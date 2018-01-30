@@ -47,7 +47,7 @@ The solution contains the Web API and the Unit Test project (unfinished).
 
 ### Run
 
-To see the result, run the project with the run button provided by Visual Studio. the browser will be opened with the included swagger solution (The start point could be change it in the 'launchSettings.json').
+To see the result, run the project with the run button provided by Visual Studio. the browser will be opened with the included swagger solution (The start point can be change it in the 'launchSettings.json').
 
 ### How it works without UI
 
