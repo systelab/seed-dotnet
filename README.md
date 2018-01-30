@@ -51,9 +51,9 @@ To see the result, run the project with the run button provided by Visual Studio
 
 ### How it works without UI
 
-1.- Do a login (username= admin and password= P@ss0rd!)
-2.- Copy the Token returned
-3.- Use the other End points to retrive, add, update or delete patients, but REMEMBER in the Authorization field add "Bearer {Token that you get before}"
+- Do a login (username= admin and password= P@ss0rd!)
+- Copy the Token returned
+- Use the other End points to retrive, add, update or delete patients, but REMEMBER in the Authorization field add "Bearer {Token that you get before}"
 
 As always if you know how to do better or if you want to help us to make a good seed let us know!!!
 
