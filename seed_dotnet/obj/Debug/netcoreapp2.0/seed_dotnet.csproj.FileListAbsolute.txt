@@ -1,0 +1,12 @@
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\bin\Debug\netcoreapp2.0\seed_dotnet.deps.json
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\bin\Debug\netcoreapp2.0\seed_dotnet.runtimeconfig.json
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\bin\Debug\netcoreapp2.0\seed_dotnet.runtimeconfig.dev.json
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\bin\Debug\netcoreapp2.0\seed_dotnet.dll
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\obj\Debug\netcoreapp2.0\seed_dotnet.csprojResolveAssemblyReference.cache
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\obj\Debug\netcoreapp2.0\seed_dotnet.csproj.CoreCompileInputs.cache
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\obj\Debug\netcoreapp2.0\seed_dotnet.AssemblyInfoInputs.cache
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\obj\Debug\netcoreapp2.0\seed_dotnet.AssemblyInfo.cs
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\bin\Debug\netcoreapp2.0\seed_dotnet.pdb
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\obj\Debug\netcoreapp2.0\seed_dotnet.dll
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\obj\Debug\netcoreapp2.0\seed_dotnet.pdb
+c:\users\aritz.penalver\documents\visual studio 2017\Projects\seed_dotnet\seed_dotnet\bin\Debug\netcoreapp2.0\seed_dotnet.xml

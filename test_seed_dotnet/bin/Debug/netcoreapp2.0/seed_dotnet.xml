@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>seed_dotnet</name>
+    </assembly>
+    <members>
+        <member name="M:seed_dotnet.Controllers.Api.PatientController.getAllPatients">
+            <summary>
+            Get list of all the patients stored in the database
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:seed_dotnet.Controllers.Api.PatientController.getPatient(System.Int32)">
+            <summary>
+            Get Information of a patient
+            </summary>
+            <param name="uid">The id of the patient that you want to retrieve information</param>
+            <returns></returns>
+        </member>
+        <member name="M:seed_dotnet.Controllers.Api.PatientController.createPatient(seed_dotnet.ViewModels.PatientViewModel)">
+            <summary>
+            Create a new patient in the database
+            </summary>
+            <param name="name">Name of the new patient</param>
+            <param name="lastname">Lastname of the new patient</param>
+            <param name="email">Email of the new patient</param>
+            <returns></returns>
+        </member>
+        <member name="M:seed_dotnet.Controllers.Api.PatientController.remove(System.Int32)">
+            <summary>
+            Remove a specific patient
+            </summary>
+            <param name="uid">The id of the patient that you want to remove</param>
+            <returns></returns>
+        </member>
+        <member name="M:seed_dotnet.Controllers.Api.PatientController.updatePatient(seed_dotnet.ViewModels.PatientViewModel)">
+            <summary>
+            Update the information of an existing patient
+            </summary>
+            <param name="id">Id of the patient</param>
+            <param name="name">Name of the new patient</param>
+            <param name="lastname">Lastname of the new patient</param>
+            <param name="email">Email of the new patient</param>
+            <returns></returns>
+        </member>
+        <member name="M:seed_dotnet.Controllers.AuthController.getToken(seed_dotnet.ViewModels.LoginViewModel)">
+            <summary>
+            Providing a correct credentials (username and password), returns a valid session token for 40 minutes
+            </summary>
+            <param name="UserName">This is the username of the user</param>
+            <param name="Password">This is the pasword of the user</param>
+            <returns></returns>
+        </member>
+        <member name="M:seed_dotnet.Controllers.AuthController.GetUserInformation(System.Int32)">
+            <summary>
+            With a valid authentication token, returns information of the owner of the token.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:seed_dotnet.Models.UserManage">
+            <summary>
+            UserManage is a extension of the information provided by the IdentityUser class
+            </summary>
+        </member>
+        <member name="T:seed_dotnet.Services.ISeed_dotnetRepository">
+            <summary>
+            Interface with all the method needed
+            </summary>
+        </member>
+        <member name="T:seed_dotnet.Services.Seed_dotnetRepository">
+            <summary>
+            Repository with all the queries to the database using the entity framework
+            </summary>
+        </member>
+        <member name="M:seed_dotnet.Services.Seed_dotnetRepository.#ctor(seed_dotnet.Models.seed_dotnetContext)">
+            <summary>
+            Set the context of the app
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:seed_dotnet.Services.Seed_dotnetRepository.AddPatient(seed_dotnet.Models.Patient)">
+            <summary>
+            Insert the patient into the database
+            </summary>
+            <param name="newpatient">Object with the information of the patient that you want to insert</param>
+        </member>
+        <member name="M:seed_dotnet.Services.Seed_dotnetRepository.DeletePatient(seed_dotnet.Models.Patient)">
+            <summary>
+            Remove the patient from the database
+            </summary>
+            <param name="nPatient">Object with the information of the patient that you want to remove</param>
+        </member>
+        <member name="M:seed_dotnet.Services.Seed_dotnetRepository.GetAllPatients">
+            <summary>
+            List all the patients saved in the database
+            </summary>
+            <returns>List of patients object</returns>
+        </member>
+        <member name="M:seed_dotnet.Services.Seed_dotnetRepository.GetPatient(seed_dotnet.Models.Patient)">
+            <summary>
+            Get a specific patient
+            </summary>
+            <param name="nPatient">Object of the patient that you want to retrieve, in this case the id of the patient must be filled</param>
+            <returns></returns>
+        </member>
+        <member name="M:seed_dotnet.Services.Seed_dotnetRepository.UpdatePatient(seed_dotnet.Models.Patient)">
+            <summary>
+            Update information of the patient
+            </summary>
+            <param name="nPatient">Object of the patient that you want to update, they ID must be filled and the information that you want to change</param>
+        </member>
+    </members>
+</doc>
