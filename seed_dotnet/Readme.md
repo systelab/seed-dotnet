@@ -1,18 +1,116 @@
 # seed-dotnet — Seed for .NET Systelab projects
 
-DRAFT
-
 In this document described how is organized the .Net Core Web API seed
 
 ## Startup file
 
+Is the first file which is run when the application was launched. The main work of this file is about registering services and injection of modules in HTTP pipeline
+
+- This file include a ConfigureServices method to configure the app's services.
+- Must include a Configure method to create the app's request processing pipeline.
+
+In our case the startup file as interesting parts contains:
+
+### Configure the CORS
+```c#
+//Configure Services Method
+//Allow use the API from other origins 
+services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+{
+    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+}
+));
+
+//Configure method
+  app.UseCors("MyPolicy");
+
+```
+#### Configure the DB Context
+```c#
+services.AddDbContext<seed_dotnetContext>();
+```
+### Set the User Identity configuration
+```c#
+services.AddIdentity<UserManage, IdentityRole>(config =>
+            {
+                config.Password.RequireNonAlphanumeric = true;
+                config.Password.RequiredLength = 8;
+                config.Password.RequireDigit = true;
+                config.User.RequireUniqueEmail = true;
+            })
+            .AddEntityFrameworkStores<seed_dotnetContext>();
+```
+
+### Configure the authentication system
+
+```c#
+services.AddAuthentication()
+      .AddCookie()
+      .AddJwtBearer(cfg =>
+      {
+          cfg.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+          {
+              ValidateIssuer = false,
+              ValidAudience = _config["Tokens:Audience"],
+              IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]))
+          };
+      });
+```        
+### Configuration of swagger
+```c#
+//ConfigureServices method
+ services.AddSwaggerGen(c =>
+  {
+      c.OperationFilter<AddRequiredHeaderParameter>();
+
+      c.SwaggerDoc("v1", new Info
+      {
+          Version = "v1",
+          Title = "Seed DotNet",
+          Description = "This is a seed project for a .Net WebApi",
+          TermsOfService = "None",
+
+      });
+
+      // Set the comments path for the Swagger JSON and UI.
+      var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+      var xmlPath = Path.Combine(basePath, "seed_dotnet.xml");
+      c.IncludeXmlComments(xmlPath);
+  });
+            
+//Configure method
+// Enable middleware to serve generated Swagger as a JSON endpoint.
+    app.UseSwagger();
+
+    // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Seed .Net");
+    });
+            
+```  
+
+### The model mapper
+```c#
+//Map the view model objet with the internal model
+  Mapper.Initialize(config =>
+  {
+      config.CreateMap<PatientViewModel, Patient>().ReverseMap();
+  });
+``` 
+
 ## Controllers
 
+The Controller responsibility is to handle the HTTP requests and responses.
+
 ## Services
+A controller must delegate the domain logic to an external class; the service will play that role, also in this section we can include the repository pattern.
+
+The role of the Repository is to access data, wherever is the data and in whatever format it could be. For the external world (the domain), the repository must deal in Domain Entities, making the rest of the system decoupled from its data source.
 
 ## Models
 
-
+Model represents domain specific data and business logic in MVC architecture. It maintains the data of the application. Model objects retrieve and store model state in the persistance store like a database.
 
 ## ViewModels
 
