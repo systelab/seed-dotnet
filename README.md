@@ -24,7 +24,7 @@ To get you started you can simply clone the `seed-dotnet` repository.
 ### Prerequisites
 
 You need [git][git] to clone the seed-dotnet repository.
-In order to buil the application you will neednVisual Studio 2017 and [.Net Core][dotnet].
+In order to build the application you will need Visual Studio 2017 and [.Net Core][dotnet].
 
 ### Clone `seed-dotnet`
 
