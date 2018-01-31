@@ -25,6 +25,14 @@ services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
   app.UseCors("MyPolicy");
 
 ```
+
+To allow CORS in the controllers is added in the top of the controller this:
+
+```c#
+[EnableCors(origins: "*", headers: "*", methods: "*", SupportsCredentials = true)]
+
+```
+
 #### Configure the DB Context
 ```c#
 services.AddDbContext<seed_dotnetContext>();
