@@ -5,7 +5,7 @@ to quickly bootstrap your projects and dev environment.
 
 The seed contains a Patient Management sample Web API.
 
-The app is based in a common patterns of developments in .NET Core, the app use the follow:
+The app doesn't do much, just shows how to use different .NET Core patterns and other suggested tools together:
 
 * .NET Core 2.0.0
 * Entity Framework Core 6.0
@@ -16,17 +16,15 @@ The app is based in a common patterns of developments in .NET Core, the app use 
 * Local database
 * Logging
 
-Refering to unit tests, the project is not finished, but the idea is to use JustMock We are working to have this ready as soon as possible. Also the idea is to include in the solution the Allure solution to show the results of the unit test results.
 
 ## Getting Started
 
-To get you started you can simply clone the `seed-dotnet` repository:
+To get you started you can simply clone the `seed-dotnet` repository.
 
 ### Prerequisites
 
-- Have installed a Visual Studio 2017 
-- Have installed .Net Core (you can download from [dotnet][dotnet])
-- Have installed [git][git]  to clone the `seed-dotnet` repository
+You need [git][git] to clone the seed-dotnet repository.
+In order to buil the application you will neednVisual Studio 2017 and [.Net Core][dotnet].
 
 ### Clone `seed-dotnet`
 
@@ -37,25 +35,33 @@ git clone https://github.com/systelab/seed-dotnet.git
 cd seed-dotnet
 ```
 
-The `depth=1` tells git to only pull down one commit worth of historical data.
+If you just want to start a new project without the seed-dotnet commit history then you can do:
+
+```bash
+git clone --depth=1 https://github.com/systelab/seed-dotnet.git <your-project-name>
+```
+
+The depth=1 tells git to only pull down one commit worth of historical data.
+
 
 ### Open the Visual Studio solution
 
-Once you have the repository cloned, open the cloned visual studio solution 'seed_dotnet.sln'
+Once you have the repository cloned, open the visual studio solution 'seed_dotnet.sln'
 
 The solution contains the Web API and the Unit Test project (unfinished).
 
 ### Run
 
-To see the result, run the project with the run button provided by Visual Studio. the browser will be opened with the included swagger solution (The start point can be change it in the 'launchSettings.json').
+To run the project, press the run button provided by Visual Studio. The browser will be opened with the included swagger page. The start point can be changed in the 'launchSettings.json'.
 
-### How it works without UI
+### How it works
 
-- Do a login (username= admin and password= P@ss0rd!)
-- Copy the Token returned
-- Use the other End points to retrive, add, update or delete patients, but REMEMBER in the Authorization field add "Bearer {Token that you get before}"
+After login (with username **admin** and password **P@ss0rd!**), copy the Token returned in the Authorization field before running any other REST end point.
 
-As always if you know how to do better or if you want to help us to make a good seed let us know!!!
+## Improvements
+
+The project is not finished, as Unit or E2E test is not still implemented. Our idea is to use JustMock, and we are working hard to have this implemented as soon as possible. Also the idea is to include Allure to show the test results in a proper maner.
 
 [git]: https://git-scm.com/
 [dotnet]:https://www.microsoft.com/net/download/windows
+
