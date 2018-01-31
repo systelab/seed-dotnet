@@ -1,6 +1,6 @@
 # seed-dotnet — Seed for .NET Systelab projects
 
-In this document described how is organized the .Net Core Web API seed
+This document described how is organized the .Net Core Web API seed
 
 ## Startup file
 
