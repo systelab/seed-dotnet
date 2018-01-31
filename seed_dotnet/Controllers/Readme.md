@@ -5,9 +5,9 @@ As a controller in this seed we can find the controller in charge of the session
 
 ## AuthController
 
-There are two REST points:
+Contains two REST points:
 
-### /users/login
+### Login the user and get the session token
 
 Is a post [HttpPost] REST end point.
 
@@ -16,9 +16,38 @@ As a parameter request a [LoginViewModel] object.
 As a result if the login is successfull returns a JWT Token.
 
 
-### /users/
+### Get Logged User information
 Is a get [HttpGet] REST end point, and in this case the authentication token is needed.
 
 Return the information of the logged user.
 
+
+## PatientController
+
+Contains the REST end points needed to implemented a CRUD of patients and for all authentification is needed.
+
+the information returned about the patients follow the model of [PatientViewModel].
+
+### Get Patient
+
+Providing Patient ID return the information of the Patient.
+
+### Get All Patients
+
+Return a list of all the patients stored in the database.
+
+### Create a Patient
+
+Providing Patient information and return the information of the patient.
+
+### Delete a Patient
+
+Providing Patient ID, the REST End point remove the information about the patient.
+
+### Update a Patient
+Providing Patient information ,with the patient Id informed, update the information of the chosen patient.
+
 [LoginViewModel]: https://github.com/systelab/seed-dotnet/blob/master/seed_dotnet/ViewModels/LoginViewModel.cs
+
+
+[PatientViewModel]: https://github.com/systelab/seed-dotnet/blob/master/seed_dotnet/ViewModels/PatientViewModel.cs
