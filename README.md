@@ -57,7 +57,7 @@ To run the project, press the run button provided by Visual Studio. The browser 
 
 ### How it works
 
-After login (with username **admin** and password **P@ss0rd!**), copy the Token returned in the Authorization field before running any other REST end point.
+After login (with username **quentinada** and password **P@ssw0rd!**), copy the Token returned in the Authorization field before running any other REST end point.
 
 ## Improvements
 
