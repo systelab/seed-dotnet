@@ -15,6 +15,7 @@ The app doesn't do much, just shows how to use different .NET Core patterns and 
 * AutoMapper
 * Local database
 * Logging
+* xUnit with Moq
 
 
 ## Getting Started
@@ -60,7 +61,7 @@ After login (with username **admin** and password **P@ss0rd!**), copy the Token 
 
 ## Improvements
 
-The project is not finished, as Unit or E2E test is not still implemented. Our idea is to use JustMock, and we are working hard to have this implemented as soon as possible. Also the idea is to include Allure to show the test results in a proper maner.
+The project is not finished, E2E test is not still implemented. We are working hard to have this implemented as soon as possible. Also the idea is to include Allure to show the test results in a proper maner.
 
 [git]: https://git-scm.com/
 [dotnet]:https://www.microsoft.com/net/download/windows
