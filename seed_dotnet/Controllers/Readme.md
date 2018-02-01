@@ -26,7 +26,18 @@ Return the information of the logged user.
 
 Contains the REST end points needed to implemented a CRUD of patients and for all authentification is needed.
 
-the information returned about the patients follow the model of [PatientViewModel].
+The information returned about the patients follow the model of [PatientViewModel].
+
+The constructor of this controller inject the dependency of the Repository Interface [ISeed_dotnetRepository], where are all the methods needed to retrive the information.
+```c#
+private ISeed_dotnetRepository _repository;
+
+public PatientController(ISeed_dotnetRepository repository)
+{
+    _repository = repository;
+}
+```
+[ISeed_dotnetRepository]:https://github.com/systelab/seed-dotnet/blob/master/seed_dotnet/Services/ISeed_dotnetRepository.cs
 
 ### Get Patient
 
