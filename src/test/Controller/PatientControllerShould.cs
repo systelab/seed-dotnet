@@ -13,7 +13,6 @@
     using Moq;
     using Xunit;
 
-    [TestClass]
     public partial class PatientControllerShould
     {
         private readonly Mock<ISeedDotnetRepository> mockUserRepo;
@@ -30,7 +29,6 @@
             this.InitializeData();
         }
 
-        [TestMethod]
         [Fact]
         public async Task CreatePatient_ReturnsBadRequest_GivenInvalidPatient()
         {
@@ -47,7 +45,6 @@
             Xunit.Assert.IsType<BadRequestObjectResult>(result);
         }
 
-        [TestMethod]
         [Fact]
         public async Task CreatePatient_Should_Create_A_New_Patient()
         {
@@ -69,7 +66,6 @@
             Xunit.Assert.Equal(patient.LastName, model.LastName);
         }
 
-        [TestMethod]
         [Fact]
         public async Task GetAllPatients_Should_Return_List_Of_Patients()
         {
@@ -85,7 +81,6 @@
             Xunit.Assert.Equal(3, model.Count());
         }
 
-        [TestMethod]
         [Fact]
         public async Task GetPatients_Should_Return_Patient_Information()
         {
@@ -104,7 +99,6 @@
             Xunit.Assert.Equal(this.lpatient[1].Id, model.Id);
         }
 
-        [TestMethod]
         [Fact]
         public async Task RemovePatient_Should_Remove_A_Existing_Patient()
         {
