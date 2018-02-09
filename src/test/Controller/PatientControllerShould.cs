@@ -19,6 +19,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace test_seed_dotnet.Controller
 {
+    using Microsoft.EntityFrameworkCore.Diagnostics;
+
     [TestClass]
     public class PatientControllerShould
     {
@@ -35,12 +37,10 @@ namespace test_seed_dotnet.Controller
             });
             _mockUserRepo = new Mock<ISeed_dotnetRepository>();
            
+            this.InitializeData();
         }
 
-       
-
-        [TestInitialize]
-        public void TestInitialize()
+        private void InitializeData()
         {
             lpatient = new List<Patient>
             {

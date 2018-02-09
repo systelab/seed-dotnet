@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using seed_dotnet.Models;
-using System.Web.Http.Cors;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
@@ -22,7 +21,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace seed_dotnet.Controllers.Api
 {
-    [EnableCors(origins: "*", headers: "*", methods: "*", SupportsCredentials = true)]
+    using Microsoft.AspNetCore.Cors;
+
+    [EnableCors("MyPolicy")]
     [Route("patients")]
     public class PatientController : Controller
     {

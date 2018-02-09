@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using System.IO;
 using Microsoft.Extensions.PlatformAbstractions;
-using System.Web.Http.Cors;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using seed_dotnet.Models;
-using System.Web.Http.Cors;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
@@ -18,7 +17,9 @@ using seed_dotnet.ViewModels;
 
 namespace seed_dotnet.Controllers
 {
-    [EnableCors(origins: "*", headers: "*", methods: "*", SupportsCredentials = true)]
+    using Microsoft.AspNetCore.Cors;
+
+    [EnableCors("MyPolicy")]
     [Route("users")]
     public class AuthController : Controller
     {
