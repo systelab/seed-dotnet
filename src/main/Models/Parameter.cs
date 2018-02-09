@@ -1,4 +1,4 @@
-﻿namespace seed_dotnet.Models
+﻿namespace Main.Models
 {
     using System.Collections.Generic;
 

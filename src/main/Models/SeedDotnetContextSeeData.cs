@@ -1,24 +1,24 @@
-﻿namespace seed_dotnet.Models
+﻿namespace Main.Models
 {
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Identity;
 
-    public class seed_dotnetContextSeeData
+    public class SeedDotnetContextSeeData
     {
-        private seed_dotnetContext _context;
+        private SeedDotnetContext context;
 
-        private UserManager<UserManage> _userManager;
+        private readonly UserManager<UserManage> userManager;
 
-        public seed_dotnetContextSeeData(seed_dotnetContext context, UserManager<UserManage> userM)
+        public SeedDotnetContextSeeData(SeedDotnetContext context, UserManager<UserManage> userM)
         {
-            this._context = context;
-            this._userManager = userM;
+            this.context = context;
+            this.userManager = userM;
         }
 
         public async Task EnsureSeedData()
         {
-            if (await this._userManager.FindByNameAsync("admin") == null)
+            if (await this.userManager.FindByNameAsync("admin") == null)
             {
                 var user = new UserManage()
                                {
@@ -27,10 +27,10 @@
                                    LastName = "Seed_Dotnet",
                                    Email = "admin@werfen.com"
                                };
-                await this._userManager.CreateAsync(user, "P@ssw0rd!");
+                await this.userManager.CreateAsync(user, "P@ssw0rd!");
             }
 
-            if (await this._userManager.FindByNameAsync("quentinada") == null)
+            if (await this.userManager.FindByNameAsync("quentinada") == null)
             {
                 var user = new UserManage()
                                {
@@ -39,10 +39,10 @@
                                    LastName = "quentinada",
                                    Email = "quentinada@werfen.com"
                                };
-                await this._userManager.CreateAsync(user, "P@ssw0rd!");
+                await this.userManager.CreateAsync(user, "P@ssw0rd!");
             }
 
-            if (await this._userManager.FindByNameAsync("test") == null)
+            if (await this.userManager.FindByNameAsync("test") == null)
             {
                 var user = new UserManage()
                                {
@@ -51,7 +51,7 @@
                                    LastName = "test_Seed_Dotnet",
                                    Email = "testadmin@werfen.com"
                                };
-                await this._userManager.CreateAsync(user, "P@ssw0rd!");
+                await this.userManager.CreateAsync(user, "P@ssw0rd!");
             }
         }
     }

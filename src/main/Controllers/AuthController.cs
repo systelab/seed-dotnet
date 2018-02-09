@@ -1,10 +1,13 @@
-﻿namespace seed_dotnet.Controllers
+﻿namespace Main.Controllers
 {
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Text;
     using System.Threading.Tasks;
+
+    using Main.Models;
+    using Main.ViewModels;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
@@ -14,49 +17,45 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Tokens;
 
-    using seed_dotnet.Models;
-    using seed_dotnet.ViewModels;
-
     [EnableCors("MyPolicy")]
     [Route("users")]
     public class AuthController : Controller
     {
-        private readonly IConfigurationRoot _config;
+        private readonly IConfigurationRoot config;
 
-        private readonly SignInManager<UserManage> _signInManager;
+        private readonly SignInManager<UserManage> signInManager;
 
-        private readonly UserManager<UserManage> _userManager;
+        private readonly UserManager<UserManage> userManager;
 
-        private seed_dotnetContext _context;
+        private SeedDotnetContext context;
 
         public AuthController(
             SignInManager<UserManage> signInManager,
             UserManager<UserManage> userM,
-            seed_dotnetContext context,
+            SeedDotnetContext context,
             IConfigurationRoot config)
         {
-            this._signInManager = signInManager;
-            this._context = context;
-            this._userManager = userM;
-            this._config = config;
+            this.signInManager = signInManager;
+            this.context = context;
+            this.userManager = userM;
+            this.config = config;
         }
 
         /// <summary>
         /// Providing a correct credentials (username and password), returns a valid session token for 40 minutes
         /// </summary>
-        /// <param name="UserName">This is the username of the user</param>
-        /// <param name="Password">This is the pasword of the user</param>
+        /// <param name="vm">Login model</param>
         /// <returns></returns>
         [Route("login")]
         [HttpPost]
-        public async Task<IActionResult> getToken(LoginViewModel vm)
+        public async Task<IActionResult> GetToken(LoginViewModel vm)
         {
             if (this.ModelState.IsValid)
             {
-                var user = await this._userManager.FindByNameAsync(vm.UserName);
+                var user = await this.userManager.FindByNameAsync(vm.UserName);
                 if (user != null)
                 {
-                    var signInResult = await this._signInManager.CheckPasswordSignInAsync(user, vm.Password, false);
+                    var signInResult = await this.signInManager.CheckPasswordSignInAsync(user, vm.Password, false);
                     if (signInResult.Succeeded)
                     {
                         // Create the token
@@ -66,11 +65,11 @@
                                              new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                                              new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
                                          };
-                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._config["Tokens:Key"]));
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["Tokens:Key"]));
                         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                         var token = new JwtSecurityToken(
-                            this._config["Tokens:Issuer"],
-                            this._config["Tokens:Audience"],
+                            this.config["Tokens:Issuer"],
+                            this.config["Tokens:Audience"],
                             claims,
                             expires: DateTime.Now.AddMinutes(40),
                             signingCredentials: creds);
@@ -90,6 +89,7 @@
         /// <summary>
         /// With a valid authentication token, returns information of the owner of the token.
         /// </summary>
+        /// <param name="uid">User unique identifier</param>
         /// <returns></returns>
         [Route("{uid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -98,7 +98,7 @@
         {
             if (this.User.Identity.IsAuthenticated)
             {
-                var user = await this._userManager.FindByNameAsync(this.User.Identity.Name);
+                var user = await this.userManager.FindByNameAsync(this.User.Identity.Name);
                 var userw = new { Email = user.Email, Name = user.Name, LastName = user.LastName };
                 return this.Created(string.Empty, userw);
             }

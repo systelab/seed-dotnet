@@ -1,4 +1,4 @@
-﻿namespace seed_dotnet.Models
+﻿namespace Main.Models
 {
     using System.Collections.Generic;
 
@@ -14,7 +14,7 @@
                 operation.Parameters = new List<IParameter>();
 
             operation.Parameters.Add(
-                new Parameter { Name = "Authorization", @In = "header", Type = "string", Required = false });
+                new Parameter { Name = "Authorization", In = "header", Type = "string", Required = false });
         }
     }
 }

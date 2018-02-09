@@ -1,4 +1,4 @@
-﻿namespace seed_dotnet
+﻿namespace Main
 {
     using System.IO;
 

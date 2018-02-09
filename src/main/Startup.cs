@@ -1,9 +1,13 @@
-﻿namespace seed_dotnet
+﻿namespace Main
 {
     using System.IO;
     using System.Text;
 
     using AutoMapper;
+
+    using Main.Models;
+    using Main.Services;
+    using Main.ViewModels;
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -17,27 +21,23 @@
 
     using Newtonsoft.Json.Serialization;
 
-    using seed_dotnet.Models;
-    using seed_dotnet.Services;
-    using seed_dotnet.ViewModels;
-
     using Swashbuckle.AspNetCore.Swagger;
 
     // This is 
     public class Startup
     {
-        private IConfigurationRoot _config;
+        private readonly IConfigurationRoot config;
 
-        private IHostingEnvironment _env;
+        private readonly IHostingEnvironment env;
 
         public Startup(IHostingEnvironment env)
         {
-            this._env = env;
+            this.env = env;
 
-            var builder = new ConfigurationBuilder().SetBasePath(this._env.ContentRootPath)
+            var builder = new ConfigurationBuilder().SetBasePath(this.env.ContentRootPath)
                 .AddJsonFile("appsettings.json").AddEnvironmentVariables();
 
-            this._config = builder.Build();
+            this.config = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -47,7 +47,7 @@
             IApplicationBuilder app,
             IHostingEnvironment env,
             ILoggerFactory factory,
-            seed_dotnetContextSeeData seeder)
+            SeedDotnetContextSeeData seeder)
         {
             // Map the view model objet with the internal model
             Mapper.Initialize(config => { config.CreateMap<PatientViewModel, Patient>().ReverseMap(); });
@@ -89,8 +89,8 @@
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(this._config);
-            if (this._env.IsEnvironment("Development") || this._env.IsEnvironment("Testing"))
+            services.AddSingleton(this.config);
+            if (this.env.IsEnvironment("Development") || this.env.IsEnvironment("Testing"))
             {
                 // Here you can set the services implemented only for DEV and TEST
             }
@@ -106,7 +106,7 @@
                     builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials(); }));
 
             // Set the context to the database
-            services.AddDbContext<seed_dotnetContext>();
+            services.AddDbContext<SeedDotnetContext>();
 
             // Set
             services.AddIdentity<UserManage, IdentityRole>(
@@ -116,7 +116,7 @@
                         config.Password.RequiredLength = 8;
                         config.Password.RequireDigit = true;
                         config.User.RequireUniqueEmail = true;
-                    }).AddEntityFrameworkStores<seed_dotnetContext>();
+                    }).AddEntityFrameworkStores<SeedDotnetContext>();
 
             // Configure the authentication system
             services.AddAuthentication().AddCookie().AddJwtBearer(
@@ -126,21 +126,21 @@
                             new TokenValidationParameters()
                                 {
                                     ValidateIssuer = false,
-                                    ValidAudience = this._config["Tokens:Audience"],
+                                    ValidAudience = this.config["Tokens:Audience"],
                                     IssuerSigningKey = new SymmetricSecurityKey(
-                                        Encoding.UTF8.GetBytes(this._config["Tokens:Key"]))
+                                        Encoding.UTF8.GetBytes(this.config["Tokens:Key"]))
                                 };
                     });
 
-            services.AddScoped<ISeed_dotnetRepository, Seed_dotnetRepository>();
-            services.AddTransient<seed_dotnetContextSeeData>();
+            services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
+            services.AddTransient<SeedDotnetContextSeeData>();
             services.AddLogging();
 
             services.AddMvc(
                 config =>
                     {
                         // You can configure that in production is needed Https but for other enviroments not needed
-                        if (this._env.IsProduction())
+                        if (this.env.IsProduction())
                         {
                             config.Filters.Add(new RequireHttpsAttribute());
                         }

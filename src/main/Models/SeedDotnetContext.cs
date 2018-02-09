@@ -1,17 +1,17 @@
-﻿namespace seed_dotnet.Models
+﻿namespace Main.Models
 {
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
 
-    public class seed_dotnetContext : IdentityDbContext<UserManage>
+    public class SeedDotnetContext : IdentityDbContext<UserManage>
     {
-        private IConfigurationRoot _config;
+        private readonly IConfigurationRoot config;
 
-        public seed_dotnetContext(IConfigurationRoot config, DbContextOptions options)
+        public SeedDotnetContext(IConfigurationRoot config, DbContextOptions options)
             : base(options)
         {
-            this._config = config;
+            this.config = config;
         }
 
         public DbSet<Patient> Patients { get; set; }
@@ -20,7 +20,7 @@
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.UseSqlite(this._config["ConnectionStrings:seed_dotnetContextConnection"]);
+            optionsBuilder.UseSqlite(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
         }
     }
 }

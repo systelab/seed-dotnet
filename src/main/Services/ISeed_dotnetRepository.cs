@@ -1,14 +1,14 @@
-﻿namespace seed_dotnet.Services
+﻿namespace Main.Services
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    using seed_dotnet.Models;
+    using Main.Models;
 
     /// <summary>
     /// Interface with all the method needed
     /// </summary>
-    public interface ISeed_dotnetRepository
+    public interface ISeedDotnetRepository
     {
         void AddPatient(Patient nPatient);
 
