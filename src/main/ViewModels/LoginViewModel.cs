@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
-
-namespace seed_dotnet.ViewModels
+﻿namespace Main.ViewModels
 {
+    using System.ComponentModel.DataAnnotations;
+
     public class LoginViewModel
     {
-       
-        [Required]
-        public string UserName { get; set; }
+        /// <summary>
+        /// User's password
+        /// </summary>
         [Required]
         public string Password { get; set; }
+
+        /// <summary>
+        /// User's login identifier
+        /// </summary>
+        [Required]
+        public string UserName { get; set; }
     }
 }

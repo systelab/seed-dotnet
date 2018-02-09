@@ -1,56 +1,73 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using seed_dotnet.Models;
-using System.Web.Http.Cors;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using seed_dotnet.ViewModels;
-
-using Microsoft.Extensions.Logging;
-using AutoMapper;
-using seed_dotnet.Services;
-using Microsoft.EntityFrameworkCore;
-
-namespace seed_dotnet.Controllers.Api
+﻿namespace Main.Controllers.Api
 {
-    [EnableCors(origins: "*", headers: "*", methods: "*", SupportsCredentials = true)]
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
+    using AutoMapper;
+
+    using Main.Models;
+    using Main.Services;
+    using Main.ViewModels;
+
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Cors;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+
+    [EnableCors("MyPolicy")]
     [Route("patients")]
     public class PatientController : Controller
     {
+        private readonly ISeedDotnetRepository repository;
 
-        private ISeed_dotnetRepository _repository;
+        private readonly ILogger<PatientController> logger;
 
-        public PatientController(ISeed_dotnetRepository repository)
+        public PatientController(ISeedDotnetRepository repository, ILogger<PatientController> logger)
         {
-            _repository = repository;
+            this.repository = repository;
+            this.logger = logger;
+        }
+
+        /// <summary>
+        /// Create a new patient in the database
+        /// </summary>
+        /// <param name="patient">patient model</param>
+        /// <returns>Task returning the status of the action</returns>
+        [Route("patient")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost]
+        public async Task<IActionResult> CreatePatient(PatientViewModel patient)
+        {
+            if (this.ModelState.IsValid)
+            {
+                // Save to the database
+                var newpatient = Mapper.Map<Patient>(patient);
+                this.repository.AddPatient(newpatient);
+                return this.Ok(Mapper.Map<PatientViewModel>(newpatient));
+            }
+
+            return this.BadRequest("Bad data");
         }
 
         /// <summary>
         /// Get list of all the patients stored in the database
         /// </summary>
-        /// <returns></returns>
+        /// <returns>result of the action</returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Microsoft.AspNetCore.Mvc.HttpGet()]
-        public IActionResult getAllPatients()
+        [HttpGet()]
+        public IActionResult GetAllPatients()
         {
             try
             {
-                    var results = _repository.GetAllPatients();
-                    return Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
+                var results = this.repository.GetAllPatients();
+                return this.Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
             }
             catch (Exception ex)
             {
-               // _logger.LogError($"Failed to get the Project: {ex}");
-                return BadRequest("Error Occurred");
+                this.logger.LogError($"Failed to get the Project: {ex}");
+                return this.BadRequest("Error Occurred");
             }
         }
 
@@ -58,127 +75,96 @@ namespace seed_dotnet.Controllers.Api
         /// Get Information of a patient
         /// </summary>
         /// <param name="uid">The id of the patient that you want to retrieve information</param>
-        /// <returns></returns>
+        /// <returns>result of the action</returns>
         [Route("{uid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Microsoft.AspNetCore.Mvc.HttpGet()]
-        public IActionResult getPatient(int uid)
+        [HttpGet()]
+        public IActionResult GetPatient(int uid)
         {
             try
             {
-                Patient nPatient = new Patient() { id = uid };
-                Patient results = _repository.GetPatient(nPatient);
-                return Ok(Mapper.Map<PatientViewModel>(results));
+                Patient nPatient = new Patient() { Id = uid };
+                Patient results = this.repository.GetPatient(nPatient);
+                return this.Ok(Mapper.Map<PatientViewModel>(results));
             }
             catch (Exception ex)
             {
-               // _logger.LogError($"Failed to get the Project: {ex}");
-                return BadRequest("Error Occurred");
+                this.logger.LogError($"Failed to get the Project: {ex}");
+                return this.BadRequest("Error Occurred");
             }
-        }
-
-
-        /// <summary>
-        /// Create a new patient in the database
-        /// </summary>
-        /// <param name="name">Name of the new patient</param>
-        /// <param name="lastname">Lastname of the new patient</param>
-        /// <param name="email">Email of the new patient</param>
-        /// <returns></returns>
-        [Route("patient")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Microsoft.AspNetCore.Mvc.HttpPost]
-        public async Task<IActionResult> createPatient(PatientViewModel patient)
-        {
-            if (ModelState.IsValid)
-            {
-                //Save to the database
-                var newpatient = Mapper.Map<Patient>(patient);
-                _repository.AddPatient(newpatient);
-                return Ok(Mapper.Map<PatientViewModel>(newpatient));
-            }
-            return BadRequest("Bad data");
         }
 
         /// <summary>
         /// Remove a specific patient
         /// </summary>
         /// <param name="uid">The id of the patient that you want to remove</param>
-        /// <returns></returns>
+        /// <returns>Task with the result of the action</returns>
         [Route("{uid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Microsoft.AspNetCore.Mvc.HttpDelete()]
-        public async Task<IActionResult> remove(int uid)
+        [HttpDelete()]
+        public async Task<IActionResult> Remove(int uid)
         {
             try
             {
                 if (uid == 0)
                 {
-                    return BadRequest("Bad data");
+                    return this.BadRequest("Bad data");
                 }
                 else
                 {
-                    var nPatient = new Patient() { id = uid };
+                    var nPatient = new Patient() { Id = uid };
+
+                    var results = this.repository.DeletePatient(nPatient);
                     
-                    var results = _repository.DeletePatient(nPatient);;
-                    return Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
+                    return this.Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
                 }
             }
             catch (Exception ex)
             {
-               // _logger.LogError($"Failed to get the Project: {ex}");
-                return BadRequest("Error Occurred");
+                this.logger.LogError($"Failed to get the Project: {ex}");
+                return this.BadRequest("Error Occurred");
             }
         }
-
 
         /// <summary>
         /// Update the information of an existing patient
         /// </summary>
-        /// <param name="id">Id of the patient</param>
-        /// <param name="name">Name of the new patient</param>
-        /// <param name="lastname">Lastname of the new patient</param>
-        /// <param name="email">Email of the new patient</param>
+        /// <param name="patient">patient model</param>
         /// <returns></returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Microsoft.AspNetCore.Mvc.HttpPut()]
-        public async Task<IActionResult> updatePatient(PatientViewModel patient)
+        [HttpPut()]
+        public async Task<IActionResult> UpdatePatient(PatientViewModel patient)
         {
-            if (ModelState.IsValid)
+            if (!this.ModelState.IsValid) return this.BadRequest("Bad data");
+
+            // Save to the database
+            var nPatient = new Patient() { Id = patient.Id };
+            var results = this.repository.GetPatient(nPatient);
+            if (results == null || results.Id == 0)
             {
-                //Save to the database
-
-                var nPatient = new Patient() { id = patient.id };
-                var results = _repository.GetPatient(nPatient);
-                if (results.id == 0 || results == null)
-                {
-                    return BadRequest("User does not exist");
-                }
-                else
-                {
-
-                    if (!string.IsNullOrWhiteSpace(patient.Name))
-                    {
-                        results.Name = patient.Name;
-                    }
-                    if (!string.IsNullOrWhiteSpace(patient.Email))
-                    {
-                        results.Email = patient.Email;
-                    }
-                    if (!string.IsNullOrWhiteSpace(patient.LastName))
-                    {
-                        results.LastName = patient.LastName;
-                    }
-                    _repository.UpdatePatient(results);
-                    return Ok(Mapper.Map<PatientViewModel>(results));
-                }
-
-
-
+                return this.BadRequest("User does not exist");
             }
-            return BadRequest("Bad data");
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(patient.Name))
+                {
+                    results.Name = patient.Name;
+                }
+
+                if (!string.IsNullOrWhiteSpace(patient.Email))
+                {
+                    results.Email = patient.Email;
+                }
+
+                if (!string.IsNullOrWhiteSpace(patient.LastName))
+                {
+                    results.LastName = patient.LastName;
+                }
+
+                this.repository.UpdatePatient(results);
+                return this.Ok(Mapper.Map<PatientViewModel>(results));
+            }
+
         }
-
-
     }
 }

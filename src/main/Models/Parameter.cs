@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
-
-namespace seed_dotnet.Models
+﻿namespace Main.Models
 {
+    using System.Collections.Generic;
+
+    using Swashbuckle.AspNetCore.Swagger;
+
     public class Parameter : IParameter
     {
         public string Description { get; set; }
