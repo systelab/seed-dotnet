@@ -1,40 +1,46 @@
-﻿
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using seed_dotnet.Models;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using seed_dotnet.ViewModels;
-
-namespace seed_dotnet.Controllers
+﻿namespace seed_dotnet.Controllers
 {
+    using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Text;
+    using System.Threading.Tasks;
+
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.IdentityModel.Tokens;
+
+    using seed_dotnet.Models;
+    using seed_dotnet.ViewModels;
 
     [EnableCors("MyPolicy")]
     [Route("users")]
     public class AuthController : Controller
     {
+        private readonly IConfigurationRoot _config;
+
+        private readonly SignInManager<UserManage> _signInManager;
+
+        private readonly UserManager<UserManage> _userManager;
 
         private seed_dotnetContext _context;
-        private readonly SignInManager<UserManage> _signInManager;
-        private readonly UserManager<UserManage> _userManager;
-        private readonly IConfigurationRoot _config;
-        public AuthController(SignInManager<UserManage> signInManager, UserManager<UserManage> userM, seed_dotnetContext context, IConfigurationRoot config)
+
+        public AuthController(
+            SignInManager<UserManage> signInManager,
+            UserManager<UserManage> userM,
+            seed_dotnetContext context,
+            IConfigurationRoot config)
         {
-            _signInManager = signInManager;
-            _context = context;
-            _userManager = userM;
-            _config = config;
+            this._signInManager = signInManager;
+            this._context = context;
+            this._userManager = userM;
+            this._config = config;
         }
+
         /// <summary>
         /// Providing a correct credentials (username and password), returns a valid session token for 40 minutes
         /// </summary>
@@ -45,44 +51,40 @@ namespace seed_dotnet.Controllers
         [HttpPost]
         public async Task<IActionResult> getToken(LoginViewModel vm)
         {
-
-            if (ModelState.IsValid)
+            if (this.ModelState.IsValid)
             {
-                var user = await _userManager.FindByNameAsync(vm.UserName);
+                var user = await this._userManager.FindByNameAsync(vm.UserName);
                 if (user != null)
                 {
-                   
-                    var signInResult = await _signInManager.CheckPasswordSignInAsync(user, vm.Password, false);
+                    var signInResult = await this._signInManager.CheckPasswordSignInAsync(user, vm.Password, false);
                     if (signInResult.Succeeded)
                     {
-                        //Create the token
+                        // Create the token
                         var claims = new[]
-                        {
-                            new Claim(JwtRegisteredClaimNames.Sub,user.Email),
-                            new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                            new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
-                        };
-                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+                                         {
+                                             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                                             new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
+                                         };
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._config["Tokens:Key"]));
                         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                         var token = new JwtSecurityToken(
-                            _config["Tokens:Issuer"],
-                             _config["Tokens:Audience"],
-                             claims,
-                             expires: DateTime.Now.AddMinutes(40),
-                             signingCredentials: creds
-                            );
+                            this._config["Tokens:Issuer"],
+                            this._config["Tokens:Audience"],
+                            claims,
+                            expires: DateTime.Now.AddMinutes(40),
+                            signingCredentials: creds);
                         var results = new
-                        {
-                            token = new JwtSecurityTokenHandler().WriteToken(token),
-                            expiration = DateTime.Now.AddMinutes(40)
-                        };
-                        return Created("", results);
+                                          {
+                                              token = new JwtSecurityTokenHandler().WriteToken(token),
+                                              expiration = DateTime.Now.AddMinutes(40)
+                                          };
+                        return this.Created(string.Empty, results);
                     }
                 }
-
-
             }
-            return BadRequest("Username or password incorrect");
+
+            return this.BadRequest("Username or password incorrect");
         }
 
         /// <summary>
@@ -96,20 +98,14 @@ namespace seed_dotnet.Controllers
         {
             if (this.User.Identity.IsAuthenticated)
             {
-                var user = await _userManager.FindByNameAsync(this.User.Identity.Name);
-                var userw = new
-                {
-                    Email = user.Email,
-                    Name = user.Name,
-                    LastName = user.LastName
-                };
-                return Created("", userw);
+                var user = await this._userManager.FindByNameAsync(this.User.Identity.Name);
+                var userw = new { Email = user.Email, Name = user.Name, LastName = user.LastName };
+                return this.Created(string.Empty, userw);
             }
             else
             {
-                return BadRequest("Not logged");
+                return this.BadRequest("Not logged");
             }
         }
-
     }
 }

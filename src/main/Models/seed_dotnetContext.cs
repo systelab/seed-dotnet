@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-
-namespace seed_dotnet.Models
+﻿namespace seed_dotnet.Models
 {
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+
     public class seed_dotnetContext : IdentityDbContext<UserManage>
     {
         private IConfigurationRoot _config;
 
         public seed_dotnetContext(IConfigurationRoot config, DbContextOptions options)
-        : base(options)
+            : base(options)
         {
-            _config = config;
-
+            this._config = config;
         }
+
         public DbSet<Patient> Patients { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.UseSqlite(_config["ConnectionStrings:seed_dotnetContextConnection"]);
+            optionsBuilder.UseSqlite(this._config["ConnectionStrings:seed_dotnetContextConnection"]);
         }
     }
 }

@@ -1,83 +1,30 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using seed_dotnet.Models;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using seed_dotnet.ViewModels;
-
-using Microsoft.Extensions.Logging;
-using AutoMapper;
-using seed_dotnet.Services;
-using Microsoft.EntityFrameworkCore;
-
-namespace seed_dotnet.Controllers.Api
+﻿namespace seed_dotnet.Controllers.Api
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
+    using AutoMapper;
+
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;
+    using Microsoft.AspNetCore.Mvc;
+
+    using seed_dotnet.Models;
+    using seed_dotnet.Services;
+    using seed_dotnet.ViewModels;
 
     [EnableCors("MyPolicy")]
     [Route("patients")]
     public class PatientController : Controller
     {
-
         private ISeed_dotnetRepository _repository;
 
         public PatientController(ISeed_dotnetRepository repository)
         {
-            _repository = repository;
+            this._repository = repository;
         }
-
-        /// <summary>
-        /// Get list of all the patients stored in the database
-        /// </summary>
-        /// <returns></returns>
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Microsoft.AspNetCore.Mvc.HttpGet()]
-        public IActionResult getAllPatients()
-        {
-            try
-            {
-                    var results = _repository.GetAllPatients();
-                    return Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
-            }
-            catch (Exception ex)
-            {
-               // _logger.LogError($"Failed to get the Project: {ex}");
-                return BadRequest("Error Occurred");
-            }
-        }
-
-        /// <summary>
-        /// Get Information of a patient
-        /// </summary>
-        /// <param name="uid">The id of the patient that you want to retrieve information</param>
-        /// <returns></returns>
-        [Route("{uid}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Microsoft.AspNetCore.Mvc.HttpGet()]
-        public IActionResult getPatient(int uid)
-        {
-            try
-            {
-                Patient nPatient = new Patient() { id = uid };
-                Patient results = _repository.GetPatient(nPatient);
-                return Ok(Mapper.Map<PatientViewModel>(results));
-            }
-            catch (Exception ex)
-            {
-               // _logger.LogError($"Failed to get the Project: {ex}");
-                return BadRequest("Error Occurred");
-            }
-        }
-
 
         /// <summary>
         /// Create a new patient in the database
@@ -88,17 +35,61 @@ namespace seed_dotnet.Controllers.Api
         /// <returns></returns>
         [Route("patient")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Microsoft.AspNetCore.Mvc.HttpPost]
+        [HttpPost]
         public async Task<IActionResult> createPatient(PatientViewModel patient)
         {
-            if (ModelState.IsValid)
+            if (this.ModelState.IsValid)
             {
-                //Save to the database
+                // Save to the database
                 var newpatient = Mapper.Map<Patient>(patient);
-                _repository.AddPatient(newpatient);
-                return Ok(Mapper.Map<PatientViewModel>(newpatient));
+                this._repository.AddPatient(newpatient);
+                return this.Ok(Mapper.Map<PatientViewModel>(newpatient));
             }
-            return BadRequest("Bad data");
+
+            return this.BadRequest("Bad data");
+        }
+
+        /// <summary>
+        /// Get list of all the patients stored in the database
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet()]
+        public IActionResult getAllPatients()
+        {
+            try
+            {
+                var results = this._repository.GetAllPatients();
+                return this.Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
+            }
+            catch (Exception ex)
+            {
+                // _logger.LogError($"Failed to get the Project: {ex}");
+                return this.BadRequest("Error Occurred");
+            }
+        }
+
+        /// <summary>
+        /// Get Information of a patient
+        /// </summary>
+        /// <param name="uid">The id of the patient that you want to retrieve information</param>
+        /// <returns></returns>
+        [Route("{uid}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet()]
+        public IActionResult getPatient(int uid)
+        {
+            try
+            {
+                Patient nPatient = new Patient() { id = uid };
+                Patient results = this._repository.GetPatient(nPatient);
+                return this.Ok(Mapper.Map<PatientViewModel>(results));
+            }
+            catch (Exception ex)
+            {
+                // _logger.LogError($"Failed to get the Project: {ex}");
+                return this.BadRequest("Error Occurred");
+            }
         }
 
         /// <summary>
@@ -108,30 +99,30 @@ namespace seed_dotnet.Controllers.Api
         /// <returns></returns>
         [Route("{uid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Microsoft.AspNetCore.Mvc.HttpDelete()]
+        [HttpDelete()]
         public async Task<IActionResult> remove(int uid)
         {
             try
             {
                 if (uid == 0)
                 {
-                    return BadRequest("Bad data");
+                    return this.BadRequest("Bad data");
                 }
                 else
                 {
                     var nPatient = new Patient() { id = uid };
+
+                    var results = this._repository.DeletePatient(nPatient);
                     
-                    var results = _repository.DeletePatient(nPatient);;
-                    return Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
+                    return this.Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
                 }
             }
             catch (Exception ex)
             {
-               // _logger.LogError($"Failed to get the Project: {ex}");
-                return BadRequest("Error Occurred");
+                // _logger.LogError($"Failed to get the Project: {ex}");
+                return this.BadRequest("Error Occurred");
             }
         }
-
 
         /// <summary>
         /// Update the information of an existing patient
@@ -142,44 +133,41 @@ namespace seed_dotnet.Controllers.Api
         /// <param name="email">Email of the new patient</param>
         /// <returns></returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Microsoft.AspNetCore.Mvc.HttpPut()]
+        [HttpPut()]
         public async Task<IActionResult> updatePatient(PatientViewModel patient)
         {
-            if (ModelState.IsValid)
+            if (this.ModelState.IsValid)
             {
-                //Save to the database
-
+                // Save to the database
                 var nPatient = new Patient() { id = patient.id };
-                var results = _repository.GetPatient(nPatient);
+                var results = this._repository.GetPatient(nPatient);
                 if (results.id == 0 || results == null)
                 {
-                    return BadRequest("User does not exist");
+                    return this.BadRequest("User does not exist");
                 }
                 else
                 {
-
                     if (!string.IsNullOrWhiteSpace(patient.Name))
                     {
                         results.Name = patient.Name;
                     }
+
                     if (!string.IsNullOrWhiteSpace(patient.Email))
                     {
                         results.Email = patient.Email;
                     }
+
                     if (!string.IsNullOrWhiteSpace(patient.LastName))
                     {
                         results.LastName = patient.LastName;
                     }
-                    _repository.UpdatePatient(results);
-                    return Ok(Mapper.Map<PatientViewModel>(results));
+
+                    this._repository.UpdatePatient(results);
+                    return this.Ok(Mapper.Map<PatientViewModel>(results));
                 }
-
-
-
             }
-            return BadRequest("Bad data");
+
+            return this.BadRequest("Bad data");
         }
-
-
     }
 }
