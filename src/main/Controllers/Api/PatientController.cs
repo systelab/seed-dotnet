@@ -14,6 +14,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     [EnableCors("MyPolicy")]
     [Route("patients")]
@@ -21,9 +22,12 @@
     {
         private readonly ISeedDotnetRepository repository;
 
-        public PatientController(ISeedDotnetRepository repository)
+        private readonly ILogger<PatientController> logger;
+
+        public PatientController(ISeedDotnetRepository repository, ILogger<PatientController> logger)
         {
             this.repository = repository;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -62,7 +66,7 @@
             }
             catch (Exception ex)
             {
-                // _logger.LogError($"Failed to get the Project: {ex}");
+                this.logger.LogError($"Failed to get the Project: {ex}");
                 return this.BadRequest("Error Occurred");
             }
         }
@@ -85,7 +89,7 @@
             }
             catch (Exception ex)
             {
-                // _logger.LogError($"Failed to get the Project: {ex}");
+                this.logger.LogError($"Failed to get the Project: {ex}");
                 return this.BadRequest("Error Occurred");
             }
         }
@@ -117,7 +121,7 @@
             }
             catch (Exception ex)
             {
-                // _logger.LogError($"Failed to get the Project: {ex}");
+                this.logger.LogError($"Failed to get the Project: {ex}");
                 return this.BadRequest("Error Occurred");
             }
         }

@@ -1,29 +1,22 @@
-﻿namespace test.Controller
+﻿namespace Test.Controller
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-
     using AutoMapper;
-
     using Main.Controllers.Api;
     using Main.Models;
     using Main.Services;
     using Main.ViewModels;
-
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-
     using Moq;
-
     using Xunit;
 
     [TestClass]
-    public class PatientControllerShould
+    public partial class PatientControllerShould
     {
         private readonly Mock<ISeedDotnetRepository> mockUserRepo;
-
-        private PatientController sut;
 
         private List<Patient> lpatient;
 
@@ -43,11 +36,12 @@
         {
             // Arrange & Act
             this.mockUserRepo.Setup(repo => repo.AddPatient(It.IsAny<Patient>()));
-            this.sut = new PatientController(this.mockUserRepo.Object);
-            this.sut.ModelState.AddModelError("error", "some error");
+            
+            PatientController sut = new PatientControllerBuilder().WithRepository(this.mockUserRepo.Object);
+            sut.ModelState.AddModelError("error", "some error");
 
             // Act
-            var result = await this.sut.CreatePatient(patient: null);
+            var result = await sut.CreatePatient(patient: null);
 
             // Assert
             Xunit.Assert.IsType<BadRequestObjectResult>(result);
@@ -58,21 +52,21 @@
         public async Task CreatePatient_Should_Create_A_New_Patient()
         {
             this.mockUserRepo.Setup(repo => repo.AddPatient(It.IsAny<Patient>()));
-            this.sut = new PatientController(this.mockUserRepo.Object);
+            PatientController sut = new PatientControllerBuilder().WithRepository(this.mockUserRepo.Object);
 
-            PatientViewModel nPatient =
+            PatientViewModel patient =
                 new PatientViewModel { Name = "Carlos", LastName = "Carmona", Email = "ccarmona@werfen.com" };
 
             // Act
-            var result = this.sut.CreatePatient(nPatient);
+            var result = sut.CreatePatient(patient);
 
             // Assert
             var viewResult = Xunit.Assert.IsType<OkObjectResult>(result.Result);
             var model = Xunit.Assert.IsType<PatientViewModel>(viewResult.Value);
             this.mockUserRepo.Verify();
-            Xunit.Assert.Equal(nPatient.Email, model.Email);
-            Xunit.Assert.Equal(nPatient.Name, model.Name);
-            Xunit.Assert.Equal(nPatient.LastName, model.LastName);
+            Xunit.Assert.Equal(patient.Email, model.Email);
+            Xunit.Assert.Equal(patient.Name, model.Name);
+            Xunit.Assert.Equal(patient.LastName, model.LastName);
         }
 
         [TestMethod]
@@ -80,10 +74,10 @@
         public async Task GetAllPatients_Should_Return_List_Of_Patients()
         {
             this.mockUserRepo.Setup(repo => repo.GetAllPatients()).Returns(this.lpatient);
-            this.sut = new PatientController(this.mockUserRepo.Object);
+            PatientController sut = new PatientControllerBuilder().WithRepository(this.mockUserRepo.Object);
 
             // Act
-            var result = this.sut.GetAllPatients();
+            var result = sut.GetAllPatients();
 
             // Assert
             var viewResult = Xunit.Assert.IsType<OkObjectResult>(result);
@@ -96,10 +90,10 @@
         public async Task GetPatients_Should_Return_Patient_Information()
         {
             this.mockUserRepo.Setup(repo => repo.GetPatient(It.IsAny<Patient>())).Returns(this.lpatient[1]);
-            this.sut = new PatientController(this.mockUserRepo.Object);
+            PatientController sut = new PatientControllerBuilder().WithRepository(this.mockUserRepo.Object);
 
             // Act
-            var result = this.sut.GetPatient(this.lpatient[1].Id);
+            var result = sut.GetPatient(this.lpatient[1].Id);
 
             // Assert
             var viewResult = Xunit.Assert.IsType<OkObjectResult>(result);
@@ -115,13 +109,13 @@
         public async Task RemovePatient_Should_Remove_A_Existing_Patient()
         {
             this.mockUserRepo.Setup(repo => repo.DeletePatient(It.IsAny<Patient>())).Returns(this.lpatient);
-            this.sut = new PatientController(this.mockUserRepo.Object);
+            PatientController sut = new PatientControllerBuilder().WithRepository(this.mockUserRepo.Object);
 
-            PatientViewModel nPatient =
+            PatientViewModel patient =
                 new PatientViewModel { Id = 2, Name = "Cerizo", LastName = "Remundo", Email = "cremundo@werfen.com" };
 
             // Act
-            var result = this.sut.Remove(nPatient.Id);
+            var result = sut.Remove(patient.Id);
 
             // Assert
             var viewResult = Xunit.Assert.IsType<OkObjectResult>(result.Result);
