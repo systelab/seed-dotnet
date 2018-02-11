@@ -2,6 +2,8 @@
 
 # seed-dotnet — Seed for .NET Systelab projects
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e4aa345edeef415abe5ccab9664079b7)](https://app.codacy.com/app/alfonsoserra/seed-dotnet?utm_source=github.com&utm_medium=referral&utm_content=systelab/seed-dotnet&utm_campaign=badger)
+
 This project is an application skeleton for a typical .NET Core WEB API application. You can use it
 to quickly bootstrap your projects and dev environment.
 
