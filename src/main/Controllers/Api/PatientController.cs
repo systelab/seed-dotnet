@@ -56,7 +56,7 @@
         /// </summary>
         /// <returns>result of the action</returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet()]
+        [HttpGet]
         public IActionResult GetAllPatients()
         {
             try
@@ -78,12 +78,12 @@
         /// <returns>result of the action</returns>
         [Route("{uid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet()]
+        [HttpGet]
         public IActionResult GetPatient(int uid)
         {
             try
             {
-                Patient nPatient = new Patient() { Id = uid };
+                Patient nPatient = new Patient { Id = uid };
                 Patient results = this.repository.GetPatient(nPatient);
                 return this.Ok(Mapper.Map<PatientViewModel>(results));
             }
@@ -101,7 +101,7 @@
         /// <returns>Task with the result of the action</returns>
         [Route("{uid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpDelete()]
+        [HttpDelete]
         public async Task<IActionResult> Remove(int uid)
         {
             try
@@ -112,7 +112,7 @@
                 }
                 else
                 {
-                    var nPatient = new Patient() { Id = uid };
+                    var nPatient = new Patient { Id = uid };
 
                     var results = this.repository.DeletePatient(nPatient);
                     
@@ -132,13 +132,16 @@
         /// <param name="patient">patient model</param>
         /// <returns></returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPut()]
+        [HttpPut]
         public async Task<IActionResult> UpdatePatient(PatientViewModel patient)
         {
-            if (!this.ModelState.IsValid) return this.BadRequest("Bad data");
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest("Bad data");
+            }
 
             // Save to the database
-            var nPatient = new Patient() { Id = patient.Id };
+            var nPatient = new Patient { Id = patient.Id };
             var results = this.repository.GetPatient(nPatient);
             if (results == null || results.Id == 0)
             {

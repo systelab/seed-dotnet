@@ -10,17 +10,17 @@
 
         private readonly UserManager<UserManage> userManager;
 
-        public SeedDotnetContextSeeData(SeedDotnetContext context, UserManager<UserManage> userM)
+        public SeedDotnetContextSeeData(SeedDotnetContext _context, UserManager<UserManage> _userM)
         {
-            this.context = context;
-            this.userManager = userM;
+            this.context = _context;
+            this.userManager = _userM;
         }
 
         public async Task EnsureSeedData()
         {
             if (await this.userManager.FindByNameAsync("admin") == null)
             {
-                var user = new UserManage()
+                var user = new UserManage
                                {
                                    UserName = "admin",
                                    Name = "Administrator",
@@ -32,7 +32,7 @@
 
             if (await this.userManager.FindByNameAsync("quentinada") == null)
             {
-                var user = new UserManage()
+                var user = new UserManage
                                {
                                    UserName = "quentinada",
                                    Name = "quentinada",
@@ -44,7 +44,7 @@
 
             if (await this.userManager.FindByNameAsync("test") == null)
             {
-                var user = new UserManage()
+                var user = new UserManage
                                {
                                    UserName = "test",
                                    Name = "test",

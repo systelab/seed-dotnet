@@ -123,7 +123,7 @@
                 cfg =>
                     {
                         cfg.TokenValidationParameters =
-                            new TokenValidationParameters()
+                            new TokenValidationParameters
                                 {
                                     ValidateIssuer = false,
                                     ValidAudience = this.config["Tokens:Audience"],

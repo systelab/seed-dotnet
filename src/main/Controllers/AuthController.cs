@@ -30,15 +30,15 @@
         private SeedDotnetContext context;
 
         public AuthController(
-            SignInManager<UserManage> signInManager,
-            UserManager<UserManage> userM,
-            SeedDotnetContext context,
-            IConfigurationRoot config)
+            SignInManager<UserManage> _signInManager,
+            UserManager<UserManage> _userM,
+            SeedDotnetContext _context,
+            IConfigurationRoot _config)
         {
-            this.signInManager = signInManager;
-            this.context = context;
-            this.userManager = userM;
-            this.config = config;
+            this.signInManager = _signInManager;
+            this.context = _context;
+            this.userManager = _userM;
+            this.config = _config;
         }
 
         /// <summary>

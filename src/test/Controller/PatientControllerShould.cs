@@ -21,7 +21,6 @@
 
         public PatientControllerShould()
         {
-            // InitContext();
             Mapper.Reset();
             Mapper.Initialize(config => { config.CreateMap<PatientViewModel, Patient>().ReverseMap(); });
             this.mockUserRepo = new Mock<ISeedDotnetRepository>();

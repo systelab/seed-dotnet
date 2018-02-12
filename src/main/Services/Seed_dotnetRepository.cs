@@ -16,10 +16,10 @@
         /// <summary>
         /// Set the context of the app
         /// </summary>
-        /// <param name="context"></param>
-        public SeedDotnetRepository(SeedDotnetContext context)
+        /// <param name="_context"></param>
+        public SeedDotnetRepository(SeedDotnetContext _context)
         {
-            this.context = context;
+            this.context = _context;
         }
 
         public List<Patient> Patients { get; private set; }
