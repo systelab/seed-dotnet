@@ -4,13 +4,13 @@
 
     using Microsoft.AspNetCore.Identity;
 
-    public class SeedDotnetContextSeeData
+    public class SeedDotnetContextSeedData
     {
         private SeedDotnetContext context;
 
         private readonly UserManager<UserManage> userManager;
 
-        public SeedDotnetContextSeeData(SeedDotnetContext context, UserManager<UserManage> userM)
+        public SeedDotnetContextSeedData(SeedDotnetContext context, UserManager<UserManage> userM)
         {
             this.context = context;
             this.userManager = userM;

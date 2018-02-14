@@ -46,8 +46,7 @@
         public void Configure(
             IApplicationBuilder app,
             IHostingEnvironment env,
-            ILoggerFactory factory,
-            SeedDotnetContextSeeData seeder)
+            ILoggerFactory factory)
         {
             // Map the view model objet with the internal model
             Mapper.Initialize(config => { config.CreateMap<PatientViewModel, Patient>().ReverseMap(); });
@@ -60,7 +59,14 @@
             }
             else
             {
+                
                 factory.AddDebug(LogLevel.Error);
+            }
+
+            if (!env.IsEnvironment("Testing"))
+            {
+                factory.AddDebug(LogLevel.Information);
+                app.UseSwagger();
             }
 
             app.UseCors("MyPolicy");
@@ -79,24 +85,45 @@
                     });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
+            
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Seed .Net"); });
-            seeder.EnsureSeedData().Wait();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(this.config);
-            if (this.env.IsEnvironment("Development") || this.env.IsEnvironment("Testing"))
+            if (this.env.IsEnvironment("Development"))
             {
-                // Here you can set the services implemented only for DEV and TEST
+                // Here you can set the services implemented only for DEV 
             }
-            else
+
+            if (!this.env.IsEnvironment("Testing"))
             {
-                // Here you can set the services implemented only for Prodcution
+                // Add Swagger reference to the project. Swagger is not needed when testing
+
+                services.AddSwaggerGen(
+                    c =>
+                        {
+                            c.OperationFilter<AddRequiredHeaderParameter>();
+
+                            c.SwaggerDoc(
+                                "v1",
+                                new Info
+                                    {
+                                        Version = "v1",
+                                        Title = "Seed DotNet",
+                                        Description = "This is a seed project for a .Net WebApi",
+                                        TermsOfService = "None",
+                                    });
+
+                            // Set the comments path for the Swagger JSON and UI.
+                            var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                            var xmlPath = Path.Combine(basePath, "seed_dotnet.xml");
+                            c.IncludeXmlComments(xmlPath);
+                        });
             }
 
             // Allow use the API from other origins 
@@ -107,7 +134,7 @@
 
             // Set the context to the database
             services.AddDbContext<SeedDotnetContext>();
-
+            services.AddTransient<SeedDotnetContextSeedData>();
             // Set
             services.AddIdentity<UserManage, IdentityRole>(
                 config =>
@@ -133,7 +160,6 @@
                     });
 
             services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
-            services.AddTransient<SeedDotnetContextSeeData>();
             services.AddLogging();
 
             services.AddMvc(
@@ -149,28 +175,7 @@
                     {
                         config.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     });
-
-            // Add Swagger reference to the project
-            services.AddSwaggerGen(
-                c =>
-                    {
-                        c.OperationFilter<AddRequiredHeaderParameter>();
-
-                        c.SwaggerDoc(
-                            "v1",
-                            new Info
-                                {
-                                    Version = "v1",
-                                    Title = "Seed DotNet",
-                                    Description = "This is a seed project for a .Net WebApi",
-                                    TermsOfService = "None",
-                                });
-
-                        // Set the comments path for the Swagger JSON and UI.
-                        var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                        var xmlPath = Path.Combine(basePath, "seed_dotnet.xml");
-                        c.IncludeXmlComments(xmlPath);
-                    });
+   
         }
     }
 }

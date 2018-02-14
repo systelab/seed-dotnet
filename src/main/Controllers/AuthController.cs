@@ -48,7 +48,7 @@
         /// <returns></returns>
         [Route("login")]
         [HttpPost]
-        public async Task<IActionResult> GetToken(LoginViewModel vm)
+        public async Task<IActionResult> GetToken([FromBody] LoginViewModel vm)
         {
             if (this.ModelState.IsValid)
             {

@@ -1,5 +1,6 @@
 ﻿namespace Test.Controller
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -9,8 +10,10 @@
     using Main.Services;
     using Main.ViewModels;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
+
+    using Newtonsoft.Json;
+
     using Xunit;
 
     public partial class PatientControllerShould
@@ -30,6 +33,14 @@
         }
 
         [Fact]
+        public async Task CreatePatientConstructor_NullParameters_ThrowsArgumentNullException()
+        {
+            // Arrange & Act & Assert
+            Assert.Throws<ArgumentNullException>(() => { new PatientControllerBuilder().WithRepository(null); });
+            Assert.Throws<ArgumentNullException>(() => { new PatientControllerBuilder().WithLogger(null); });
+        }
+
+        [Fact]
         public async Task CreatePatient_ReturnsBadRequest_GivenInvalidPatient()
         {
             // Arrange & Act
@@ -42,7 +53,7 @@
             var result = await sut.CreatePatient(patient: null);
 
             // Assert
-            Xunit.Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
         [Fact]
@@ -58,12 +69,12 @@
             var result = sut.CreatePatient(patient);
 
             // Assert
-            var viewResult = Xunit.Assert.IsType<OkObjectResult>(result.Result);
-            var model = Xunit.Assert.IsType<PatientViewModel>(viewResult.Value);
+            var viewResult = Assert.IsType<OkObjectResult>(result.Result);
+            var model = Assert.IsType<PatientViewModel>(viewResult.Value);
             this.mockUserRepo.Verify();
-            Xunit.Assert.Equal(patient.Email, model.Email);
-            Xunit.Assert.Equal(patient.Name, model.Name);
-            Xunit.Assert.Equal(patient.LastName, model.LastName);
+            Assert.Equal(patient.Email, model.Email);
+            Assert.Equal(patient.Name, model.Name);
+            Assert.Equal(patient.LastName, model.LastName);
         }
 
         [Fact]
@@ -76,9 +87,9 @@
             var result = sut.GetAllPatients();
 
             // Assert
-            var viewResult = Xunit.Assert.IsType<OkObjectResult>(result);
-            var model = Xunit.Assert.IsAssignableFrom<List<PatientViewModel>>(viewResult.Value);
-            Xunit.Assert.Equal(3, model.Count());
+            var viewResult = Assert.IsType<OkObjectResult>(result);
+            var model = Assert.IsAssignableFrom<List<PatientViewModel>>(viewResult.Value);
+            Assert.Equal(3, model.Count());
         }
 
         [Fact]
@@ -91,12 +102,12 @@
             var result = sut.GetPatient(this.lpatient[1].Id);
 
             // Assert
-            var viewResult = Xunit.Assert.IsType<OkObjectResult>(result);
-            var model = Xunit.Assert.IsAssignableFrom<PatientViewModel>(viewResult.Value);
-            Xunit.Assert.Equal(this.lpatient[1].Email, model.Email);
-            Xunit.Assert.Equal(this.lpatient[1].Name, model.Name);
-            Xunit.Assert.Equal(this.lpatient[1].LastName, model.LastName);
-            Xunit.Assert.Equal(this.lpatient[1].Id, model.Id);
+            var viewResult = Assert.IsType<OkObjectResult>(result);
+            var model = Assert.IsAssignableFrom<PatientViewModel>(viewResult.Value);
+            Assert.Equal(this.lpatient[1].Email, model.Email);
+            Assert.Equal(this.lpatient[1].Name, model.Name);
+            Assert.Equal(this.lpatient[1].LastName, model.LastName);
+            Assert.Equal(this.lpatient[1].Id, model.Id);
         }
 
         [Fact]
@@ -112,9 +123,34 @@
             var result = sut.Remove(patient.Id);
 
             // Assert
-            var viewResult = Xunit.Assert.IsType<OkObjectResult>(result.Result);
-            var model = Xunit.Assert.IsAssignableFrom<List<PatientViewModel>>(viewResult.Value);
-            Xunit.Assert.Equal(3, model.Count());
+            var viewResult = Assert.IsType<OkObjectResult>(result.Result);
+            var model = Assert.IsAssignableFrom<List<PatientViewModel>>(viewResult.Value);
+            Assert.Equal(3, model.Count());
+        }
+
+        [Theory]
+        [InlineData("joe", "doe", "email@valid.com", 99)]
+        [InlineData("joe", "", "email@valid.com", 99)]
+        [InlineData("joe", "doe", "", 99)]
+        [InlineData("joe", "doe", null, 99)]
+        [InlineData("joe", null, null, 99)]
+        [InlineData("", null, null, 99)]
+        [InlineData(null, null, null, 99)]
+        public async Task InsertPatient_ValidPatient_InsertionOK(string name, string lastname, string email, int id)
+        {
+            PatientViewModel patientToInsert = new PatientViewModel() { Email = email, Id = id, LastName = lastname, Name = name };
+            Patient mappedPatientToInsert = Mapper.Map<Patient>(patientToInsert);
+            this.mockUserRepo.Setup(repo => repo.AddPatient(It.Is<Patient>(p => p.Equals(mappedPatientToInsert))));
+            PatientController sut = new PatientControllerBuilder().WithRepository(this.mockUserRepo.Object);
+
+            // Act
+            var result = await sut.CreatePatient(patientToInsert);
+
+            // Assert
+            this.mockUserRepo.Verify();
+            var viewResult = Assert.IsType<OkObjectResult>(result);
+            var model = Assert.IsAssignableFrom<PatientViewModel>(viewResult.Value);
+            Assert.Equal(JsonConvert.SerializeObject(patientToInsert), JsonConvert.SerializeObject(model));
         }
 
         private void InitializeData()

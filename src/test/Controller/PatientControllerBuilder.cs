@@ -5,12 +5,20 @@
     using Main.Services;
     using Microsoft.Extensions.Logging;
 
+    using Moq;
+
     public partial class PatientControllerShould
     {
         public class PatientControllerBuilder
         {
             private ISeedDotnetRepository repository;
             private ILogger<PatientController> logger;
+
+            public PatientControllerBuilder()
+            {
+                this.repository = new Mock<ISeedDotnetRepository>().Object;
+                this.logger = new Mock<ILogger<PatientController>>().Object;
+            }
 
             public static implicit operator PatientController(PatientControllerBuilder instance)
             {
