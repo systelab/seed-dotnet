@@ -47,8 +47,64 @@
             response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
+        }
 
+        public async Task InvalidLogin_BadRequest()
+        {
+        }
 
+        public async Task TwoLogins_SameTokenUpdatedExpirationDate()
+        {
+        }
+
+        public async Task GetListOfPatients_EmptyList()
+        {
+        }
+
+        public async Task GetListOfPatients_PopulatedList()
+        {
+        }
+
+        // TODO: do the following two for each call
+
+        public async Task GetListOfPatients_Unauthorized()
+        {
+        }
+
+        public async Task GetListOfPatients_Timedout()
+        {
+        }
+
+        public async Task CreatePatient_CreationOK(PatientViewModel patient)
+        {
+        }
+   
+        public async Task CreatePatient_BadRequest(PatientViewModel patient)
+        {
+        }
+
+        public async Task UpdatePatient_CreationOK(PatientViewModel patient)
+        {
+        }
+
+        public async Task UpdatePatient_BadRequest(PatientViewModel patient)
+        {
+        }
+
+        public async Task RemovePatient_Found(int id)
+        {
+        }
+
+        public async Task RemovePatient_NotFound(int id)
+        {
+        }
+
+        public async Task GetPatient_Found(int id)
+        {
+        }
+
+        public async Task GetPatient_NotFound(int id)
+        {
         }
     }    
 }
