@@ -50,7 +50,10 @@
             SeedDotnetContextSeeData seeder)
         {
             // Map the view model objet with the internal model
-            Mapper.Initialize(config => { config.CreateMap<PatientViewModel, Patient>().ReverseMap(); });
+            Mapper.Initialize(config => { config.CreateMap<PatientViewModel, Patient>().ReverseMap();
+                                          config.CreateMap<UserViewModel, UserManage>().ReverseMap();
+            });
+
 
             // Configure how to display the errors and the level of severity
             if (env.IsEnvironment("Development"))

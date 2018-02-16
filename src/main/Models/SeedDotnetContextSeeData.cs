@@ -6,13 +6,11 @@
 
     public class SeedDotnetContextSeeData
     {
-        private SeedDotnetContext context;
 
         private readonly UserManager<UserManage> userManager;
 
-        public SeedDotnetContextSeeData(SeedDotnetContext _context, UserManager<UserManage> _userM)
+        public SeedDotnetContextSeeData(UserManager<UserManage> _userM)
         {
-            this.context = _context;
             this.userManager = _userM;
         }
 

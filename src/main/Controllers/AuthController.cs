@@ -17,31 +17,19 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Tokens;
     using Main.Services;
+    using AutoMapper;
 
     [EnableCors("MyPolicy")]
     [Route("users")]
     public class AuthController : Controller
     {
-        private readonly IConfigurationRoot config;
         private readonly IAccountService repository;
-
-        private readonly SignInManager<UserManage> signInManager;
-
         private readonly UserManager<UserManage> userManager;
 
-        private SeedDotnetContext context;
-
-        public AuthController(
-            SignInManager<UserManage> _signInManager,
-            UserManager<UserManage> _userM,
-            SeedDotnetContext _context,
-            IConfigurationRoot _config, IAccountService _repository)
+        public AuthController( UserManager<UserManage> _userM, IAccountService _repository)
         {
             this.repository = _repository;
-            this.signInManager = _signInManager;
-            this.context = _context;
             this.userManager = _userM;
-            this.config = _config;
         }
 
         /// <summary>
@@ -88,8 +76,7 @@
             if (this.User.Identity.IsAuthenticated)
             {
                 var user = await this.userManager.FindByNameAsync(this.User.Identity.Name);
-                var userw = new { Email = user.Email, Name = user.Name, LastName = user.LastName };
-                return this.Created(string.Empty, userw);
+                return this.Ok(Mapper.Map<UserViewModel>(user));
             }
             else
             {
