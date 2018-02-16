@@ -10,18 +10,15 @@ namespace Main.Services
 {
     public class JwtHandler : IJwtHandler
     {
-        private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-        private readonly SecurityKey _securityKey;
         private readonly SigningCredentials _signingCredentials;
-        private readonly JwtHeader _jwtHeader;
         private readonly IConfigurationRoot _config;
 
         public JwtHandler(IConfigurationRoot config)
         {
             _config = config;
-            _securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["jwt:secretKey"]));
+            SecurityKey _securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["jwt:secretKey"]));
             _signingCredentials = new SigningCredentials(_securityKey, SecurityAlgorithms.HmacSha256);
-            _jwtHeader = new JwtHeader(_signingCredentials);
+            JwtHeader _jwtHeader = new JwtHeader(_signingCredentials);
         }
 
         public JsonWebToken Create(UserManage user)

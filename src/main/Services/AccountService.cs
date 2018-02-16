@@ -8,8 +8,7 @@ namespace Main.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly ISet<UserManage> _users = new HashSet<UserManage>();
-        private ISeedDotnetRepository _repository;
+        private readonly ISeedDotnetRepository _repository;
         private readonly IJwtHandler _jwtHandler;
         private readonly IPasswordHasher<UserManage> _passwordHasher;
         private readonly SignInManager<UserManage> _signInManager;
@@ -49,13 +48,13 @@ namespace Main.Services
 
         public async Task<JsonWebToken> RefreshAccessToken(string token)
         {
-            var refreshToken = await GetRefreshToken(token);
+            var refreshToken = await GetRefreshToken(token).ConfigureAwait(false);
             if (refreshToken == null)
             {
                 throw new Exception("Refresh token was not found.");
             }
 
-            var jwt = _jwtHandler.Create(refreshToken); ;
+            var jwt = _jwtHandler.Create(refreshToken); 
             jwt.RefreshToken = refreshToken.RefreshToken;
 
             return jwt;
