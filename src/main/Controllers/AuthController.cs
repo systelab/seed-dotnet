@@ -16,12 +16,14 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Tokens;
+    using Main.Services;
 
     [EnableCors("MyPolicy")]
     [Route("users")]
     public class AuthController : Controller
     {
         private readonly IConfigurationRoot config;
+        private readonly IAccountService repository;
 
         private readonly SignInManager<UserManage> signInManager;
 
@@ -33,8 +35,9 @@
             SignInManager<UserManage> _signInManager,
             UserManager<UserManage> _userM,
             SeedDotnetContext _context,
-            IConfigurationRoot _config)
+            IConfigurationRoot _config, IAccountService _repository)
         {
+            this.repository = _repository;
             this.signInManager = _signInManager;
             this.context = _context;
             this.userManager = _userM;
@@ -48,42 +51,28 @@
         /// <returns></returns>
         [Route("login")]
         [HttpPost]
-        public async Task<IActionResult> GetToken(LoginViewModel vm)
+        public async Task<IActionResult> GetToken([FromBody] LoginViewModel vm)
         {
             if (this.ModelState.IsValid)
             {
-                var user = await this.userManager.FindByNameAsync(vm.UserName);
-                if (user != null)
-                {
-                    var signInResult = await this.signInManager.CheckPasswordSignInAsync(user, vm.Password, false);
-                    if (signInResult.Succeeded)
-                    {
-                        // Create the token
-                        var claims = new[]
-                                         {
-                                             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                                             new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
-                                         };
-                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["Tokens:Key"]));
-                        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                        var token = new JwtSecurityToken(
-                            this.config["Tokens:Issuer"],
-                            this.config["Tokens:Audience"],
-                            claims,
-                            expires: DateTime.Now.AddMinutes(40),
-                            signingCredentials: creds);
-                        var results = new
-                                          {
-                                              token = new JwtSecurityTokenHandler().WriteToken(token),
-                                              expiration = DateTime.Now.AddMinutes(40)
-                                          };
-                        return this.Created(string.Empty, results);
-                    }
-                }
+                var result = await this.repository.SignIn(vm.login, vm.password);
+                return Ok(result);
             }
 
             return this.BadRequest("Username or password incorrect");
+        }
+
+        /// <summary>
+        /// Providing a refresh token, the system will return a not expired access token.
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
+        [HttpPost("login/refresh")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RefreshAccessToken(string refreshToken)
+        {
+            var result = await this.repository.RefreshAccessToken(refreshToken);
+            return Ok(result);
         }
 
         /// <summary>

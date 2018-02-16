@@ -119,19 +119,21 @@
                     }).AddEntityFrameworkStores<SeedDotnetContext>();
 
             // Configure the authentication system
-            services.AddAuthentication().AddCookie().AddJwtBearer(
-                cfg =>
+            services.AddAuthentication()
+                .AddJwtBearer(cfg =>
+                {
+                    cfg.TokenValidationParameters = new TokenValidationParameters
                     {
-                        cfg.TokenValidationParameters =
-                            new TokenValidationParameters
-                                {
-                                    ValidateIssuer = false,
-                                    ValidAudience = this.config["Tokens:Audience"],
-                                    IssuerSigningKey = new SymmetricSecurityKey(
-                                        Encoding.UTF8.GetBytes(this.config["Tokens:Key"]))
-                                };
-                    });
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["jwt:secretKey"])),
+                        ValidIssuer = this.config["jwt:issuer"],
+                        ValidateAudience = false,
+                        ValidateLifetime = true
+                    };
+                });
 
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IJwtHandler, JwtHandler>();
+            services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
             services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
             services.AddTransient<SeedDotnetContextSeeData>();
             services.AddLogging();

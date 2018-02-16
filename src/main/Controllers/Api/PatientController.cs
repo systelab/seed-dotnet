@@ -61,7 +61,7 @@
         {
             try
             {
-                var results = this.repository.GetAllPatients();
+                var results =  this.repository.GetAllPatients();
                 return this.Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
             }
             catch (Exception ex)
@@ -84,7 +84,7 @@
             try
             {
                 Patient nPatient = new Patient { Id = uid };
-                Patient results = this.repository.GetPatient(nPatient);
+                Patient results =  this.repository.GetPatient(nPatient);
                 return this.Ok(Mapper.Map<PatientViewModel>(results));
             }
             catch (Exception ex)
@@ -114,7 +114,7 @@
                 {
                     var nPatient = new Patient { Id = uid };
 
-                    var results = this.repository.DeletePatient(nPatient);
+                    var results =  this.repository.DeletePatient(nPatient);
                     
                     return this.Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
                 }
@@ -142,7 +142,7 @@
 
             // Save to the database
             var nPatient = new Patient { Id = patient.Id };
-            var results = this.repository.GetPatient(nPatient);
+            var results =  this.repository.GetPatient(nPatient);
             if (results == null || results.Id == 0)
             {
                 return this.BadRequest("User does not exist");
