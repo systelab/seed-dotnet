@@ -115,10 +115,12 @@
             services.AddIdentity<UserManage, IdentityRole>(
                 config =>
                     {
-                        config.Password.RequireNonAlphanumeric = true;
+                        config.Password.RequireLowercase = true;
+                        config.Password.RequireUppercase = true;
+                        config.Password.RequireNonAlphanumeric = false;
                         config.Password.RequiredLength = 8;
-                        config.Password.RequireDigit = true;
-                        config.User.RequireUniqueEmail = true;
+                        config.Password.RequireDigit = false;
+                        config.User.RequireUniqueEmail = false;
                     }).AddEntityFrameworkStores<SeedDotnetContext>();
 
             // Configure the authentication system

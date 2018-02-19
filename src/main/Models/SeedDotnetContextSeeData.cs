@@ -16,6 +16,19 @@
 
         public async Task EnsureSeedData()
         {
+
+            if (await this.userManager.FindByNameAsync("Systelab") == null)
+            {
+                var user = new UserManage
+                {
+                    UserName = "Systelab",
+                    Name = "Systelab",
+                    LastName = "Seed_Dotnet",
+                    Email = "Systelab@werfen.com"
+                };
+                await this.userManager.CreateAsync(user, "Systelab");
+            }
+
             if (await this.userManager.FindByNameAsync("admin") == null)
             {
                 var user = new UserManage
