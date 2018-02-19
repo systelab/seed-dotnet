@@ -43,7 +43,7 @@ namespace Main.Services
                     return jwt;
                 }
             }
-            throw new Exception("Username or password incorrect");
+            return null;
         }
 
         public async Task<JsonWebToken> RefreshAccessToken(string token)
@@ -51,7 +51,7 @@ namespace Main.Services
             var refreshToken = await GetRefreshToken(token).ConfigureAwait(false);
             if (refreshToken == null)
             {
-                throw new Exception("Refresh token was not found.");
+                return null;
             }
 
             var jwt = _jwtHandler.Create(refreshToken); 

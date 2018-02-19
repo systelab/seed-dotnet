@@ -47,9 +47,16 @@
             if (this.ModelState.IsValid)
             {
                 var result = await this.repository.SignIn(vm.login, vm.password);
-                Response.Headers.Add("Authorization", result.AccessToken);
-                Response.Headers.Add("Refresh", result.RefreshToken);
-                return Ok(result);
+                if (result != null)
+                {
+                    Response.Headers.Add("Authorization", result.AccessToken);
+                    Response.Headers.Add("Refresh", result.RefreshToken);
+                    return this.Ok(result);
+                }
+                else
+                {
+                    return this.BadRequest("Username or password incorrect");
+                }
             }
             return this.BadRequest("Username or password incorrect");
         }
@@ -64,7 +71,15 @@
         public async Task<IActionResult> RefreshAccessToken(string refreshToken)
         {
             var result = await this.repository.RefreshAccessToken(refreshToken);
-            return Ok(result);
+            if(result != null)
+            {
+                return this.Ok(result);
+            }
+            else
+            {
+               return this.BadRequest("Refresh token was not found.");
+            }
+            
         }
 
         /// <summary>
