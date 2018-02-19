@@ -18,6 +18,7 @@
     using Microsoft.IdentityModel.Tokens;
     using Main.Services;
     using AutoMapper;
+ 
 
     [EnableCors("MyPolicy")]
     [Route("users")]
@@ -32,21 +33,24 @@
             this.userManager = _userM;
         }
 
-        /// <summary>
-        /// Providing a correct credentials (username and password), returns a valid session token for 40 minutes
-        /// </summary>
-        /// <param name="vm">Login model</param>
-        /// <returns></returns>
+   /// <summary>
+   /// 
+   /// </summary>
+   /// <typeparam name="IActionResult"></typeparam>
+   /// <param name=""></param>
+   /// <param name="vm"></param>
+   /// <returns></returns>
         [Route("login")]
-        [HttpPost]
-        public async Task<IActionResult> GetToken([FromBody] LoginViewModel vm)
+        [HttpPost, Consumes("application/x-www-form-urlencoded")]
+        public async  Task<IActionResult>  GetToken([FromForm] LoginViewModel vm)
         {
             if (this.ModelState.IsValid)
             {
                 var result = await this.repository.SignIn(vm.login, vm.password);
+                Response.Headers.Add("Authorization", result.AccessToken);
+                Response.Headers.Add("Refresh", result.RefreshToken);
                 return Ok(result);
             }
-
             return this.BadRequest("Username or password incorrect");
         }
 

@@ -51,7 +51,7 @@
             PatientController sut = new PatientControllerBuilder().WithRepository(this.mockUserRepo.Object);
 
             PatientViewModel patient =
-                new PatientViewModel { Name = "Carlos", LastName = "Carmona", Email = "ccarmona@werfen.com" };
+                new PatientViewModel { Name = "Carlos", Surname = "Carmona", Email = "ccarmona@werfen.com" };
 
             // Act
             var result = sut.CreatePatient(patient);
@@ -62,7 +62,7 @@
             this.mockUserRepo.Verify();
             Xunit.Assert.Equal(patient.Email, model.Email);
             Xunit.Assert.Equal(patient.Name, model.Name);
-            Xunit.Assert.Equal(patient.LastName, model.LastName);
+            Xunit.Assert.Equal(patient.Surname, model.Surname);
         }
 
         [Fact]
@@ -94,7 +94,7 @@
             var model = Xunit.Assert.IsAssignableFrom<PatientViewModel>(viewResult.Value);
             Xunit.Assert.Equal(this.lpatient[1].Email, model.Email);
             Xunit.Assert.Equal(this.lpatient[1].Name, model.Name);
-            Xunit.Assert.Equal(this.lpatient[1].LastName, model.LastName);
+            Xunit.Assert.Equal(this.lpatient[1].Surname, model.Surname);
             Xunit.Assert.Equal(this.lpatient[1].Id, model.Id);
         }
 
@@ -105,7 +105,7 @@
             PatientController sut = new PatientControllerBuilder().WithRepository(this.mockUserRepo.Object);
 
             PatientViewModel patient =
-                new PatientViewModel { Id = 2, Name = "Cerizo", LastName = "Remundo", Email = "cremundo@werfen.com" };
+                new PatientViewModel { Id = 2, Name = "Cerizo", Surname = "Remundo", Email = "cremundo@werfen.com" };
 
             // Act
             var result = sut.Remove(patient.Id);
@@ -124,21 +124,21 @@
                                         {
                                             Id = 1,
                                             Name = "Arturo",
-                                            LastName = "Ciguendo",
+                                            Surname = "Ciguendo",
                                             Email = "aciguendo@werfen.com"
                                         },
                                     new Patient
                                         {
                                             Id = 2,
                                             Name = "Sofia",
-                                            LastName = "Corona",
+                                            Surname = "Corona",
                                             Email = "scorona@werfen.com"
                                         },
                                     new Patient
                                         {
                                             Id = 3,
                                             Name = "Marta",
-                                            LastName = "Sanchez",
+                                            Surname = "Sanchez",
                                             Email = "msanchez@werfen.com"
                                         }
                                 };

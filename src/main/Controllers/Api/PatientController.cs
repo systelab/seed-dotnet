@@ -38,7 +38,7 @@
         [Route("patient")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public async Task<IActionResult> CreatePatient(PatientViewModel patient)
+        public async Task<IActionResult> CreatePatient([FromBody] PatientViewModel patient)
         {
             if (this.ModelState.IsValid)
             {
@@ -61,7 +61,7 @@
         {
             try
             {
-                var results =  this.repository.GetAllPatients();
+                var results = this.repository.GetAllPatients();
                 return this.Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
             }
             catch (Exception ex)
@@ -84,7 +84,7 @@
             try
             {
                 Patient nPatient = new Patient { Id = uid };
-                Patient results =  this.repository.GetPatient(nPatient);
+                Patient results = this.repository.GetPatient(nPatient);
                 return this.Ok(Mapper.Map<PatientViewModel>(results));
             }
             catch (Exception ex)
@@ -106,7 +106,7 @@
         {
             try
             {
-                if (uid == 0)
+                if (uid == 0 )
                 {
                     return this.BadRequest("Bad data");
                 }
@@ -114,8 +114,8 @@
                 {
                     var nPatient = new Patient { Id = uid };
 
-                    var results =  this.repository.DeletePatient(nPatient);
-                    
+                    var results = this.repository.DeletePatient(nPatient);
+
                     return this.Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
                 }
             }
@@ -133,7 +133,8 @@
         /// <returns></returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
-        public async Task<IActionResult> UpdatePatient(PatientViewModel patient)
+        [Route("{uid}")]
+        public async Task<IActionResult> UpdatePatient(int uid,[FromBody] PatientViewModel patient)
         {
             if (!this.ModelState.IsValid)
             {
@@ -141,7 +142,7 @@
             }
 
             // Save to the database
-            var nPatient = new Patient { Id = patient.Id };
+            var nPatient = new Patient { Id = uid };
             var results =  this.repository.GetPatient(nPatient);
             if (results == null || results.Id == 0)
             {
@@ -159,9 +160,9 @@
                     results.Email = patient.Email;
                 }
 
-                if (!string.IsNullOrWhiteSpace(patient.LastName))
+                if (!string.IsNullOrWhiteSpace(patient.Surname))
                 {
-                    results.LastName = patient.LastName;
+                    results.Surname = patient.Surname;
                 }
 
                 this.repository.UpdatePatient(results);
