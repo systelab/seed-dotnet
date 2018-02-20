@@ -5677,6 +5677,12 @@
           "build/netcoreapp1.0/xunit.runner.visualstudio.props": {}
         }
       },
+      "XunitXml.TestLogger/2.0.0": {
+        "type": "package",
+        "build": {
+          "build/netstandard1.0/XunitXml.TestLogger.props": {}
+        }
+      },
       "main/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v2.0",
@@ -14603,6 +14609,19 @@
         "xunit.runner.visualstudio.nuspec"
       ]
     },
+    "XunitXml.TestLogger/2.0.0": {
+      "sha512": "OdsXV1esWxrko9qb3cMhhx6+rpbGoQY7it0GKbs4jjrTwwlltOXI7k6/8K65HMRIwcmyhTr1jFibBmNRcC004Q==",
+      "type": "package",
+      "path": "xunitxml.testlogger/2.0.0",
+      "files": [
+        "build/_common/Microsoft.VisualStudio.TestPlatform.Extension.Xunit.Xml.TestAdapter.dll",
+        "build/_common/Microsoft.VisualStudio.TestPlatform.Extension.Xunit.Xml.TestLogger.dll",
+        "build/net45/XunitXml.TestLogger.props",
+        "build/netstandard1.0/XunitXml.TestLogger.props",
+        "xunitxml.testlogger.2.0.0.nupkg.sha512",
+        "xunitxml.testlogger.nuspec"
+      ]
+    },
     "main/1.0.0": {
       "type": "project",
       "path": "../main/main.csproj",
@@ -14617,6 +14636,7 @@
       "Microsoft.NETCore.App >= 2.0.0",
       "Moq >= 4.7.145",
       "Newtonsoft.Json >= 10.0.3",
+      "XunitXml.TestLogger >= 2.0.0",
       "main >= 1.0.0",
       "xunit >= 2.3.1",
       "xunit.runner.visualstudio >= 2.3.1"
@@ -14694,6 +14714,10 @@
           "Newtonsoft.Json": {
             "target": "Package",
             "version": "[10.0.3, )"
+          },
+          "XunitXml.TestLogger": {
+            "target": "Package",
+            "version": "[2.0.0, )"
           },
           "xunit": {
             "target": "Package",

@@ -3,44 +3,43 @@
 
     using Main.Controllers.Api;
     using Main.Services;
+
     using Microsoft.Extensions.Logging;
 
     using Moq;
 
-    public partial class PatientControllerShould
+    public class PatientControllerBuilder
     {
-        public class PatientControllerBuilder
+        private ISeedDotnetRepository repository;
+
+        private ILogger<PatientController> logger;
+
+        public PatientControllerBuilder()
         {
-            private ISeedDotnetRepository repository;
-            private ILogger<PatientController> logger;
+            this.repository = new Mock<ISeedDotnetRepository>().Object;
+            this.logger = new Mock<ILogger<PatientController>>().Object;
+        }
 
-            public PatientControllerBuilder()
-            {
-                this.repository = new Mock<ISeedDotnetRepository>().Object;
-                this.logger = new Mock<ILogger<PatientController>>().Object;
-            }
+        public static implicit operator PatientController(PatientControllerBuilder instance)
+        {
+            return instance.Build();
+        }
 
-            public static implicit operator PatientController(PatientControllerBuilder instance)
-            {
-                return instance.Build();
-            }
+        public PatientController Build()
+        {
+            return new PatientController(this.repository, this.logger);
+        }
 
-            public PatientController Build()
-            {
-                return new PatientController(this.repository, this.logger);
-            }
+        public PatientControllerBuilder WithRepository(ISeedDotnetRepository repository)
+        {
+            this.repository = repository;
+            return this;
+        }
 
-            public PatientControllerBuilder WithRepository(ISeedDotnetRepository repository)
-            {
-                this.repository = repository;
-                return this;
-            }
-
-            public PatientControllerBuilder WithLogger(ILogger<PatientController> logger)
-            {
-                this.logger = logger;
-                return this;
-            }
+        public PatientControllerBuilder WithLogger(ILogger<PatientController> logger)
+        {
+            this.logger = logger;
+            return this;
         }
     }
 }

@@ -48,9 +48,6 @@
             IHostingEnvironment env,
             ILoggerFactory factory)
         {
-            // Map the view model objet with the internal model
-            Mapper.Initialize(config => { config.CreateMap<PatientViewModel, Patient>().ReverseMap(); });
-
             // Configure how to display the errors and the level of severity
             if (env.IsEnvironment("Development"))
             {
@@ -162,6 +159,14 @@
             services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
             services.AddLogging();
 
+            var automapConfiguration = new AutoMapper.MapperConfiguration(cfg =>
+                {
+                    cfg.CreateMap<PatientViewModel, Patient>().ReverseMap();
+                });
+
+            var mapper = automapConfiguration.CreateMapper();
+
+            services.AddSingleton(mapper);
             services.AddMvc(
                 config =>
                     {
