@@ -16,10 +16,10 @@
         /// <summary>
         /// Set the context of the app
         /// </summary>
-        /// <param name="context"></param>
-        public SeedDotnetRepository(SeedDotnetContext context)
+        /// <param name="_context"></param>
+        public SeedDotnetRepository(SeedDotnetContext _context)
         {
-            this.context = context;
+            this.context = _context;
         }
 
         public List<Patient> Patients { get; private set; }
@@ -78,5 +78,24 @@
             this.context.Entry(nPatient).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             this.context.SaveChanges();
         }
+        /// <summary>
+        /// Get the user information providing a refresh token, in this case we are using a database but you can use other system.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public UserManage GetUserManageWithRefreshToken(string token)
+        {
+            return this.context.Users.Where(t => t.RefreshToken == token).FirstOrDefault();
+        }
+        /// <summary>
+        /// Update the refresh token of the user session
+        /// </summary>
+        /// <param name="user"></param>
+        public void UpdateRefreshToken(UserManage user)
+        {
+            this.context.Entry(user).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            this.context.SaveChanges();
+        }
     }
+
 }

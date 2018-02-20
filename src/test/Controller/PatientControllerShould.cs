@@ -24,7 +24,6 @@
 
         public PatientControllerShould()
         {
-            // InitContext();
             Mapper.Reset();
             Mapper.Initialize(config => { config.CreateMap<PatientViewModel, Patient>().ReverseMap(); });
             this.mockUserRepo = new Mock<ISeedDotnetRepository>();
@@ -63,7 +62,7 @@
             PatientController sut = new PatientControllerBuilder().WithRepository(this.mockUserRepo.Object);
 
             PatientViewModel patient =
-                new PatientViewModel { Name = "Carlos", LastName = "Carmona", Email = "ccarmona@werfen.com" };
+                new PatientViewModel { Name = "Carlos", Surname = "Carmona", Email = "ccarmona@werfen.com" };
 
             // Act
             var result = sut.CreatePatient(patient);
@@ -72,9 +71,9 @@
             var viewResult = Assert.IsType<OkObjectResult>(result.Result);
             var model = Assert.IsType<PatientViewModel>(viewResult.Value);
             this.mockUserRepo.Verify();
-            Assert.Equal(patient.Email, model.Email);
-            Assert.Equal(patient.Name, model.Name);
-            Assert.Equal(patient.LastName, model.LastName);
+            Xunit.Assert.Equal(patient.Email, model.Email);
+            Xunit.Assert.Equal(patient.Name, model.Name);
+            Xunit.Assert.Equal(patient.Surname, model.Surname);
         }
 
         [Fact]
@@ -102,12 +101,12 @@
             var result = sut.GetPatient(this.lpatient[1].Id);
 
             // Assert
-            var viewResult = Assert.IsType<OkObjectResult>(result);
-            var model = Assert.IsAssignableFrom<PatientViewModel>(viewResult.Value);
-            Assert.Equal(this.lpatient[1].Email, model.Email);
-            Assert.Equal(this.lpatient[1].Name, model.Name);
-            Assert.Equal(this.lpatient[1].LastName, model.LastName);
-            Assert.Equal(this.lpatient[1].Id, model.Id);
+            var viewResult = Xunit.Assert.IsType<OkObjectResult>(result);
+            var model = Xunit.Assert.IsAssignableFrom<PatientViewModel>(viewResult.Value);
+            Xunit.Assert.Equal(this.lpatient[1].Email, model.Email);
+            Xunit.Assert.Equal(this.lpatient[1].Name, model.Name);
+            Xunit.Assert.Equal(this.lpatient[1].Surname, model.Surname);
+            Xunit.Assert.Equal(this.lpatient[1].Id, model.Id);
         }
 
         [Fact]
@@ -117,7 +116,7 @@
             PatientController sut = new PatientControllerBuilder().WithRepository(this.mockUserRepo.Object);
 
             PatientViewModel patient =
-                new PatientViewModel { Id = 2, Name = "Cerizo", LastName = "Remundo", Email = "cremundo@werfen.com" };
+                new PatientViewModel { Id = 2, Name = "Cerizo", Surname = "Remundo", Email = "cremundo@werfen.com" };
 
             // Act
             var result = sut.Remove(patient.Id);
@@ -161,21 +160,21 @@
                                         {
                                             Id = 1,
                                             Name = "Arturo",
-                                            LastName = "Ciguendo",
+                                            Surname = "Ciguendo",
                                             Email = "aciguendo@werfen.com"
                                         },
                                     new Patient
                                         {
                                             Id = 2,
                                             Name = "Sofia",
-                                            LastName = "Corona",
+                                            Surname = "Corona",
                                             Email = "scorona@werfen.com"
                                         },
                                     new Patient
                                         {
                                             Id = 3,
                                             Name = "Marta",
-                                            LastName = "Sanchez",
+                                            Surname = "Sanchez",
                                             Email = "msanchez@werfen.com"
                                         }
                                 };

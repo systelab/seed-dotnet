@@ -8,12 +8,12 @@
         /// User's password
         /// </summary>
         [Required]
-        public string Password { get; set; }
+        public string password { get; set; }
 
         /// <summary>
         /// User's login identifier
         /// </summary>
         [Required]
-        public string UserName { get; set; }
+        public string login { get; set; }
     }
 }

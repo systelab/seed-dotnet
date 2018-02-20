@@ -136,32 +136,37 @@
             services.AddIdentity<UserManage, IdentityRole>(
                 config =>
                     {
-                        config.Password.RequireNonAlphanumeric = true;
+                        config.Password.RequireLowercase = true;
+                        config.Password.RequireUppercase = true;
+                        config.Password.RequireNonAlphanumeric = false;
                         config.Password.RequiredLength = 8;
-                        config.Password.RequireDigit = true;
-                        config.User.RequireUniqueEmail = true;
+                        config.Password.RequireDigit = false;
+                        config.User.RequireUniqueEmail = false;
                     }).AddEntityFrameworkStores<SeedDotnetContext>();
 
             // Configure the authentication system
-            services.AddAuthentication().AddCookie().AddJwtBearer(
-                cfg =>
+            services.AddAuthentication()
+                .AddJwtBearer(cfg =>
+                {
+                    cfg.TokenValidationParameters = new TokenValidationParameters
                     {
-                        cfg.TokenValidationParameters =
-                            new TokenValidationParameters()
-                                {
-                                    ValidateIssuer = false,
-                                    ValidAudience = this.config["Tokens:Audience"],
-                                    IssuerSigningKey = new SymmetricSecurityKey(
-                                        Encoding.UTF8.GetBytes(this.config["Tokens:Key"]))
-                                };
-                    });
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["jwt:secretKey"])),
+                        ValidIssuer = this.config["jwt:issuer"],
+                        ValidateAudience = false,
+                        ValidateLifetime = true
+                    };
+                });
 
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IJwtHandler, JwtHandler>();
+            services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
             services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
             services.AddLogging();
 
             var automapConfiguration = new AutoMapper.MapperConfiguration(cfg =>
                 {
                     cfg.CreateMap<PatientViewModel, Patient>().ReverseMap();
+                    cfg.CreateMap<UserViewModel, UserManage>().ReverseMap();
                 });
 
             var mapper = automapConfiguration.CreateMapper();

@@ -16,74 +16,70 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Tokens;
+    using Main.Services;
+    using AutoMapper;
+ 
 
     [EnableCors("MyPolicy")]
     [Route("users")]
     public class AuthController : Controller
     {
-        private readonly IConfigurationRoot config;
-
-        private readonly SignInManager<UserManage> signInManager;
-
+        private readonly IAccountService repository;
         private readonly UserManager<UserManage> userManager;
 
-        private SeedDotnetContext context;
-
-        public AuthController(
-            SignInManager<UserManage> signInManager,
-            UserManager<UserManage> userM,
-            SeedDotnetContext context,
-            IConfigurationRoot config)
+        public AuthController( UserManager<UserManage> _userM, IAccountService _repository)
         {
-            this.signInManager = signInManager;
-            this.context = context;
-            this.userManager = userM;
-            this.config = config;
+            this.repository = _repository;
+            this.userManager = _userM;
         }
 
-        /// <summary>
-        /// Providing a correct credentials (username and password), returns a valid session token for 40 minutes
-        /// </summary>
-        /// <param name="vm">Login model</param>
-        /// <returns></returns>
+   /// <summary>
+   /// 
+   /// </summary>
+   /// <typeparam name="IActionResult"></typeparam>
+   /// <param name=""></param>
+   /// <param name="vm"></param>
+   /// <returns></returns>
         [Route("login")]
-        [HttpPost]
-        public async Task<IActionResult> GetToken([FromBody] LoginViewModel vm)
+        [HttpPost, Consumes("application/x-www-form-urlencoded")]
+        public async  Task<IActionResult>  GetToken([FromForm] LoginViewModel vm)
         {
             if (this.ModelState.IsValid)
             {
-                var user = await this.userManager.FindByNameAsync(vm.UserName);
-                if (user != null)
+                var result = await this.repository.SignIn(vm.login, vm.password);
+                if (result != null)
                 {
-                    var signInResult = await this.signInManager.CheckPasswordSignInAsync(user, vm.Password, false);
-                    if (signInResult.Succeeded)
-                    {
-                        // Create the token
-                        var claims = new[]
-                                         {
-                                             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                                             new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
-                                         };
-                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["Tokens:Key"]));
-                        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                        var token = new JwtSecurityToken(
-                            this.config["Tokens:Issuer"],
-                            this.config["Tokens:Audience"],
-                            claims,
-                            expires: DateTime.Now.AddMinutes(40),
-                            signingCredentials: creds);
-                        var results = new
-                                          {
-                                              token = new JwtSecurityTokenHandler().WriteToken(token),
-                                              expiration = DateTime.Now.AddMinutes(40)
-                                          };
-                        return this.Created(string.Empty, results);
-                    }
+                    Response.Headers.Add("Authorization", result.AccessToken);
+                    Response.Headers.Add("Refresh", result.RefreshToken);
+                    return this.Ok(result);
+                }
+                else
+                {
+                    return this.BadRequest("Username or password incorrect");
                 }
             }
-
             return this.BadRequest("Username or password incorrect");
+        }
+
+        /// <summary>
+        /// Providing a refresh token, the system will return a not expired access token.
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
+        [HttpPost("login/refresh")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RefreshAccessToken(string refreshToken)
+        {
+            var result = await this.repository.RefreshAccessToken(refreshToken);
+            if(result != null)
+            {
+                return this.Ok(result);
+            }
+            else
+            {
+               return this.BadRequest("Refresh token was not found.");
+            }
+            
         }
 
         /// <summary>
@@ -99,8 +95,7 @@
             if (this.User.Identity.IsAuthenticated)
             {
                 var user = await this.userManager.FindByNameAsync(this.User.Identity.Name);
-                var userw = new { Email = user.Email, Name = user.Name, LastName = user.LastName };
-                return this.Created(string.Empty, userw);
+                return this.Ok(Mapper.Map<UserViewModel>(user));
             }
             else
             {

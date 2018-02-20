@@ -38,7 +38,7 @@
         [Route("patient")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public async Task<IActionResult> CreatePatient(PatientViewModel patient)
+        public async Task<IActionResult> CreatePatient([FromBody] PatientViewModel patient)
         {
             if (this.ModelState.IsValid)
             {
@@ -56,7 +56,7 @@
         /// </summary>
         /// <returns>result of the action</returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet()]
+        [HttpGet]
         public IActionResult GetAllPatients()
         {
             try
@@ -78,12 +78,12 @@
         /// <returns>result of the action</returns>
         [Route("{uid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet()]
+        [HttpGet]
         public IActionResult GetPatient(int uid)
         {
             try
             {
-                Patient nPatient = new Patient() { Id = uid };
+                Patient nPatient = new Patient { Id = uid };
                 Patient results = this.repository.GetPatient(nPatient);
                 return this.Ok(Mapper.Map<PatientViewModel>(results));
             }
@@ -101,21 +101,21 @@
         /// <returns>Task with the result of the action</returns>
         [Route("{uid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpDelete()]
+        [HttpDelete]
         public async Task<IActionResult> Remove(int uid)
         {
             try
             {
-                if (uid == 0)
+                if (uid == 0 )
                 {
                     return this.BadRequest("Bad data");
                 }
                 else
                 {
-                    var nPatient = new Patient() { Id = uid };
+                    var nPatient = new Patient { Id = uid };
 
                     var results = this.repository.DeletePatient(nPatient);
-                    
+
                     return this.Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
                 }
             }
@@ -132,14 +132,18 @@
         /// <param name="patient">patient model</param>
         /// <returns></returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPut()]
-        public async Task<IActionResult> UpdatePatient(PatientViewModel patient)
+        [HttpPut]
+        [Route("{uid}")]
+        public async Task<IActionResult> UpdatePatient(int uid,[FromBody] PatientViewModel patient)
         {
-            if (!this.ModelState.IsValid) return this.BadRequest("Bad data");
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest("Bad data");
+            }
 
             // Save to the database
-            var nPatient = new Patient() { Id = patient.Id };
-            var results = this.repository.GetPatient(nPatient);
+            var nPatient = new Patient { Id = uid };
+            var results =  this.repository.GetPatient(nPatient);
             if (results == null || results.Id == 0)
             {
                 return this.BadRequest("User does not exist");
@@ -156,9 +160,9 @@
                     results.Email = patient.Email;
                 }
 
-                if (!string.IsNullOrWhiteSpace(patient.LastName))
+                if (!string.IsNullOrWhiteSpace(patient.Surname))
                 {
-                    results.LastName = patient.LastName;
+                    results.Surname = patient.Surname;
                 }
 
                 this.repository.UpdatePatient(results);

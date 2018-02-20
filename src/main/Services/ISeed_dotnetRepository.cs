@@ -21,5 +21,8 @@
         Task<bool> SaveChangesAsync();
 
         void UpdatePatient(Patient nPatient);
+
+        UserManage GetUserManageWithRefreshToken(string token);
+        void UpdateRefreshToken(UserManage user);
     }
 }

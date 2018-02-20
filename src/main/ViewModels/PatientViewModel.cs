@@ -19,7 +19,7 @@
         /// Patient last name (Surname)
         /// </summary>
         [Required]
-        public string LastName { get; set; }
+        public string Surname { get; set; }
 
         /// <summary>
         /// Patient first name (Given name)
