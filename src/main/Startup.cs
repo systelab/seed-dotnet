@@ -101,6 +101,7 @@
             {
                 // Here you can set the services implemented only for Prodcution
             }
+            
 
             // Allow use the API from other origins 
             services.AddCors(
