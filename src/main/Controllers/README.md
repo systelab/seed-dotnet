@@ -5,21 +5,40 @@ As a controller in this seed we can find the controller in charge of the session
 
 ## AuthController
 
-Contains two REST points:
+Contains three REST points:
 
 ### Login the user and get the session token
 
 Is a post [HttpPost] REST end point.
 
-As a parameter request a [LoginViewModel] object.
+As a parameter request a [LoginViewModel] object, but  in the from form not in the body.
+```c#
+public async Task<IActionResult> GetToken([FromForm] LoginViewModel vm)
+```
 
-As a result if the login is successfull returns a JWT Token.
+As a result if the login is successfull returns a JWT Token in the Response header.
 
+```c#
+ Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
+```
+Also the endpoint return a refresh token in the header.
+```c#
+ Response.Headers.Add("Refresh", result.RefreshToken);
+```
+To allow the read off the header by the external system you need to add the header "Access-Control-Expose-Headers".
+
+```c#
+ Response.Headers.Add("Access-Control-Expose-Headers", "origin, content-type, accept, authorization, ETag, if-none-match");
+```
 
 ### Get Logged User information
 Is a get [HttpGet] REST end point, and in this case the authentication token is needed.
 
 Return the information of the logged user.
+
+### Check and refresh the current token
+
+Is a [HttpPost] REST end point, this end point return if the provided refresh token is correct a new authorization token.
 
 
 ## PatientController
