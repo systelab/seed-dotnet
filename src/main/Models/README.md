@@ -26,6 +26,9 @@ The method Apply is overridden to add the parameter Authorization in the header 
 
 Is the structure of a parameter to add in the Swagger REST End points headers.
 
+###JsonWebToken
+This model represent the structure of the JWT token response.
+
 ## Context
 
 ### seed_dotnetContext.cs
