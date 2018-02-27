@@ -18,6 +18,7 @@ The app doesn't do much, just shows how to use different .NET Core patterns and 
 * Local database
 * Logging
 * xUnit with Moq
+* Allure
 
 
 ## Getting Started
@@ -53,9 +54,27 @@ Once you have the repository cloned, open the visual studio solution 'seed_dotne
 
 The solution contains the Web API and the Unit Test project (unfinished).
 
+### How to install Allure
+
+First you should install **"scoop"**, follow the steps in this link: [scoop]
+After the installation have been finished, execute the follow commands:
+```bash
+scoop install allure
+```
+If you already have installed Allure and you want to update the application execute the follow command:
+```bash
+scoop update allure
+```
+
 ### Run
 
+You have two options:
+
+**Via Visual Studio**
 To run the project, press the run button provided by Visual Studio. The browser will be opened with the included swagger page. The start point can be changed in the 'launchSettings.json'.
+
+**Using the scripts provided**
+You have two scripts, one is to run the project[app] (use this option to integrate the FrontEnd that you want) and the other is to run all the tests and view the results in the allure application [test].
 
 ### How it works
 
@@ -67,4 +86,7 @@ The project is not finished, E2E test is not still implemented. We are working h
 
 [git]: https://git-scm.com/
 [dotnet]:https://www.microsoft.com/net/download/windows
+[scoop]:http://scoop.sh/
+[test]:https://github.com/systelab/seed-dotnet/test.bat
+[app]:https://github.com/systelab/seed-dotnet/app.bat
 
