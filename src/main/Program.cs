@@ -8,7 +8,7 @@
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder().UseKestrel().UseContentRoot(Directory.GetCurrentDirectory())
+            var host = new WebHostBuilder().UseKestrel().UseContentRoot(Directory.GetCurrentDirectory()).UseUrls("http://127.0.0.1:13080")
                 .UseIISIntegration().UseStartup<Startup>().Build();
 
             host.Run();
