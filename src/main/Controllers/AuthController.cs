@@ -42,7 +42,7 @@
    /// <returns></returns>
         [Route("login")]
         [HttpPost, Consumes("application/x-www-form-urlencoded")]
-        public async  Task<IActionResult>  GetToken([FromForm] LoginViewModel vm)
+        public async  Task<IActionResult> GetToken([FromForm] LoginViewModel vm)
         {
             if (this.ModelState.IsValid)
             {

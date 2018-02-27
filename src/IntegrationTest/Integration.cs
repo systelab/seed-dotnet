@@ -4,7 +4,11 @@
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Text;
     using System.Threading.Tasks;
+    using System.Web;
+
+    using AutoMapper;
 
     using Main;
     using Main.Models;
@@ -19,7 +23,7 @@
 
     using Xunit;
 
-    public class LoginTest
+    public class Integration
     {
         private readonly HttpClient client;
 
@@ -27,7 +31,7 @@
 
         private string currentToken;
 
-        public LoginTest()
+        public Integration()
         {
             this.server = new TestServer(new WebHostBuilder().UseEnvironment("Testing").UseStartup<Startup>());
 
@@ -41,35 +45,43 @@
         public PatientViewModel[] KnownPatients =>
             new[]
                 {
-                    new PatientViewModel() { Email = "valid@email.com", Id = 1, LastName = "Pérez", Name = "Silvio" },
+                    new PatientViewModel() { Email = "valid@email.com", Id = 1, Surname = "Pérez", Name = "Silvio" },
                     new PatientViewModel()
                         {
                             Email = "another_valid@email.com",
                             Id = 2,
-                            LastName = "Maragall",
+                            Surname = "Maragall",
                             Name = "Lluís"
                         },
                     new PatientViewModel()
                         {
                             Email = "third_email@email.com",
                             Id = 3,
-                            LastName = "Malafont",
+                            Surname = "Malafont",
                             Name = "Andreu"
                         },
                     new PatientViewModel()
                         {
                             Email = "fourth_email@email.com",
                             Id = 4,
-                            LastName = "De la Cruz",
+                            Surname = "De la Cruz",
                             Name = "Penélope"
                         },
                 };
 
         [Theory]
         [InlineData("joe", "doe", "email@valid.com", 1)]
+        [InlineData("joe", "", "email@valid.com", 10)]
+        [InlineData("joe", "doe", "", 10)]
+        [InlineData("joe", "doe", null, 10)]
+        [InlineData("joe", null, null, 10)]
+        [InlineData("", null, null, 10)]
+        [InlineData(null, null, null, 10)]
         public async Task CreatePatient_BadRequest(string name, string lastname, string email, int id)
         {
-            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, LastName = lastname, Name = name };
+            // Arrange
+            await this.Authorize();
+            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
             var response = await this.CallCreatePatient(patientToUpdate);
@@ -78,15 +90,11 @@
 
         [Theory]
         [InlineData("joe", "doe", "email@valid.com", 10)]
-        [InlineData("joe", "", "email@valid.com", 10)]
-        [InlineData("joe", "doe", "", 10)]
-        [InlineData("joe", "doe", null, 10)]
-        [InlineData("joe", null, null, 10)]
-        [InlineData("", null, null, 10)]
-        [InlineData(null, null, null, 10)]
         public async Task CreatePatient_CreationOK(string name, string lastname, string email, int id)
         {
-            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, LastName = lastname, Name = name };
+            // Arrange
+            await this.Authorize();
+            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
             var response = await this.CallCreatePatient(patientToUpdate);
@@ -95,13 +103,14 @@
 
             // Assert
             Assert.NotNull(patient);
-            Assert.Equal(this.KnownPatients.First(p => p.Id == id), patient);
+            Assert.Equal(patientToUpdate, patient, new JsonEqualityComparer());
         }
 
         [Fact]
         public async Task GetListOfPatients_EmptyList()
         {
             // Arrange
+            await this.Authorize();
             this.ClearPatientData();
 
             // Act
@@ -116,6 +125,8 @@
         [Fact]
         public async Task GetListOfPatients_PopulatedList()
         {
+            // Arrange
+            await this.Authorize();
             // Act
             var response = await this.CallGetPatientList();
             response.EnsureSuccessStatusCode();
@@ -124,12 +135,7 @@
 
             // Assert
             Assert.NotEmpty(patientList);
-            Assert.Equal(this.KnownPatients, patientList);
-        }
-
-        // TODO: do the following two for each call
-        public async Task GetListOfPatients_Timedout()
-        {
+            Assert.Equal(this.KnownPatients, patientList, new JsonEqualityComparer());
         }
 
         [Fact]
@@ -154,6 +160,9 @@
         [InlineData(4)]
         public async Task GetPatient_Found(int id)
         {
+            // Arrange
+            await this.Authorize();
+            
             // Act
             var response = await this.CallGetPatient(id);
             response.EnsureSuccessStatusCode();
@@ -162,7 +171,7 @@
 
             // Assert
             Assert.NotNull(patient);
-            Assert.Equal(this.KnownPatients.First(p => p.Id == id), patient);
+            Assert.Equal(this.KnownPatients.First(p => p.Id == id), patient, new JsonEqualityComparer());
         }
 
         [Theory]
@@ -171,6 +180,9 @@
         [InlineData(-1)]
         public async Task GetPatient_NotFound(int id)
         {
+            // Arrange
+            await this.Authorize();
+            
             // Act
             var response = await this.CallGetPatient(id);
             response.EnsureSuccessStatusCode();
@@ -181,9 +193,18 @@
             Assert.Null(patient);
         }
 
-        [Fact(Skip = "The login interface is about to change")]
+        [Fact]
         public async Task InvalidLogin_BadRequest()
         {
+            var nvc = new List<KeyValuePair<string, string>>();
+            nvc.Add(new KeyValuePair<string, string>("login", "admin"));
+            var req = new HttpRequestMessage(HttpMethod.Post, "/users/login")
+                          {
+                              Content = new FormUrlEncodedContent(
+                                  nvc)
+                          };
+            var response = await this.client.SendAsync(req);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]
@@ -200,14 +221,17 @@
         [InlineData(4)]
         public async Task RemovePatient_Found(int id)
         {
+            // Arrange
+            await this.Authorize();
+            
             // Act
             var response = await this.CallDeletePatient(id);
             response.EnsureSuccessStatusCode();
-            var patient = JsonConvert.DeserializeObject<PatientViewModel>(await response.Content.ReadAsStringAsync());
+            var patients = JsonConvert.DeserializeObject<IEnumerable<PatientViewModel>>(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.NotNull(patient);
-            Assert.Equal(this.KnownPatients.First(p => p.Id == id), patient);
+            Assert.NotNull(patients);
+            Assert.Equal(this.KnownPatients.Count() - 1, patients.Count());
         }
 
         [Theory]
@@ -216,18 +240,17 @@
         [InlineData(-1)]
         public async Task RemovePatient_NotFound(int id)
         {
+            // Arrange
+            await this.Authorize();
+            
             // Act
             var response = await this.CallDeletePatient(id);
             response.EnsureSuccessStatusCode();
-            var patient = JsonConvert.DeserializeObject<PatientViewModel>(await response.Content.ReadAsStringAsync());
+            var patients = JsonConvert.DeserializeObject<IEnumerable<PatientViewModel>>(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.Null(patient);
-        }
-
-        [Fact(Skip = "The login interface is about to change")]
-        public async Task TwoLogins_SameTokenUpdatedExpirationDate()
-        {
+            Assert.NotNull(patients);
+            Assert.Equal(this.KnownPatients.Count(), patients.Count());
         }
 
         [Fact]
@@ -239,16 +262,12 @@
         }
 
         [Theory]
-        [InlineData("joe", "doe", "email@valid.com", 1)]
-        [InlineData("joe", "", "email@valid.com", 1)]
-        [InlineData("joe", "doe", "", 1)]
-        [InlineData("joe", "doe", null, 1)]
-        [InlineData("joe", null, null, 1)]
-        [InlineData("", null, null, 1)]
-        [InlineData(null, null, null, 1)]
+        [InlineData("joe", "doe", "email@valid.com", 1)]        
         public async Task UpdatePatient_CreationOk(string name, string lastname, string email, int id)
         {
-            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, LastName = lastname, Name = name };
+            // Arrange
+            await this.Authorize();
+            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
             var response = await this.CallUpdatePatient(patientToUpdate);
@@ -257,40 +276,66 @@
 
             // Assert
             Assert.NotNull(patient);
-            Assert.Equal(this.KnownPatients.First(p => p.Id == id), patient);
+            Assert.NotEqual(this.KnownPatients.First(p => p.Id == id), patient, new JsonEqualityComparer());
+            Assert.Equal(patientToUpdate, patient, new JsonEqualityComparer());
         }
 
         [Theory]
         [InlineData("joe", "doe", "email@valid.com", 0)]
+        [InlineData("joe", "", "email@valid.com", 1)]
+        [InlineData("joe", "doe", "", 1)]
+        [InlineData("joe", "doe", null, 1)]
+        [InlineData("joe", null, null, 1)]
+        [InlineData("", null, null, 1)]
+        [InlineData(null, null, null, 1)]
         public async Task UpdatePatient_BadRequest(string name, string lastname, string email, int id)
         {
-            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, LastName = lastname, Name = name };
+            // Arrange
+            await this.Authorize();
+            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
             var response = await this.CallUpdatePatient(patientToUpdate);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
-        [Fact(Skip = "The login interface is about to change")]
+        [Fact]
         public async Task ValidLogin_ReturnToken()
         {
-            var requestData = new LoginViewModel() { UserName = "admin", Password = "P@ssw0rd!" };
-
-            // Act
-            var response = await this.client.PostAsJsonAsync("/users/login", requestData);
+            var response = await this.RequestToken();
             response.EnsureSuccessStatusCode();
+            var token = response.Headers.GetValues("Authorization").FirstOrDefault();
+            Assert.NotNull(token);
+        }
 
-            var responseString = await response.Content.ReadAsStringAsync();
+        private async Task<HttpResponseMessage> RequestToken()
+        {
+            var nvc = new List<KeyValuePair<string, string>>();
+            nvc.Add(new KeyValuePair<string, string>("login", "admin"));
+            nvc.Add(new KeyValuePair<string, string>("password", "P@ssw0rd!"));
+            var req = new HttpRequestMessage(HttpMethod.Post, "/users/login")
+                          {
+                              Content = new FormUrlEncodedContent(
+                                  nvc)
+                          };
+            return await this.client.SendAsync(req);
+        }
+
+        private async Task Authorize()
+        {
+            var response = await this.RequestToken();
+            response.EnsureSuccessStatusCode();
+            this.currentToken = response.Headers.GetValues("Authorization").First();
         }
 
         private RequestBuilder BuildAuthorizedRequest(string uri)
         {
-            return this.server.CreateRequest(uri).WithAuthorization(this.currentToken);
+            return this.server.CreateRequest(uri).WithAuthorization(this.currentToken).WithAppJsonContentType();
         }
 
         private async Task<HttpResponseMessage> CallCreatePatient(PatientViewModel patient)
         {
-            return await this.BuildAuthorizedRequest($"/patients/patient").PostAsync();
+            return await this.BuildAuthorizedRequest($"/patients/patient").WithJsonContent(patient).PostAsync();
         }
 
         private async Task<HttpResponseMessage> CallDeletePatient(int id)
@@ -315,7 +360,7 @@
 
         private async Task<HttpResponseMessage> CallUpdatePatient(PatientViewModel patient)
         {
-            return await this.BuildAuthorizedRequest($"/patients").SendAsync("PUT");
+            return await this.BuildAuthorizedRequest($"/patients/{patient.Id}").WithJsonContent(patient).SendAsync("PUT");
         }
 
         private void ClearPatientData()
@@ -324,7 +369,13 @@
             {
                 using (var context = scope.ServiceProvider.GetRequiredService<SeedDotnetContext>())
                 {
-                    context.Patients.FromSql("DELETE TABLE Patients");
+                    var patients = context.Patients.ToList();
+
+                    foreach (var patient in patients )
+                    {
+                        context.Patients.Remove(patient);
+                    }
+
                     context.SaveChanges();
                 }
             }
@@ -334,11 +385,12 @@
         {
             using (var scope = this.server.Host.Services.GetService<IServiceScopeFactory>().CreateScope())
             {
+                var mapper = this.server.Host.Services.GetService<IMapper>();
                 using (var context = scope.ServiceProvider.GetRequiredService<SeedDotnetContext>())
                 {
                     foreach (var patient in patientList)
                     {
-                        context.Patients.Add(AutoMapper.Mapper.Map<Patient>(patient));
+                        context.Patients.Add(mapper.Map<Patient>(patient));
                     }
 
                     context.SaveChanges();

@@ -9,7 +9,7 @@
 
         private readonly UserManager<UserManage> userManager;
 
-        public SeedDotnetContextSeeData(UserManager<UserManage> _userM)
+        public SeedDotnetContextSeedData(UserManager<UserManage> _userM)
         {
             this.userManager = _userM;
         }

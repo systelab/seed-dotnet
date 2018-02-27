@@ -65,6 +65,11 @@
                 factory.AddDebug(LogLevel.Information);
                 app.UseSwagger();
             }
+            else
+            { 
+                factory.AddConsole();
+            }
+            
 
             app.UseCors("MyPolicy");
 
