@@ -127,6 +127,7 @@
                             c.IncludeXmlComments(xmlPath);
                         });
             }
+            
 
             // Allow use the API from other origins 
             services.AddCors(

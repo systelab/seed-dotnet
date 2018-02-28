@@ -1,27 +1,19 @@
 ﻿namespace Main.Controllers
 {
-    using System;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Security.Claims;
-    using System.Text;
     using System.Threading.Tasks;
-
     using Main.Models;
     using Main.ViewModels;
-
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.IdentityModel.Tokens;
     using Main.Services;
     using AutoMapper;
- 
+
 
     [EnableCors("MyPolicy")]
-    [Route("users")]
+    [Route("seed/v1/users")]
     public class AuthController : Controller
     {
         private readonly IAccountService repository;
@@ -49,9 +41,10 @@
                 var result = await this.repository.SignIn(vm.login, vm.password);
                 if (result != null)
                 {
-                    Response.Headers.Add("Authorization", result.AccessToken);
+                    Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
                     Response.Headers.Add("Refresh", result.RefreshToken);
-                    return this.Ok(result);
+                    Response.Headers.Add("Access-Control-Expose-Headers", "origin, content-type, accept, authorization, ETag, if-none-match");
+                    return this.Ok();
                 }
                 else
                 {
@@ -73,7 +66,10 @@
             var result = await this.repository.RefreshAccessToken(refreshToken);
             if(result != null)
             {
-                return this.Ok(result);
+                Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
+                Response.Headers.Add("Refresh", result.RefreshToken);
+                Response.Headers.Add("Access-Control-Expose-Headers", "origin, content-type, accept, authorization, ETag, if-none-match");
+                return this.Ok();
             }
             else
             {

@@ -29,7 +29,7 @@ services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
 To allow CORS in the controllers is added in the top of the controller this:
 
 ```c#
-[EnableCors(origins: "*", headers: "*", methods: "*", SupportsCredentials = true)]
+[EnableCors("MyPolicy")]
 
 ```
 
@@ -53,17 +53,24 @@ services.AddIdentity<UserManage, IdentityRole>(config =>
 
 ```c#
 services.AddAuthentication()
-      .AddCookie()
-      .AddJwtBearer(cfg =>
-      {
-          cfg.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
-          {
-              ValidateIssuer = false,
-              ValidAudience = _config["Tokens:Audience"],
-              IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]))
-          };
-      });
+    .AddJwtBearer(cfg =>
+    {
+        cfg.TokenValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["jwt:secretKey"])),
+            ValidIssuer = this.config["jwt:issuer"],
+            ValidateAudience = false,
+            ValidateLifetime = true
+        };
+    });
 ```        
+Include the interfaces to perform the authentication
+```c#
+services.AddScoped<IAccountService, AccountService>();
+services.AddScoped<IJwtHandler, JwtHandler>();
+services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
+```
+
 ### Configuration of swagger
 ```c#
 //ConfigureServices method
@@ -104,6 +111,7 @@ services.AddAuthentication()
   Mapper.Initialize(config =>
   {
       config.CreateMap<PatientViewModel, Patient>().ReverseMap();
+      config.CreateMap<UserViewModel, UserManage>().ReverseMap();
   });
 ``` 
 

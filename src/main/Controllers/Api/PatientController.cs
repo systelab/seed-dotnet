@@ -17,7 +17,7 @@
     using Microsoft.Extensions.Logging;
 
     [EnableCors("MyPolicy")]
-    [Route("patients")]
+    [Route("seed/v1/patients")]
     public class PatientController : Controller
     {
         private readonly ISeedDotnetRepository repository;
