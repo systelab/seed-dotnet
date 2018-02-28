@@ -141,7 +141,7 @@
         [Fact]
         public async Task GetListOfPatients_Unauthorized()
         {
-            var response = await this.server.CreateRequest("/patients").GetAsync();
+            var response = await this.server.CreateRequest("seed/v1/patients").GetAsync();
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -149,7 +149,7 @@
         [Fact]
         public async Task GetPatient_Unauthorized()
         {
-            var response = await this.server.CreateRequest("/patients/1").GetAsync();
+            var response = await this.server.CreateRequest("seed/v1/patients/1").GetAsync();
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -198,7 +198,7 @@
         {
             var nvc = new List<KeyValuePair<string, string>>();
             nvc.Add(new KeyValuePair<string, string>("login", "admin"));
-            var req = new HttpRequestMessage(HttpMethod.Post, "/users/login")
+            var req = new HttpRequestMessage(HttpMethod.Post, "seed/v1/users/login")
                           {
                               Content = new FormUrlEncodedContent(
                                   nvc)
@@ -210,7 +210,7 @@
         [Fact]
         public async Task RemovePatient_Unauthorized()
         {
-            var response = await this.server.CreateRequest("/patients/1").SendAsync("DELETE");
+            var response = await this.server.CreateRequest("seed/v1/patients/1").SendAsync("DELETE");
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -256,7 +256,7 @@
         [Fact]
         public async Task UpdatePatient_Unauthorized()
         {
-            var response = await this.server.CreateRequest("/patients/1").SendAsync("PUT");
+            var response = await this.server.CreateRequest("seed/v1/patients/1").SendAsync("PUT");
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -311,9 +311,9 @@
         private async Task<HttpResponseMessage> RequestToken()
         {
             var nvc = new List<KeyValuePair<string, string>>();
-            nvc.Add(new KeyValuePair<string, string>("login", "admin"));
-            nvc.Add(new KeyValuePair<string, string>("password", "P@ssw0rd!"));
-            var req = new HttpRequestMessage(HttpMethod.Post, "/users/login")
+            nvc.Add(new KeyValuePair<string, string>("login", "Systelab"));
+            nvc.Add(new KeyValuePair<string, string>("password", "Systelab"));
+            var req = new HttpRequestMessage(HttpMethod.Post, "seed/v1/users/login")
                           {
                               Content = new FormUrlEncodedContent(
                                   nvc)
@@ -335,22 +335,22 @@
 
         private async Task<HttpResponseMessage> CallCreatePatient(PatientViewModel patient)
         {
-            return await this.BuildAuthorizedRequest($"/patients/patient").WithJsonContent(patient).PostAsync();
+            return await this.BuildAuthorizedRequest($"seed/v1/patients/patient").WithJsonContent(patient).PostAsync();
         }
 
         private async Task<HttpResponseMessage> CallDeletePatient(int id)
         {
-            return await this.BuildAuthorizedRequest($"/patients/{id}").SendAsync("DELETE");
+            return await this.BuildAuthorizedRequest($"seed/v1/patients/{id}").SendAsync("DELETE");
         }
 
         private async Task<HttpResponseMessage> CallGetPatient(int id)
         {
-            return await this.BuildAuthorizedRequest($"/patients/{id}").GetAsync();
+            return await this.BuildAuthorizedRequest($"seed/v1/patients/{id}").GetAsync();
         }
 
         private async Task<HttpResponseMessage> CallGetPatientList()
         {
-            return await this.BuildAuthorizedRequest("/patients").GetAsync();
+            return await this.BuildAuthorizedRequest("seed/v1/patients").GetAsync();
         }
 
         private Task<HttpResponseMessage> CallUnauthorized(string uri)
@@ -360,7 +360,7 @@
 
         private async Task<HttpResponseMessage> CallUpdatePatient(PatientViewModel patient)
         {
-            return await this.BuildAuthorizedRequest($"/patients/{patient.Id}").WithJsonContent(patient).SendAsync("PUT");
+            return await this.BuildAuthorizedRequest($"seed/v1/patients/{patient.Id}").WithJsonContent(patient).SendAsync("PUT");
         }
 
         private void ClearPatientData()

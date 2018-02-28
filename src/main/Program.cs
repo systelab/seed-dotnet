@@ -16,7 +16,7 @@
         {
             return new WebHostBuilder()
                 .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseContentRoot(Directory.GetCurrentDirectory()).UseUrls("http://127.0.0.1:13080")
                 .UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();

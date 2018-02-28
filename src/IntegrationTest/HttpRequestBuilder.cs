@@ -16,7 +16,7 @@ namespace IntegrationTest
     {
         public static RequestBuilder WithAuthorization(this RequestBuilder requestBuilder, string token)
         {
-            requestBuilder.AddHeader("Authorization", $"Bearer  {token}");
+            requestBuilder.AddHeader("Authorization", $"{token}");
             return requestBuilder;
         }
 

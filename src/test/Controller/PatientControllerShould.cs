@@ -39,6 +39,7 @@
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public async Task CreatePatientConstructor_NullParameters_ThrowsArgumentNullException()
         {
             // Arrange & Act & Assert
