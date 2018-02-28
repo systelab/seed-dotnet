@@ -3202,34 +3202,14 @@
           "build/netstandard2.0/NETStandard.Library.targets": {}
         }
       },
-      "Newtonsoft.Json/10.0.1": {
+      "Newtonsoft.Json/10.0.3": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.3.0",
-          "System.Collections": "4.3.0",
+          "NETStandard.Library": "1.6.1",
           "System.ComponentModel.TypeConverter": "4.3.0",
-          "System.Diagnostics.Debug": "4.3.0",
-          "System.Dynamic.Runtime": "4.3.0",
-          "System.Globalization": "4.3.0",
-          "System.IO": "4.3.0",
-          "System.Linq": "4.3.0",
-          "System.Linq.Expressions": "4.3.0",
-          "System.ObjectModel": "4.3.0",
-          "System.Reflection": "4.3.0",
-          "System.Reflection.Extensions": "4.3.0",
-          "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
-          "System.Runtime.Extensions": "4.3.0",
-          "System.Runtime.Numerics": "4.3.0",
           "System.Runtime.Serialization.Formatters": "4.3.0",
           "System.Runtime.Serialization.Primitives": "4.3.0",
-          "System.Text.Encoding": "4.3.0",
-          "System.Text.Encoding.Extensions": "4.3.0",
-          "System.Text.RegularExpressions": "4.3.0",
-          "System.Threading": "4.3.0",
-          "System.Threading.Tasks": "4.3.0",
-          "System.Xml.ReaderWriter": "4.3.0",
-          "System.Xml.XDocument": "4.3.0",
           "System.Xml.XmlDocument": "4.3.0"
         },
         "compile": {
@@ -5695,6 +5675,12 @@
         },
         "build": {
           "build/netcoreapp1.0/xunit.runner.visualstudio.props": {}
+        }
+      },
+      "XunitXml.TestLogger/2.0.0": {
+        "type": "package",
+        "build": {
+          "build/netstandard1.0/XunitXml.TestLogger.props": {}
         }
       },
       "main/1.0.0": {
@@ -9042,11 +9028,12 @@
         "netstandard.library.nuspec"
       ]
     },
-    "Newtonsoft.Json/10.0.1": {
-      "sha512": "ebWzW9j2nwxQeBo59As2TYn7nYr9BHicqqCwHOD1Vdo+50HBtLPuqdiCYJcLdTRknpYis/DSEOQz5KmZxwrIAg==",
+    "Newtonsoft.Json/10.0.3": {
+      "sha512": "hSXaFmh7hNCuEoC4XNY5DrRkLDzYHqPx/Ik23R4J86Z7PE/Y6YidhG602dFVdLBRSdG6xp9NabH3dXpcoxWvww==",
       "type": "package",
-      "path": "newtonsoft.json/10.0.1",
+      "path": "newtonsoft.json/10.0.3",
       "files": [
+        "LICENSE.md",
         "lib/net20/Newtonsoft.Json.dll",
         "lib/net20/Newtonsoft.Json.xml",
         "lib/net35/Newtonsoft.Json.dll",
@@ -9059,9 +9046,11 @@
         "lib/netstandard1.0/Newtonsoft.Json.xml",
         "lib/netstandard1.3/Newtonsoft.Json.dll",
         "lib/netstandard1.3/Newtonsoft.Json.xml",
-        "lib/portable-net45+win8+wpa81+wp8/Newtonsoft.Json.dll",
-        "lib/portable-net45+win8+wpa81+wp8/Newtonsoft.Json.xml",
-        "newtonsoft.json.10.0.1.nupkg.sha512",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "newtonsoft.json.10.0.3.nupkg.sha512",
         "newtonsoft.json.nuspec",
         "tools/install.ps1"
       ]
@@ -14620,6 +14609,19 @@
         "xunit.runner.visualstudio.nuspec"
       ]
     },
+    "XunitXml.TestLogger/2.0.0": {
+      "sha512": "OdsXV1esWxrko9qb3cMhhx6+rpbGoQY7it0GKbs4jjrTwwlltOXI7k6/8K65HMRIwcmyhTr1jFibBmNRcC004Q==",
+      "type": "package",
+      "path": "xunitxml.testlogger/2.0.0",
+      "files": [
+        "build/_common/Microsoft.VisualStudio.TestPlatform.Extension.Xunit.Xml.TestAdapter.dll",
+        "build/_common/Microsoft.VisualStudio.TestPlatform.Extension.Xunit.Xml.TestLogger.dll",
+        "build/net45/XunitXml.TestLogger.props",
+        "build/netstandard1.0/XunitXml.TestLogger.props",
+        "xunitxml.testlogger.2.0.0.nupkg.sha512",
+        "xunitxml.testlogger.nuspec"
+      ]
+    },
     "main/1.0.0": {
       "type": "project",
       "path": "../main/main.csproj",
@@ -14633,6 +14635,8 @@
       "Microsoft.NET.Test.Sdk >= 15.3.0",
       "Microsoft.NETCore.App >= 2.0.0",
       "Moq >= 4.7.145",
+      "Newtonsoft.Json >= 10.0.3",
+      "XunitXml.TestLogger >= 2.0.0",
       "main >= 1.0.0",
       "xunit >= 2.3.1",
       "xunit.runner.visualstudio >= 2.3.1"
@@ -14706,6 +14710,14 @@
           "Moq": {
             "target": "Package",
             "version": "[4.7.145, )"
+          },
+          "Newtonsoft.Json": {
+            "target": "Package",
+            "version": "[10.0.3, )"
+          },
+          "XunitXml.TestLogger": {
+            "target": "Package",
+            "version": "[2.0.0, )"
           },
           "xunit": {
             "target": "Package",

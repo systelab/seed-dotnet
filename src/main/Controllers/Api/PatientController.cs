@@ -24,10 +24,13 @@
 
         private readonly ILogger<PatientController> logger;
 
-        public PatientController(ISeedDotnetRepository repository, ILogger<PatientController> logger)
+        private readonly IMapper mapper;
+
+        public PatientController(ISeedDotnetRepository repository, ILogger<PatientController> logger, IMapper mapper)
         {
-            this.repository = repository;
-            this.logger = logger;
+            this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         /// <summary>
@@ -40,15 +43,25 @@
         [HttpPost]
         public async Task<IActionResult> CreatePatient([FromBody] PatientViewModel patient)
         {
-            if (this.ModelState.IsValid)
+            if (!this.ModelState.IsValid)
             {
-                // Save to the database
-                var newpatient = Mapper.Map<Patient>(patient);
-                this.repository.AddPatient(newpatient);
-                return this.Ok(Mapper.Map<PatientViewModel>(newpatient));
+                return this.BadRequest("Bad data");
             }
 
-            return this.BadRequest("Bad data");
+            try
+            {
+                // Save to the database
+                var newpatient = this.mapper.Map<Patient>(patient);
+                this.repository.AddPatient(newpatient);
+                return this.Ok(this.mapper.Map<PatientViewModel>(newpatient));
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Failed to create the patient: {ex}");
+                return this.BadRequest("Error Occurred");
+            }
+
+
         }
 
         /// <summary>
@@ -62,11 +75,11 @@
             try
             {
                 var results = this.repository.GetAllPatients();
-                return this.Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
+                return this.Ok(this.mapper.Map<IEnumerable<PatientViewModel>>(results));
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Failed to get the Project: {ex}");
+                this.logger.LogError($"Failed to get the patient: {ex}");
                 return this.BadRequest("Error Occurred");
             }
         }
@@ -83,13 +96,13 @@
         {
             try
             {
-                Patient nPatient = new Patient { Id = uid };
-                Patient results = this.repository.GetPatient(nPatient);
-                return this.Ok(Mapper.Map<PatientViewModel>(results));
+                Patient lookupPatient = new Patient { Id = uid };
+                Patient results = this.repository.GetPatient(lookupPatient);
+                return this.Ok(this.mapper.Map<PatientViewModel>(results));
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Failed to get the Project: {ex}");
+                this.logger.LogError($"Failed to get the patient: {ex}");
                 return this.BadRequest("Error Occurred");
             }
         }
@@ -112,16 +125,21 @@
                 }
                 else
                 {
-                    var nPatient = new Patient { Id = uid };
+                    var lookupPatient = new Patient { Id = uid };
+                    Patient patientToDelete = this.repository.GetPatient(lookupPatient);                    
+                    if (patientToDelete == null)
+                    {
+                        return this.GetAllPatients();
+                    }
 
-                    var results = this.repository.DeletePatient(nPatient);
+                    var results = this.repository.DeletePatient(patientToDelete);
+                    return this.Ok(this.mapper.Map<IEnumerable<PatientViewModel>>(results));
 
-                    return this.Ok(Mapper.Map<IEnumerable<PatientViewModel>>(results));
                 }
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Failed to get the Project: {ex}");
+                this.logger.LogError($"Failed to get the patient: {ex}");
                 return this.BadRequest("Error Occurred");
             }
         }
@@ -142,8 +160,8 @@
             }
 
             // Save to the database
-            var nPatient = new Patient { Id = uid };
-            var results =  this.repository.GetPatient(nPatient);
+            var lookupPatient = new Patient { Id = uid };
+            var results = this.repository.GetPatient(lookupPatient);
             if (results == null || results.Id == 0)
             {
                 return this.BadRequest("User does not exist");
@@ -166,7 +184,7 @@
                 }
 
                 this.repository.UpdatePatient(results);
-                return this.Ok(Mapper.Map<PatientViewModel>(results));
+                return this.Ok(this.mapper.Map<PatientViewModel>(results));
             }
 
         }

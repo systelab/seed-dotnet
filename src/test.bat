@@ -1,3 +1,3 @@
-dotnet test --logger:trx
-allure serve test\TestResults
+dotnet test --logger:trx --results-directory ../TestResults
+allure serve ./TestResults
 
