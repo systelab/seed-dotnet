@@ -74,18 +74,16 @@ You have two options:
 
 You have two scripts, one is to run the project [app] (use this option to integrate the FrontEnd that you want) and the other is to run all the tests and view the results in the allure application [test].
 
+To acceess to swagger: http://127.0.0.1:13080/swagger/
+
 #### Use Visual Studio
 To run the project, press the run button provided by Visual Studio. The browser will be opened with the included swagger page. The start point can be changed in the 'launchSettings.json'.
-
 
 
 ### How it works
 
 After login (with username **Systelab** and password **Systelab**), copy the Token returned in the Authorization field before running any other REST end point.
 
-## Improvements
-
-The project is not finished, E2E test is not still implemented. We are working hard to have this implemented as soon as possible. Also the idea is to include Allure to show the test results in a proper maner.
 
 [git]: https://git-scm.com/
 [dotnet]:https://www.microsoft.com/net/download/windows
