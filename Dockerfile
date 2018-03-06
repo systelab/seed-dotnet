@@ -24,7 +24,7 @@ WORKDIR /app
 COPY --from=builder /src/main/bin/Debug/netcoreapp2.0/seed_dotnet.xml .
  
 # Copy database  
-COPY  --from=builder /src/main/db .
+COPY  --from=builder /src/main/*.db .
  
 # Copy build output 
 COPY --from=builder /app .
