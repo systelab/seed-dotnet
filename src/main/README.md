@@ -1,120 +1,155 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d6124578c1984b24bde396b8ada17d0e)](https://www.codacy.com/app/alfonsoserra/seed-dotnet?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=systelab/seed-dotnet&amp;utm_campaign=Badge_Grade)
-
 # seed-dotnet — Seed for .NET Systelab projects
 
-This project is an application skeleton for a typical .NET Core WEB API application. You can use it
-to quickly bootstrap your projects and dev environment.
+This document described how is organized the .Net Core Web API seed
 
-The seed contains a Patient Management sample Web API.
+## Startup file
 
-The app doesn't do much, just shows how to use different .NET Core patterns and other suggested tools together:
+Is the first file which is run when the application was launched. The main work of this file is about registering services and injection of modules in HTTP pipeline
 
-* .NET Core 2.0.0
-* Entity Framework Core 6.0
-* JWT
-* CORS
-* Swagger
-* AutoMapper
-* Local database
-* Logging
-* xUnit with Moq
-* Allure
+- This file include a ConfigureServices method to configure the app's services.
+- Must include a Configure method to create the app's request processing pipeline.
 
+In our case the startup file as interesting parts contains:
 
-## Getting Started
+### Configure the CORS
+```c#
+//Configure Services Method
+//Allow use the API from other origins 
+services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+{
+    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+}
+));
 
-To get you started you can simply clone the `seed-dotnet` repository.
+//Configure method
+  app.UseCors("MyPolicy");
 
-### Prerequisites
-
-You need [git][git] to clone the seed-dotnet repository.
-In order to build the application you will need Visual Studio 2017 and [.Net Core][dotnet].
-
-### Clone `seed-dotnet`
-
-Clone the `seed-dotnet` repository using git:
-
-```bash
-git clone https://github.com/systelab/seed-dotnet.git
-cd seed-dotnet
 ```
 
-If you just want to start a new project without the seed-dotnet commit history then you can do:
+To allow CORS in the controllers is added in the top of the controller this:
 
-```bash
-git clone --depth=1 https://github.com/systelab/seed-dotnet.git <your-project-name>
+```c#
+[EnableCors("MyPolicy")]
+
 ```
 
-The depth=1 tells git to only pull down one commit worth of historical data.
-
-
-### Open the Visual Studio solution
-
-Once you have the repository cloned, open the visual studio solution 'seed_dotnet.sln'
-
-The solution contains the Web API and the Unit Test project (unfinished).
-
-### How to install Allure
-
-First you should install **"scoop"**, follow the steps described in this link: [scoop]
-After the installation have been finished, execute the follow commands:
-```bash
-scoop install allure
+#### Configure the DB Context
+```c#
+services.AddDbContext<seed_dotnetContext>();
 ```
-If you already have installed Allure and you want to update the application execute the follow command:
-```bash
-scoop update allure
+### Set the User Identity configuration
+```c#
+services.AddIdentity<UserManage, IdentityRole>(config =>
+            {
+                config.Password.RequireNonAlphanumeric = true;
+                config.Password.RequiredLength = 8;
+                config.Password.RequireDigit = true;
+                config.User.RequireUniqueEmail = true;
+            })
+            .AddEntityFrameworkStores<seed_dotnetContext>();
 ```
 
-### Run
+### Configure the authentication system
 
-You have two options:
-
-#### Use the scripts provided
-
-You have two scripts, one is to run the project [app] (use this option to integrate the FrontEnd that you want) and the other is to run all the tests and view the results in the allure application [test].
-
-#### Use Visual Studio
-To run the project, press the run button provided by Visual Studio. The browser will be opened with the included swagger page. The start point can be changed in the 'launchSettings.json'.
-
-### How it works
-
-After login (with username **Systelab** and password **Systelab**), copy the Token returned in the Authorization field before running any other REST end point.
-
-To access to swagger: http://127.0.0.1:13080/swagger/
-
-## Docker
-
-### Build docker image
-
-There is an Automated Build Task in Docker Cloud in order to build the Docker Image. 
-This task, triggers a new build with every git push to your source code repository to create a 'latest' image.
-There is another build rule to trigger a new tag and create a 'version-x.y.z' image
-
-You can always manually create the image with the following command:
-
-```bash
-docker build -t systelab/seed-dotnet . 
+```c#
+services.AddAuthentication()
+    .AddJwtBearer(cfg =>
+    {
+        cfg.TokenValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["jwt:secretKey"])),
+            ValidIssuer = this.config["jwt:issuer"],
+            ValidateAudience = false,
+            ValidateLifetime = true
+        };
+    });
+```        
+Include the interfaces to perform the authentication
+```c#
+services.AddScoped<IAccountService, AccountService>();
+services.AddScoped<IJwtHandler, JwtHandler>();
+services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
 ```
 
-The image created, will contain the deployment of the aspnetcore application
+### Configuration of swagger
+```c#
+//ConfigureServices method
+ services.AddSwaggerGen(c =>
+  {
+      c.OperationFilter<AddRequiredHeaderParameter>();
 
-### Run the container
+      c.SwaggerDoc("v1", new Info
+      {
+          Version = "v1",
+          Title = "Seed DotNet",
+          Description = "This is a seed project for a .Net WebApi",
+          TermsOfService = "None",
 
-```bash
-docker run /p 13080:13080 systelab/seed-dotnet
-```
+      });
 
-The app will be available at http://localhost:13080
+      // Set the comments path for the Swagger JSON and UI.
+      var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+      var xmlPath = Path.Combine(basePath, "seed_dotnet.xml");
+      c.IncludeXmlComments(xmlPath);
+  });
+            
+//Configure method
+// Enable middleware to serve generated Swagger as a JSON endpoint.
+    app.UseSwagger();
 
-In the github root folder, you will information on how to use docker-compose, a tool for define and run multi-container Docker applications.
+    // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Seed .Net");
+    });
+            
+```  
 
+### The model mapper
+```c#
+//Map the view model objet with the internal model
+  Mapper.Initialize(config =>
+  {
+      config.CreateMap<PatientViewModel, Patient>().ReverseMap();
+      config.CreateMap<UserViewModel, UserManage>().ReverseMap();
+  });
+``` 
 
+## Controllers
 
+The Controller responsibility is to handle the HTTP requests and responses.
 
-[git]: https://git-scm.com/
-[dotnet]:https://www.microsoft.com/net/download/windows
-[scoop]:http://scoop.sh/
-[test]:https://github.com/systelab/seed-dotnet/blob/master/src/test.bat
-[app]:https://github.com/systelab/seed-dotnet/blob/master/src/app.bat
+## Services
+A controller must delegate the domain logic to an external class; the service will play that role, also in this section we can include the repository pattern.
 
+The role of the Repository is to access data, wherever is the data and in whatever format it could be. For the external world (the domain), the repository must deal in Domain Entities, making the rest of the system decoupled from its data source.
+
+## Models
+
+Model represents domain specific data and business logic in MVC architecture. It maintains the data of the application. Model objects retrieve and store model state in the persistance store like a database.
+
+## ViewModels
+
+The ViewModels allow you to shape multiple entities from one or more data models or sources into a single object, and use it as comunication with API.
+
+There are not any combination of models in a view model in this seed, but we would like to contains the idea in the seed, to take into consideration this option for the new developments.
+
+## DB
+
+The seed have a integrated SQLLite database, where the information of the users and the patients will stored. This database is intended only for this seed project. In your future projects you can use the database you want.
+
+These are the changes that you need to do to change the database:
+
+- In the appsettings.json file set the new database connection string
+
+```json
+  "ConnectionStrings": {
+    "seed_dotnetContextConnection": "Data Source=.\\db\\seed_dotnetdb.db;"
+  },
+ ```
+ 
+ - In the seed_dotnetContext.cs change the database property of the option builder for the correct one
+ 
+ ```c#
+    optionsBuilder.UseSqlite(_config["ConnectionStrings:seed_dotnetContextConnection"]);
+ ```

@@ -83,9 +83,33 @@ To run the project, press the run button provided by Visual Studio. The browser 
 
 After login (with username **Systelab** and password **Systelab**), copy the Token returned in the Authorization field before running any other REST end point.
 
-## Improvements
+## Docker
 
-The project is not finished, E2E test is not still implemented. We are working hard to have this implemented as soon as possible. Also the idea is to include Allure to show the test results in a proper maner.
+### Build docker image
+
+There is an Automated Build Task in Docker Cloud in order to build the Docker Image. 
+This task, triggers a new build with every git push to your source code repository to create a 'latest' image.
+There is another build rule to trigger a new tag and create a 'version-x.y.z' image
+
+You can always manually create the image with the following command:
+
+```bash
+docker build -t systelab/seed-dotnet . 
+```
+
+The image created, will contain the deployment of the aspnetcore application
+
+### Run the container
+
+```bash
+docker run /p 13080:13080 systelab/seed-dotnet
+```
+
+The app will be available at http://localhost:13080
+
+In the github root folder, you will information on how to use docker-compose, a tool for define and run multi-container Docker applications.
+
+
 
 [git]: https://git-scm.com/
 [dotnet]:https://www.microsoft.com/net/download/windows
