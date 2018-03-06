@@ -1,5 +1,6 @@
 ﻿namespace Main.Controllers
 {
+    using System;
     using System.Threading.Tasks;
     using Main.Models;
     using Main.ViewModels;
@@ -18,11 +19,13 @@
     {
         private readonly IAccountService repository;
         private readonly UserManager<UserManage> userManager;
+		private readonly IMapper mapper;
 
-        public AuthController( UserManager<UserManage> _userM, IAccountService _repository)
+        public AuthController( UserManager<UserManage> _userM, IAccountService _repository, IMapper _mapper)
         {
-            this.repository = _repository;
-            this.userManager = _userM;
+            this.repository = _repository ?? throw new ArgumentNullException(nameof(_repository));
+            this.userManager = _userM ?? throw new ArgumentNullException(nameof(_userM));
+			this.mapper = _mapper ?? throw new ArgumentNullException(nameof(_mapper));
         }
 
    /// <summary>
@@ -91,7 +94,7 @@
             if (this.User.Identity.IsAuthenticated)
             {
                 var user = await this.userManager.FindByNameAsync(this.User.Identity.Name);
-                return this.Ok(Mapper.Map<UserViewModel>(user));
+                return this.Ok(this.mapper.Map<UserViewModel>(user));
             }
             else
             {
