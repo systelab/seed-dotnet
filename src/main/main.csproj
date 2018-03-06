@@ -8,6 +8,10 @@
     <DocumentationFile>bin\Debug\netcoreapp2.0\seed_dotnet.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.0\seed_dotnet.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
@@ -47,7 +51,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Update="db\seed_dotnetdb.db">
+    <None Update="seed_dotnetdb.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

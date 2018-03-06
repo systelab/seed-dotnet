@@ -56,7 +56,6 @@
             }
             else
             {
-                
                 factory.AddDebug(LogLevel.Error);
             }
 
@@ -182,10 +181,12 @@
                 config =>
                     {
                         // You can configure that in production is needed Https but for other enviroments not needed
-                        if (this.env.IsProduction())
+                        /*
+						if (this.env.IsProduction())
                         {
                             config.Filters.Add(new RequireHttpsAttribute());
                         }
+						*/
                     }).AddJsonOptions(
                 config =>
                     {
