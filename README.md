@@ -74,14 +74,16 @@ You have two options:
 
 You have two scripts, one is to run the project [app] (use this option to integrate the FrontEnd that you want) and the other is to run all the tests and view the results in the allure application [test].
 
+To acceess to swagger: http://127.0.0.1:13080/swagger/
+
 #### Use Visual Studio
 To run the project, press the run button provided by Visual Studio. The browser will be opened with the included swagger page. The start point can be changed in the 'launchSettings.json'.
-
 
 
 ### How it works
 
 After login (with username **Systelab** and password **Systelab**), copy the Token returned in the Authorization field before running any other REST end point.
+
 
 ## Docker
 
@@ -108,7 +110,6 @@ docker run /p 13080:13080 systelab/seed-dotnet
 The app will be available at http://localhost:13080
 
 In the github root folder, you will information on how to use docker-compose, a tool for define and run multi-container Docker applications.
-
 
 
 [git]: https://git-scm.com/
