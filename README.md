@@ -104,13 +104,10 @@ The image created, will contain the deployment of the aspnetcore application
 ### Run the container
 
 ```bash
-docker run /p 13080:13080 systelab/seed-dotnet
+docker run -p 13080:13080 systelab/seed-dotnet
 ```
 
 The app will be available at http://localhost:13080
-
-In the github root folder, you will information on how to use docker-compose, a tool for define and run multi-container Docker applications.
-
 
 [git]: https://git-scm.com/
 [dotnet]:https://www.microsoft.com/net/download/windows
