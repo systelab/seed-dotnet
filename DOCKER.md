@@ -1,5 +1,11 @@
 # Docker
 
+To manually build the image, execute the command:
+
+```bash
+docker build -t systelab/seed-dotnet . 
+```
+
 To run the application, execute the command:
 
 ```bash
