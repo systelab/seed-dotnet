@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "main", "main\main.csproj", "{C6F22F22-A069-4653-971F-469A0C9406CE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test", "test\test.csproj", "{0FBE06F2-F87F-4153-B47C-6875E0EA5AAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTest", "IntegrationTest\IntegrationTest.csproj", "{7027A79E-C3AE-4398-8161-C9100CAC6F48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTest", "IntegrationTest\IntegrationTest.csproj", "{7027A79E-C3AE-4398-8161-C9100CAC6F48}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Allure.builder", "Allure.xUnit\Allure.builder.csproj", "{C2ADE090-A70F-48E4-892A-87A1235FE3AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{7027A79E-C3AE-4398-8161-C9100CAC6F48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7027A79E-C3AE-4398-8161-C9100CAC6F48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7027A79E-C3AE-4398-8161-C9100CAC6F48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2ADE090-A70F-48E4-892A-87A1235FE3AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2ADE090-A70F-48E4-892A-87A1235FE3AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2ADE090-A70F-48E4-892A-87A1235FE3AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2ADE090-A70F-48E4-892A-87A1235FE3AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
