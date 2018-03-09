@@ -4,9 +4,7 @@
     using System.Linq;
     using System.Net;
     using System.Net.Http;
-    using System.Text;
     using System.Threading.Tasks;
-    using System.Web;
 
     using AutoMapper;
 
@@ -16,7 +14,6 @@
 
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
 
     using Newtonsoft.Json;
@@ -93,13 +90,13 @@
         public async Task CreatePatient_CreationOK(string name, string lastname, string email, int id)
         {
             // Arrange
-            await this.Authorize();
+            await this.Authorize().ConfigureAwait(false);
             PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
-            var response = await this.CallCreatePatient(patientToUpdate);
+            var response = await this.CallCreatePatient(patientToUpdate).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            var patient = JsonConvert.DeserializeObject<PatientViewModel>(await response.Content.ReadAsStringAsync());
+            var patient = JsonConvert.DeserializeObject<PatientViewModel>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             // Assert
             Assert.NotNull(patient);
@@ -110,13 +107,13 @@
         public async Task GetListOfPatients_EmptyList()
         {
             // Arrange
-            await this.Authorize();
+            await this.Authorize().ConfigureAwait(false);
             this.ClearPatientData();
 
             // Act
-            var response = await this.CallGetPatientList();
+            var response = await this.CallGetPatientList().ConfigureAwait(false);
             response.EnsureSuccessStatusCode();      
-            var patientList = JsonConvert.DeserializeObject<List<PatientViewModel>>(await response.Content.ReadAsStringAsync());
+            var patientList = JsonConvert.DeserializeObject<List<PatientViewModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             // Assert
             Assert.Empty(patientList);
@@ -126,12 +123,12 @@
         public async Task GetListOfPatients_PopulatedList()
         {
             // Arrange
-            await this.Authorize();
+            await this.Authorize().ConfigureAwait(false);
             // Act
-            var response = await this.CallGetPatientList();
+            var response = await this.CallGetPatientList().ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            var patientList = JsonConvert.DeserializeObject<List<PatientViewModel>>(await response.Content.ReadAsStringAsync());
+            var patientList = JsonConvert.DeserializeObject<List<PatientViewModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             // Assert
             Assert.NotEmpty(patientList);
@@ -141,7 +138,7 @@
         [Fact]
         public async Task GetListOfPatients_Unauthorized()
         {
-            var response = await this.server.CreateRequest("seed/v1/patients").GetAsync();
+            var response = await this.server.CreateRequest("seed/v1/patients").GetAsync().ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -149,7 +146,7 @@
         [Fact]
         public async Task GetPatient_Unauthorized()
         {
-            var response = await this.server.CreateRequest("seed/v1/patients/1").GetAsync();
+            var response = await this.server.CreateRequest("seed/v1/patients/1").GetAsync().ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -167,7 +164,7 @@
             var response = await this.CallGetPatient(id).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            var patient = JsonConvert.DeserializeObject<PatientViewModel>(await response.Content.ReadAsStringAsync());
+            var patient = JsonConvert.DeserializeObject<PatientViewModel>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             // Assert
             Assert.NotNull(patient);
@@ -184,10 +181,10 @@
             await this.Authorize();
             
             // Act
-            var response = await this.CallGetPatient(id);
+            var response = await this.CallGetPatient(id).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            var patient = JsonConvert.DeserializeObject<PatientViewModel>(await response.Content.ReadAsStringAsync());
+            var patient = JsonConvert.DeserializeObject<PatientViewModel>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             // Assert
             Assert.Null(patient);
@@ -222,12 +219,12 @@
         public async Task RemovePatient_Found(int id)
         {
             // Arrange
-            await this.Authorize();
-            
+            await this.Authorize().ConfigureAwait(false);
+
             // Act
             var response = await this.CallDeletePatient(id).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            var patients = JsonConvert.DeserializeObject<IEnumerable<PatientViewModel>>(await response.Content.ReadAsStringAsync());
+            var patients = JsonConvert.DeserializeObject<IEnumerable<PatientViewModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             // Assert
             Assert.NotNull(patients);
@@ -241,12 +238,12 @@
         public async Task RemovePatient_NotFound(int id)
         {
             // Arrange
-            await this.Authorize();
-            
+            await this.Authorize().ConfigureAwait(false);
+
             // Act
-            var response = await this.CallDeletePatient(id);
+            var response = await this.CallDeletePatient(id).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            var patients = JsonConvert.DeserializeObject<IEnumerable<PatientViewModel>>(await response.Content.ReadAsStringAsync());
+            var patients = JsonConvert.DeserializeObject<IEnumerable<PatientViewModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             // Assert
             Assert.NotNull(patients);
@@ -256,7 +253,7 @@
         [Fact]
         public async Task UpdatePatient_Unauthorized()
         {
-            var response = await this.server.CreateRequest("seed/v1/patients/1").SendAsync("PUT");
+            var response = await this.server.CreateRequest("seed/v1/patients/1").SendAsync("PUT").ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -266,13 +263,13 @@
         public async Task UpdatePatient_CreationOk(string name, string lastname, string email, int id)
         {
             // Arrange
-            await this.Authorize();
+            await this.Authorize().ConfigureAwait(false);
             PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
-            var response = await this.CallUpdatePatient(patientToUpdate);
+            var response = await this.CallUpdatePatient(patientToUpdate).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            var patient = JsonConvert.DeserializeObject<PatientViewModel>(await response.Content.ReadAsStringAsync());
+            var patient = JsonConvert.DeserializeObject<PatientViewModel>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             // Assert
             Assert.NotNull(patient);
@@ -291,11 +288,11 @@
         public async Task UpdatePatient_BadRequest(string name, string lastname, string email, int id)
         {
             // Arrange
-            await this.Authorize();
+            await this.Authorize().ConfigureAwait(false);
             PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
-            var response = await this.CallUpdatePatient(patientToUpdate);
+            var response = await this.CallUpdatePatient(patientToUpdate).ConfigureAwait(false);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
@@ -318,12 +315,12 @@
                               Content = new FormUrlEncodedContent(
                                   nvc)
                           };
-            return await this.client.SendAsync(req);
+            return await this.client.SendAsync(req).ConfigureAwait(false);
         }
 
         private async Task Authorize()
         {
-            var response = await this.RequestToken();
+            var response = await this.RequestToken().ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
             this.currentToken = response.Headers.GetValues("Authorization").First();
         }
@@ -335,22 +332,22 @@
 
         private async Task<HttpResponseMessage> CallCreatePatient(PatientViewModel patient)
         {
-            return await this.BuildAuthorizedRequest($"seed/v1/patients/patient").WithJsonContent(patient).PostAsync();
+            return await this.BuildAuthorizedRequest($"seed/v1/patients/patient").WithJsonContent(patient).PostAsync().ConfigureAwait(false);
         }
 
         private async Task<HttpResponseMessage> CallDeletePatient(int id)
         {
-            return await this.BuildAuthorizedRequest($"seed/v1/patients/{id}").SendAsync("DELETE");
+            return await this.BuildAuthorizedRequest($"seed/v1/patients/{id}").SendAsync("DELETE").ConfigureAwait(false);
         }
 
         private async Task<HttpResponseMessage> CallGetPatient(int id)
         {
-            return await this.BuildAuthorizedRequest($"seed/v1/patients/{id}").GetAsync();
+            return await this.BuildAuthorizedRequest($"seed/v1/patients/{id}").GetAsync().ConfigureAwait(false);
         }
 
         private async Task<HttpResponseMessage> CallGetPatientList()
         {
-            return await this.BuildAuthorizedRequest("seed/v1/patients").GetAsync();
+            return await this.BuildAuthorizedRequest("seed/v1/patients").GetAsync().ConfigureAwait(false);
         }
 
         private Task<HttpResponseMessage> CallUnauthorized(string uri)
@@ -360,7 +357,7 @@
 
         private async Task<HttpResponseMessage> CallUpdatePatient(PatientViewModel patient)
         {
-            return await this.BuildAuthorizedRequest($"seed/v1/patients/{patient.Id}").WithJsonContent(patient).SendAsync("PUT");
+            return await this.BuildAuthorizedRequest($"seed/v1/patients/{patient.Id}").WithJsonContent(patient).SendAsync("PUT").ConfigureAwait(false);
         }
 
         private void ClearPatientData()

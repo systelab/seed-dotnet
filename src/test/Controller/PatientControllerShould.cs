@@ -18,9 +18,8 @@
     using Allure.Commons;
     using Allure.builder;
     using Allure.builder.attributes;
-    using System;
 
-    public partial class PatientControllerShould
+    public  class PatientControllerShould
     {
         private readonly Mock<ISeedDotnetRepository> mockUserRepo;
 
@@ -179,7 +178,7 @@
             string testId = "";
             try
             {
-                testId = Test.addTest(new testDefinition()
+                testId = Test.addTest(new testDefinition
                 {
                     name = "Get list of patients",
                     description = "This test should return a list of patients",
