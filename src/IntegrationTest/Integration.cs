@@ -158,8 +158,8 @@
         public async Task GetPatient_Found(int id)
         {
             // Arrange
-            await this.Authorize();
-            
+            await this.Authorize().ConfigureAwait(false);
+
             // Act
             var response = await this.CallGetPatient(id).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
@@ -178,8 +178,8 @@
         public async Task GetPatient_NotFound(int id)
         {
             // Arrange
-            await this.Authorize();
-            
+            await this.Authorize().ConfigureAwait(false);
+
             // Act
             var response = await this.CallGetPatient(id).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();

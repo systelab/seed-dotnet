@@ -76,7 +76,18 @@ services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
 //ConfigureServices method
  services.AddSwaggerGen(c =>
   {
-      c.OperationFilter<AddRequiredHeaderParameter>();
+     c.OperationFilter<SwaggerConsumesOperationFilter>();
+     c.AddSecurityDefinition("Bearer", new ApiKeyScheme()
+     {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = "header",
+        Type = "apiKey"
+     });
+     c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+        {
+            { "Bearer", new string[] { } }
+        });
 
       c.SwaggerDoc("v1", new Info
       {

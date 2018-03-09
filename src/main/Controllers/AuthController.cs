@@ -11,7 +11,8 @@
     using Microsoft.AspNetCore.Mvc;
     using Main.Services;
     using AutoMapper;
-
+    using Swashbuckle.AspNetCore.SwaggerGen;
+    using main.Models;
 
     [EnableCors("MyPolicy")]
     [Route("seed/v1/users")]
@@ -28,15 +29,15 @@
 			this.mapper = _mapper ?? throw new ArgumentNullException(nameof(_mapper));
         }
 
-   /// <summary>
-   /// 
-   /// </summary>
-   /// <typeparam name="IActionResult"></typeparam>
-   /// <param name=""></param>
-   /// <param name="vm"></param>
-   /// <returns></returns>
+        /// <summary>
+        /// Do the login and get the Token of the session
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <returns></returns>
+
         [Route("login")]
-        [HttpPost, Consumes("application/x-www-form-urlencoded")]
+        [HttpPost]
+        [SwaggerConsumes("application/x-www-form-urlencoded")]
         public async  Task<IActionResult> GetToken([FromForm] LoginViewModel vm)
         {
             if (this.ModelState.IsValid)
@@ -47,7 +48,7 @@
                     Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
                     Response.Headers.Add("Refresh", result.RefreshToken);
                     Response.Headers.Add("Access-Control-Expose-Headers", "origin, content-type, accept, authorization, ETag, if-none-match");
-                    return this.Ok();
+                    return this.Ok("Done");
                 }
                 else
                 {

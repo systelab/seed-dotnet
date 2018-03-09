@@ -14,20 +14,14 @@ This model is a extend from the class IdentityUser, we extend the class to add m
 
 This model represent the structure of the data which are going to save about the patients.
 
-## Authentication Token in the header
-
-### AddRequieredHeaderParameter.cs
-
-This internal class extend from the Interface IOperationFilter provided by Swashbuckle (used to add Swagger in the solution).
-
-The method Apply is overridden to add the parameter Authorization in the header of the REST End Points in the Swagger page.
-
-### Parameter.cs
-
-Is the structure of a parameter to add in the Swagger REST End points headers.
-
 ###JsonWebToken
 This model represent the structure of the JWT token response.
+
+## Swagger
+
+### Consume Content types overrride
+
+There are two class "SwaggerConsumesAttribute" and "SwaggerConsumesOperationFilter" used to add as decorator the content types to consume the endpoint.
 
 ## Context
 
