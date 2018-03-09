@@ -16,10 +16,6 @@ namespace Allure.builder
             instance = AllureLifecycle.Instance;
          
         }
-        public static void clearInstance()
-        {
-            AllureLifecycle instance = AllureLifecycle.Instance;
-        }
         public static (string path, byte[] content) addAttachment(Attachment attach)
         {
             File.WriteAllText(attach.source, attach.name);
@@ -151,7 +147,6 @@ namespace Allure.builder
             }
             catch(Exception ex)
             {
-                string e = ex.ToString();
                 return false;
             }
 

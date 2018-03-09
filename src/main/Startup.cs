@@ -177,17 +177,7 @@
             var mapper = automapConfiguration.CreateMapper();
 
             services.AddSingleton(mapper);
-            services.AddMvc(
-                config =>
-                    {
-                        // You can configure that in production is needed Https but for other enviroments not needed
-                        /*
-						if (this.env.IsProduction())
-                        {
-                            config.Filters.Add(new RequireHttpsAttribute());
-                        }
-						*/
-                    }).AddJsonOptions(
+            services.AddMvc().AddJsonOptions(
                 config =>
                     {
                         config.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();

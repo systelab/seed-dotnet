@@ -42,7 +42,7 @@
             this.SeedPatient(this.KnownPatients);
         }
 
-        public PatientViewModel[] KnownPatients =>
+        public  PatientViewModel[] KnownPatients =>
             new[]
                 {
                     new PatientViewModel() { Email = "valid@email.com", Id = 1, Surname = "Pérez", Name = "Silvio" },
@@ -81,7 +81,7 @@
         {
             // Arrange
             await this.Authorize();
-            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, Surname = lastname, Name = name };
+            PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
             var response = await this.CallCreatePatient(patientToUpdate);
@@ -94,7 +94,7 @@
         {
             // Arrange
             await this.Authorize();
-            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, Surname = lastname, Name = name };
+            PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
             var response = await this.CallCreatePatient(patientToUpdate);
@@ -267,7 +267,7 @@
         {
             // Arrange
             await this.Authorize();
-            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, Surname = lastname, Name = name };
+            PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
             var response = await this.CallUpdatePatient(patientToUpdate);
@@ -292,7 +292,7 @@
         {
             // Arrange
             await this.Authorize();
-            PatientViewModel patientToUpdate = new PatientViewModel() { Email = email, Id = id, Surname = lastname, Name = name };
+            PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
             var response = await this.CallUpdatePatient(patientToUpdate);
