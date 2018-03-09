@@ -97,7 +97,7 @@
                 sut.ModelState.AddModelError("error", "some error");
                 Test.stopStep(Status.passed);
 
-                Test.addStep(new step { description = "Act", name = "Step 2: Act", listParamenters = new List<Allure.Commons.Parameter>() { { new Allure.Commons.Parameter() { name = "Patient", value = null } } } });
+                Test.addStep(new step { description = "Act", name = "Step 2: Act", listParamenters = new List<Allure.Commons.Parameter> { { new Allure.Commons.Parameter { name = "Patient", value = null } } } });
                 // Act
                 var result = await sut.CreatePatient(patient: null);
                 Test.stopStep(Status.passed);
@@ -296,8 +296,8 @@
                 {
                     description = " Remove the patient",
                     name = "Step 2: Act",
-                    listParamenters = new List<Allure.Commons.Parameter>() {
-                    { new Allure.Commons.Parameter() { name = "Patient ID", value = patient.Id.ToString() }} }
+                    listParamenters = new List<Allure.Commons.Parameter> {
+                    { new Allure.Commons.Parameter { name = "Patient ID", value = patient.Id.ToString() }} }
                 });
                 var result = sut.Remove(patient.Id);
                 Test.stopStep(Status.passed);
@@ -354,10 +354,10 @@
                     description = "Insert patient",
                     name = "Step 2: Act",
                     listParamenters = new List<Allure.Commons.Parameter> {
-                    { new Allure.Commons.Parameter() { name = "Email", value = patientToInsert.Email }},
-                    { new Allure.Commons.Parameter() { name = "Name", value = patientToInsert.Name}},
-                    { new Allure.Commons.Parameter() { name = "Surname", value = patientToInsert.Surname }},
-                    { new Allure.Commons.Parameter() { name = "Id", value = patientToInsert.Id.ToString() }}}
+                    { new Allure.Commons.Parameter { name = "Email", value = patientToInsert.Email }},
+                    { new Allure.Commons.Parameter { name = "Name", value = patientToInsert.Name}},
+                    { new Allure.Commons.Parameter { name = "Surname", value = patientToInsert.Surname }},
+                    { new Allure.Commons.Parameter { name = "Id", value = patientToInsert.Id.ToString() }}}
                 });
                 var result = await sut.CreatePatient(patientToInsert);
                 Test.stopStep(Status.passed);

@@ -154,7 +154,7 @@ namespace Allure.builder
         public static bool stopTest(string testId, Status status,string message,string trace)
         {
 
-            StatusDetails std = new StatusDetails() { flaky = false, known = true, message = message, trace = trace, muted = false };
+            StatusDetails std = new StatusDetails { flaky = false, known = true, message = message, trace = trace, muted = false };
             instance = instance.UpdateTestCase(testId, x => x.status = status);
             instance = instance.UpdateTestCase(testId, x => x.statusDetails = std);
             instance.StopTestCase(testId)

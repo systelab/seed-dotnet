@@ -45,22 +45,22 @@
         public  PatientViewModel[] KnownPatients =>
             new[]
                 {
-                    new PatientViewModel() { Email = "valid@email.com", Id = 1, Surname = "Pérez", Name = "Silvio" },
-                    new PatientViewModel()
+                    new PatientViewModel { Email = "valid@email.com", Id = 1, Surname = "Pérez", Name = "Silvio" },
+                    new PatientViewModel
                         {
                             Email = "another_valid@email.com",
                             Id = 2,
                             Surname = "Maragall",
                             Name = "Lluís"
                         },
-                    new PatientViewModel()
+                    new PatientViewModel
                         {
                             Email = "third_email@email.com",
                             Id = 3,
                             Surname = "Malafont",
                             Name = "Andreu"
                         },
-                    new PatientViewModel()
+                    new PatientViewModel
                         {
                             Email = "fourth_email@email.com",
                             Id = 4,
@@ -80,11 +80,11 @@
         public async Task CreatePatient_BadRequest(string name, string lastname, string email, int id)
         {
             // Arrange
-            await this.Authorize();
+            await this.Authorize().ConfigureAwait(false);
             PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
 
             // Act
-            var response = await this.CallCreatePatient(patientToUpdate);
+            var response = await this.CallCreatePatient(patientToUpdate).ConfigureAwait(false);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
@@ -164,7 +164,7 @@
             await this.Authorize();
             
             // Act
-            var response = await this.CallGetPatient(id);
+            var response = await this.CallGetPatient(id).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             var patient = JsonConvert.DeserializeObject<PatientViewModel>(await response.Content.ReadAsStringAsync());
@@ -225,7 +225,7 @@
             await this.Authorize();
             
             // Act
-            var response = await this.CallDeletePatient(id);
+            var response = await this.CallDeletePatient(id).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
             var patients = JsonConvert.DeserializeObject<IEnumerable<PatientViewModel>>(await response.Content.ReadAsStringAsync());
 
@@ -302,7 +302,7 @@
         [Fact]
         public async Task ValidLogin_ReturnToken()
         {
-            var response = await this.RequestToken();
+            var response = await this.RequestToken().ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
             var token = response.Headers.GetValues("Authorization").FirstOrDefault();
             Assert.NotNull(token);
