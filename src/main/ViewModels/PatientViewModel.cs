@@ -1,5 +1,7 @@
 ﻿namespace Main.ViewModels
 {
+    using Main.Models;
+    using System;
     using System.ComponentModel.DataAnnotations;
 
     public class PatientViewModel
@@ -26,5 +28,15 @@
         /// </summary>
         [Required]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Date
+        /// </summary>
+        public DateTime Dob { get; set; }
+
+        /// <summary>
+        /// Address of the user
+        /// </summary>
+        public Address Address { get; set; }
     }
 }

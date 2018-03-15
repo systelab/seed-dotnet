@@ -14,7 +14,7 @@ namespace main.Models
         /// </summary>
         /// <param name="operation">Swagger description</param>
         /// <param name="context">Context of the operation filter</param>
-        public void Apply(Operation operation, OperationFilterContext context)
+        public  void Apply(Operation operation, OperationFilterContext context)
         {
             var action = context?.ApiDescription?.ActionDescriptor as ControllerActionDescriptor;
             var attribute = action?.MethodInfo.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(SwaggerConsumesAttribute));
@@ -24,7 +24,7 @@ namespace main.Models
                 var primaryContentType = attribute.ConstructorArguments[0].Value as string;
                 var secondaryContentTypes = (attribute.ConstructorArguments[1].Value as IReadOnlyList<CustomAttributeTypedArgument>).Select(s => s.Value.ToString()).ToArray();
 
-                var contentTypes = new List<string>() { primaryContentType };
+                var contentTypes = new List<string> { primaryContentType };
                 contentTypes.AddRange(secondaryContentTypes);
 
                 operation.Consumes = contentTypes;
