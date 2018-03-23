@@ -1,0 +1,8 @@
+language: csharp
+mono: none
+dotnet: 2.0.5
+script:
+  - dotnet restore
+  - dotnet build ./src/main
+  - dotnet build ./src/IntegrationTest
+  - dotnet test ./src/test
