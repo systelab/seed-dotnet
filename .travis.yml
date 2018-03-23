@@ -5,4 +5,6 @@ script:
   - dotnet restore
   - dotnet build ./src/main
   - dotnet build ./src/IntegrationTest
+  - dotnet build ./src/test
   - dotnet test ./src/test
+  - dotnet test ./src/IntegrationTest
