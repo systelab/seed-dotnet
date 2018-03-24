@@ -1,8 +1,6 @@
 language: csharp
 mono: none
 dotnet: 2.0.2
-before_install:
-  - dotnet restore
 install:
   - dotnet build ./src/main
   - dotnet build ./src/IntegrationTest
