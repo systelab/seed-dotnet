@@ -37,6 +37,47 @@ To allow CORS in the controllers is added in the top of the controller this:
 ```c#
 services.AddDbContext<seed_dotnetContext>();
 ```
+
+The context is based in this example in a in-process SQLite database. 
+The database is encrypted using SQLcipher so only the application can access. 
+The key is located in the application settings file. If you need encryption, please consider a safer method to store the key.
+In order to use encryption:
+
+1. add the following package to your application
+
+2. add the following line to you main execution thread at startup
+```c#
+            SQLitePCL.Batteries_V2.Init();
+```
+3. Modify the context to use a connection that sets the key
+
+```c#
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{
+    base.OnConfiguring(optionsBuilder);
+    optionsBuilder.UseSqlite(this.GetConnection());
+}
+
+private DbConnection GetConnection()
+{
+    SqliteConnection connection =
+        new SqliteConnection(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
+
+    // each connection will use the password for unencrypt the database.
+    // The following code executes the PRAGMA with two SQL Queries to prevent SQL-injection in the password
+    connection.Open();
+    SqliteCommand command = connection.CreateCommand();
+    command.CommandText = "SELECT quote($password);";
+    command.Parameters.AddWithValue("$password", this.GetPassword());
+    string quotedPassword = (string)command.ExecuteScalar();
+    command.CommandText = "PRAGMA key = " + quotedPassword;
+    command.Parameters.Clear();
+    command.ExecuteNonQuery();
+
+    return connection;
+}
+```
+
 ### Set the User Identity configuration
 ```c#
 services.AddIdentity<UserManage, IdentityRole>(config =>

@@ -35,6 +35,7 @@
         public Startup(IHostingEnvironment env)
         {
             this.env = env;
+            SQLitePCL.Batteries_V2.Init();
 
             var builder = new ConfigurationBuilder().SetBasePath(this.env.ContentRootPath)
                 .AddJsonFile("appsettings.json").AddEnvironmentVariables();
