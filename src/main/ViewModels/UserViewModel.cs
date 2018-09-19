@@ -2,20 +2,23 @@
 {
     using System.ComponentModel.DataAnnotations;
 
+    /// <summary>
+    /// Represents a user
+    /// </summary>
     public class UserViewModel
     {
         /// <summary>
-        /// User's email
+        /// Gets or sets User's email
         /// </summary>
         public string Email { get; set; }
 
         /// <summary>
-        /// User's name
+        /// Gets or sets User's name
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// User's lastname
+        /// Gets or sets User's lastname
         /// </summary>
         public string LastName { get; set; }
     }

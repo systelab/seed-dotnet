@@ -8,7 +8,7 @@ using Main.Models;
 
 namespace Main.Services
 {
-    public class JwtHandler : IJwtHandler
+    internal class JwtHandler : IJwtHandler
     {
         private readonly SigningCredentials _signingCredentials;
         private readonly IConfigurationRoot _config;

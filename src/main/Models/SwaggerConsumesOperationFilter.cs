@@ -7,7 +7,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 namespace main.Models
 {
-    public class SwaggerConsumesOperationFilter : IOperationFilter
+    internal class SwaggerConsumesOperationFilter : IOperationFilter
     {
         /// <summary>
         /// Apply the filter

@@ -7,7 +7,7 @@ namespace main.Models
     /// Specifies the content types accepted for the annoted method 
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class SwaggerConsumesAttribute : ConsumesAttribute
+    internal class SwaggerConsumesAttribute : ConsumesAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SwaggerConsumesAttribute"/> class

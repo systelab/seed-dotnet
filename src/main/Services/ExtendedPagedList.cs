@@ -13,7 +13,7 @@ namespace Main.Services
     /// Extends a paged list by adding a total count of items
     /// </summary>
     /// <typeparam name="T">The type of object the collection should contain.</typeparam>
-    public class ExtendedPagedList<T>
+    internal class ExtendedPagedList<T>
     {
         /// <summary>
         /// Gets the paged content

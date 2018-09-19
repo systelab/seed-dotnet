@@ -4,7 +4,7 @@
     using System.Runtime.Serialization;
 
     /// <inheritdoc />
-    public class PatientNotFoundException : Exception
+    internal class PatientNotFoundException : Exception
     {        
     }
 }

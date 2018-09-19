@@ -25,7 +25,7 @@
     using main.Models;
 
     // This is 
-    public class Startup
+    internal class Startup
     {
         private readonly IConfigurationRoot config;
 

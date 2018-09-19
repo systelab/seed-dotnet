@@ -9,7 +9,7 @@
 
     using Moq;
 
-    public class PatientControllerBuilder
+    internal class PatientControllerBuilder
     {
         private ISeedDotnetRepository repository;
 

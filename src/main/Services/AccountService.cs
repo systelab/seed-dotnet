@@ -1,73 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
-using Main.Models;
-
-namespace Main.Services
+﻿namespace Main.Services
 {
-    public class AccountService : IAccountService
+    using System;
+    using System.Threading.Tasks;
+
+    using Main.Models;
+
+    using Microsoft.AspNetCore.Identity;
+
+    internal class AccountService : IAccountService
     {
-        private readonly ISeedDotnetRepository _repository;
-        private readonly IJwtHandler _jwtHandler;
-        private readonly IPasswordHasher<UserManage> _passwordHasher;
-        private readonly SignInManager<UserManage> _signInManager;
-        private readonly UserManager<UserManage> _userManager;
-        public AccountService(SignInManager<UserManage> signInManager, UserManager<UserManage> userM, IJwtHandler jwtHandler,
-            IPasswordHasher<UserManage> passwordHasher, ISeedDotnetRepository repository)
-        {
-            _repository = repository;
-            _signInManager = signInManager;
-            _jwtHandler = jwtHandler;
-            _passwordHasher = passwordHasher;
-            _userManager = userM;
-        }
+        private readonly IJwtHandler jwtHandler;
 
+        private readonly IPasswordHasher<UserManage> passwordHasher;
 
-        public async Task<JsonWebToken> SignIn(string username, string password)
+        private readonly ISeedDotnetRepository repository;
+
+        private readonly SignInManager<UserManage> signInManager;
+
+        private readonly UserManager<UserManage> userManager;
+
+        public AccountService(
+            SignInManager<UserManage> signInManager,
+            UserManager<UserManage> userM,
+            IJwtHandler jwtHandler,
+            IPasswordHasher<UserManage> passwordHasher,
+            ISeedDotnetRepository repository)
         {
-            var user = await _userManager.FindByNameAsync(username);
-            if (user != null)
-            {
-                var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, false);
-                if (signInResult.Succeeded)
-                {
-                    var jwt = _jwtHandler.Create(user);
-                    var refreshToken = _passwordHasher.HashPassword(user, Guid.NewGuid().ToString())
-                        .Replace("+", string.Empty)
-                        .Replace("=", string.Empty)
-                        .Replace("/", string.Empty);
-                    jwt.RefreshToken = refreshToken;
-                    user.RefreshToken = refreshToken;
-                    _repository.UpdateRefreshToken(user);
-                    return jwt;
-                }
-            }
-            return null;
+            this.repository = repository;
+            this.signInManager = signInManager;
+            this.jwtHandler = jwtHandler;
+            this.passwordHasher = passwordHasher;
+            this.userManager = userM;
         }
 
         public async Task<JsonWebToken> RefreshAccessToken(string token)
         {
-            var refreshToken = await GetRefreshToken(token).ConfigureAwait(false);
+            var refreshToken = await this.GetRefreshToken(token).ConfigureAwait(false);
             if (refreshToken == null)
             {
                 return null;
             }
 
-            var jwt = _jwtHandler.Create(refreshToken); 
+            var jwt = this.jwtHandler.Create(refreshToken);
             jwt.RefreshToken = refreshToken.RefreshToken;
 
             return jwt;
         }
 
+        public async Task<JsonWebToken> SignIn(string username, string password)
+        {
+            var user = await this.userManager.FindByNameAsync(username);
+            if (user != null)
+            {
+                var signInResult = await this.signInManager.CheckPasswordSignInAsync(user, password, false);
+                if (signInResult.Succeeded)
+                {
+                    var jwt = this.jwtHandler.Create(user);
+                    var refreshToken = this.passwordHasher.HashPassword(user, Guid.NewGuid().ToString())
+                        .Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
+                    jwt.RefreshToken = refreshToken;
+                    user.RefreshToken = refreshToken;
+                    await this.repository.UpdateRefreshToken(user);
+                    return jwt;
+                }
+            }
 
+            return null;
+        }
 
         private async Task<UserManage> GetRefreshToken(string token)
         {
-            return _repository.GetUserManageWithRefreshToken(token);
+            return await this.repository.GetUserManageWithRefreshToken(token);
         }
-
-
-
     }
 }

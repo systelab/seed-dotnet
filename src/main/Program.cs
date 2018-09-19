@@ -1,10 +1,22 @@
-﻿namespace Main
+﻿using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("IntegrationTest")]
+[assembly: InternalsVisibleTo("test")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+namespace Main
 {
     using System.IO;
     using Microsoft.AspNetCore.Hosting;
 
+    /// <summary>
+    /// Main entry program
+    /// </summary>
     public static class Program
     {
+        /// <summary>
+        /// Main entry
+        /// </summary>
+        /// <param name="args">not used</param>
         public static void Main(string[] args)
         {
             var host = BuildWebHost().Seed();

@@ -5,54 +5,66 @@
     using System.Threading.Tasks;
 
     using Main.Models;
+
+    using Microsoft.EntityFrameworkCore;
+
     using PagedList.Core;
 
     /// <summary>
     /// Repository with all the queries to the database using the entity framework
     /// </summary>
-    public class SeedDotnetRepository : ISeedDotnetRepository
+    internal class SeedDotnetRepository : ISeedDotnetRepository
     {
         private readonly SeedDotnetContext context;
 
         /// <summary>
-        /// Set the context of the app
+        /// Initializes a new instance of the <see cref="SeedDotnetRepository"/> class. 
         /// </summary>
-        /// <param name="_context"></param>
-        public SeedDotnetRepository(SeedDotnetContext _context)
+        /// <param name="context">
+        /// database context
+        /// </param>
+        public SeedDotnetRepository(SeedDotnetContext context)
         {
-            this.context = _context;
+            this.context = context;
         }
-
-        public List<Patient> Patients { get; private set; }
 
         /// <summary>
         /// Insert the patient into the database
         /// </summary>
-        /// <param name="newpatient">Object with the information of the patient that you want to insert</param>
-        public void AddPatient(Patient newpatient)
+        /// <param name="newPatient">
+        /// Object with the information of the patient that you want to insert
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task AddPatient(Patient newPatient)
         {
-            this.context.Add(newpatient);
+            await this.context.AddAsync(newPatient);
             this.context.SaveChanges();
         }
 
         /// <summary>
         /// Remove the patient from the database
         /// </summary>
-        /// <param name="nPatient">Object with the information of the patient that you want to remove</param>
-        public List<Patient> DeletePatient(Patient nPatient)
+        /// <param name="patient">
+        /// Object with the information of the patient that you want to remove
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task DeletePatient(Patient patient)
         {
-            this.context.Entry(nPatient).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-            this.context.SaveChanges();
-            return this.context.Patients.ToList();
+            this.context.Entry(patient).State = EntityState.Deleted;
+            await this.context.SaveChangesAsync();
         }
 
         /// <summary>
         /// List all the patients saved in the database
         /// </summary>
         /// <returns>List of patients object</returns>
-        public List<Patient> GetAllPatients()
+        public async Task<List<Patient>> GetAllPatients()
         {
-            return this.context.Patients.ToList();
+            return await this.context.Patients.ToListAsync();
         }
 
         /// <summary>
@@ -67,53 +79,65 @@
         /// <returns>
         /// The list <see cref="PagedList"/>.
         /// </returns>
-        public PagedList<Patient> GetAllPatients(int pageNumber, int elementsPerPage)
+        public async Task<PagedList<Patient>> GetAllPatients(int pageNumber, int elementsPerPage)
         {
-            return new PagedList<Patient>(this.context.Patients, pageNumber, elementsPerPage);
+            return await Task.Run(() => new PagedList<Patient>(this.context.Patients, pageNumber, elementsPerPage));
         }
 
         /// <summary>
         /// Get a specific patient
         /// </summary>
-        /// <param name="nPatient">Object of the patient that you want to retrieve, in this case the id of the patient must be filled</param>
-        /// <returns></returns>
-        public Patient GetPatient(Patient nPatient)
+        /// <param name="patient">
+        /// Object of the patient that you want to retrieve, in this case the id of the patient must be filled
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<Patient> GetPatient(Patient patient)
         {
-            return this.context.Patients.Where(t => t.Id == nPatient.Id).FirstOrDefault();
+            return await this.context.Patients.Where(t => t.Id == patient.Id).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> SaveChangesAsync()
+        /// <summary>
+        /// Get the user information providing a refresh token, in this case we are using a database but you can use other system.
+        /// </summary>
+        /// <param name="token">token to refresh
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<UserManage> GetUserManageWithRefreshToken(string token)
         {
-            return (await this.context.SaveChangesAsync()) > 0;
+            return await this.context.Users.Where(t => t.RefreshToken == token).FirstOrDefaultAsync();
         }
 
         /// <summary>
         /// Update information of the patient
         /// </summary>
-        /// <param name="nPatient">Object of the patient that you want to update, they ID must be filled and the information that you want to change</param>
-        public void UpdatePatient(Patient nPatient)
+        /// <param name="patient">
+        /// Object of the patient that you want to update, they ID must be filled and the information that you want to change
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task UpdatePatient(Patient patient)
         {
-            this.context.Entry(nPatient).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            this.context.SaveChanges();
+            this.context.Entry(patient).State = EntityState.Modified;
+            await this.context.SaveChangesAsync();
         }
-        /// <summary>
-        /// Get the user information providing a refresh token, in this case we are using a database but you can use other system.
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public UserManage GetUserManageWithRefreshToken(string token)
-        {
-            return this.context.Users.Where(t => t.RefreshToken == token).FirstOrDefault();
-        }
+
         /// <summary>
         /// Update the refresh token of the user session
         /// </summary>
-        /// <param name="user"></param>
-        public void UpdateRefreshToken(UserManage user)
+        /// <param name="user">user to refresh the token
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task UpdateRefreshToken(UserManage user)
         {
-            this.context.Entry(user).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            this.context.SaveChanges();
+            this.context.Entry(user).State = EntityState.Modified;
+            await this.context.SaveChangesAsync();
         }
     }
-
 }

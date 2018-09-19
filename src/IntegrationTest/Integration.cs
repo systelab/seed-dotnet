@@ -243,12 +243,7 @@
 
             // Act
             var response = await this.CallDeletePatient(id).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-            var patients = JsonConvert.DeserializeObject<IEnumerable<PatientViewModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-
-            // Assert
-            Assert.NotNull(patients);
-            Assert.Equal(this.KnownPatients.Count() - 1, patients.Count());
+            response.EnsureSuccessStatusCode();            
         }
 
         [Theory]

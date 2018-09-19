@@ -17,7 +17,7 @@
     using Microsoft.Extensions.Logging;
 
     [EnableCors("MyPolicy")]
-    [Route("seed/v1/patients")]
+    [Route("seed/v1/patients")]   
     public class PatientController : Controller
     {
         private readonly ISeedDotnetRepository repository;
@@ -51,9 +51,9 @@
             try
             {
                 // Save to the database
-                var newpatient = this.mapper.Map<Patient>(patient);
-                this.repository.AddPatient(newpatient);
-                return this.Ok(this.mapper.Map<PatientViewModel>(newpatient));
+                var newPatient = this.mapper.Map<Patient>(patient);
+                await this.repository.AddPatient(newPatient);
+                return this.Ok(this.mapper.Map<PatientViewModel>(newPatient));
             }
             catch (Exception ex)
             {
@@ -76,12 +76,12 @@
         /// </returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
-        public IActionResult GetAllPatients([FromQuery(Name = "page")] int page, [FromQuery(Name = "size")] int elementsPerPage)
+        public async Task<IActionResult> GetAllPatients([FromQuery(Name = "page")] int page, [FromQuery(Name = "size")] int elementsPerPage)
         {
             try
             {
                 // PagedList is a one-based index. We offer a zero-based index, therefore we have to add 1 to the page number
-                var results = this.repository.GetAllPatients(page + 1, elementsPerPage);
+                var results = await this.repository.GetAllPatients(page + 1, elementsPerPage);
                 return this.Ok(this.mapper.Map<ExtendedPagedList<PatientViewModel>>(results));
                 
             }
@@ -100,12 +100,12 @@
         [Route("{uid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
-        public IActionResult GetPatient(int uid)
+        public async Task<IActionResult> GetPatient(int uid)
         {
             try
             {
                 Patient lookupPatient = new Patient { Id = uid };
-                Patient results = this.repository.GetPatient(lookupPatient);
+                Patient results = await this.repository.GetPatient(lookupPatient);
                 return this.Ok(this.mapper.Map<PatientViewModel>(results));
             }
             catch (Exception ex)
@@ -134,14 +134,14 @@
                 else
                 {
                     var lookupPatient = new Patient { Id = uid };
-                    Patient patientToDelete = this.repository.GetPatient(lookupPatient);                    
+                    Patient patientToDelete = await this.repository.GetPatient(lookupPatient);                    
                     if (patientToDelete == null)
                     {
                         throw new PatientNotFoundException();
                     }
 
                     var results = this.repository.DeletePatient(patientToDelete);
-                    return this.Ok(this.mapper.Map<IEnumerable<PatientViewModel>>(results));
+                    return this.Ok();
 
                 }
             }
@@ -155,12 +155,19 @@
         /// <summary>
         /// Update the information of an existing patient
         /// </summary>
-        /// <param name="patient">patient model</param>
-        /// <returns></returns>
+        /// <param name="uid">
+        /// unique identifier of the patient
+        /// </param>
+        /// <param name="patient">
+        /// patient model
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         [Route("{uid}")]
-        public async Task<IActionResult> UpdatePatient(int uid,[FromBody] PatientViewModel patient)
+        public async Task<IActionResult> UpdatePatient(int uid, [FromBody] PatientViewModel patient)
         {
             if (!this.ModelState.IsValid)
             {
@@ -169,7 +176,7 @@
 
             // Save to the database
             var lookupPatient = new Patient { Id = uid };
-            var results = this.repository.GetPatient(lookupPatient);
+            var results = await this.repository.GetPatient(lookupPatient);
             if (results == null || results.Id == 0)
             {
                 return this.BadRequest("User does not exist");
@@ -191,7 +198,7 @@
                     results.Surname = patient.Surname;
                 }
 
-                this.repository.UpdatePatient(results);
+                await this.repository.UpdatePatient(results);
                 return this.Ok(this.mapper.Map<PatientViewModel>(results));
             }
 

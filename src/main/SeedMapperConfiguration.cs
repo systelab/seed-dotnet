@@ -10,12 +10,13 @@
     using Main.ViewModels;
     using PagedList.Core;
 
-    public class SeedMapperConfiguration : MapperConfiguration
+    internal class SeedMapperConfiguration : MapperConfiguration
     {
         public SeedMapperConfiguration()
             : base(
                 cfg =>
                     {
+                        cfg.CreateMap<AddressViewModel, Address>().ReverseMap();
                         cfg.CreateMap<PatientViewModel, Patient>()
                             .ForMember(p => p.Dob, o => o.MapFrom(q => q.Dob ?? DateTime.MinValue))
                             .ReverseMap()

@@ -3,7 +3,7 @@
 
 namespace Main.Services
 {
-    public interface IJwtHandler
+    internal interface IJwtHandler
     {
         JsonWebToken Create(UserManage user);
     }

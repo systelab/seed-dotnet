@@ -5,7 +5,7 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
 
-    public static class WebHostExtensions
+    internal static class WebHostExtensions
     {
         public static IWebHost Seed(this IWebHost webhost)
         {

@@ -11,21 +11,18 @@
     /// </summary>
     public interface ISeedDotnetRepository
     {
-        void AddPatient(Patient nPatient);
+        Task AddPatient(Patient newPatient);
 
-        List<Patient> DeletePatient(Patient nPatient);
+        Task DeletePatient(Patient patient);
 
-        List<Patient> GetAllPatients();
+        Task<PagedList<Patient>> GetAllPatients(int pageNumber, int elementsPerPage);
 
-        PagedList<Patient> GetAllPatients(int pageNumber, int elementsPerPage);
+        Task<Patient> GetPatient(Patient patient);
 
-        Patient GetPatient(Patient nPatient);
+        Task UpdatePatient(Patient patient);
 
-        Task<bool> SaveChangesAsync();
-
-        void UpdatePatient(Patient nPatient);
-
-        UserManage GetUserManageWithRefreshToken(string token);
-        void UpdateRefreshToken(UserManage user);
+        Task<UserManage> GetUserManageWithRefreshToken(string token);
+        
+        Task UpdateRefreshToken(UserManage user);
     }
 }

@@ -4,9 +4,8 @@
 
     using Microsoft.AspNetCore.Identity;
 
-    public class SeedDotnetContextSeedData
+    internal class SeedDotnetContextSeedData
     {
-
         private readonly UserManager<UserManage> userManager;
 
         public SeedDotnetContextSeedData(UserManager<UserManage> _userM)
@@ -16,16 +15,15 @@
 
         public async Task EnsureSeedData()
         {
-
             if (await this.userManager.FindByNameAsync("Systelab") == null)
             {
                 var user = new UserManage
-                {
-                    UserName = "Systelab",
-                    Name = "Systelab",
-                    LastName = "Seed_Dotnet",
-                    Email = "Systelab@werfen.com"
-                };
+                               {
+                                   UserName = "Systelab",
+                                   Name = "Systelab",
+                                   LastName = "Seed_Dotnet",
+                                   Email = "Systelab@werfen.com"
+                               };
                 await this.userManager.CreateAsync(user, "Systelab");
             }
 

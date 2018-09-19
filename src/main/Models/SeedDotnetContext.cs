@@ -9,7 +9,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
 
-    public class SeedDotnetContext : IdentityDbContext<UserManage>
+    internal class SeedDotnetContext : IdentityDbContext<UserManage>
     {
         private readonly IConfigurationRoot config;
 

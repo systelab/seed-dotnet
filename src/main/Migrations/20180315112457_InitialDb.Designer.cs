@@ -12,7 +12,7 @@ namespace main.Migrations
 {
     [DbContext(typeof(SeedDotnetContext))]
     [Migration("20180315112457_InitialDb")]
-    partial class InitialDb
+    internal partial class InitialDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
