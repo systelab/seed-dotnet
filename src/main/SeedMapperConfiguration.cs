@@ -1,5 +1,6 @@
 ﻿namespace Main
 {
+    using System;
     using System.Linq;
 
     using AutoMapper;
@@ -15,7 +16,10 @@
             : base(
                 cfg =>
                     {
-                        cfg.CreateMap<PatientViewModel, Patient>().ReverseMap();
+                        cfg.CreateMap<PatientViewModel, Patient>()
+                            .ForMember(p => p.Dob, o => o.MapFrom(q => q.Dob ?? DateTime.MinValue))
+                            .ReverseMap()
+                            .ForMember(p => p.Dob, o => o.MapFrom(q => (q.Dob == DateTime.MinValue) ? null : new DateTime?(q.Dob)));
                         cfg.CreateMap<UserViewModel, UserManage>().ReverseMap();
                         cfg.CreateMap<PagedList<Patient>, ExtendedPagedList<PatientViewModel>>()
                             .ForMember(p => p.TotalPages, o => o.MapFrom(q => q.PageCount))

@@ -32,7 +32,7 @@
         /// <summary>
         /// Date
         /// </summary>
-        public DateTime Dob { get; set; }
+        public DateTime? Dob { get; set; }
 
         /// <summary>
         /// Address of the user
