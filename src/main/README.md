@@ -158,8 +158,12 @@ services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
 ```  
 
 ### The model mapper
+
+Automapper is used to map the Model to the View Model and viceversa. 
+A specific class is taking care to the mapping. That allows the same map to be used in the Unit Test and the application
+
 ```c#
-//Map the view model objet with the internal model
+//Map the view model object with the internal model
   Mapper.Initialize(config =>
   {
       config.CreateMap<PatientViewModel, Patient>().ReverseMap();
@@ -185,6 +189,13 @@ Model represents domain specific data and business logic in MVC architecture. It
 The ViewModels allow you to shape multiple entities from one or more data models or sources into a single object, and use it as comunication with API.
 
 There are not any combination of models in a view model in this seed, but we would like to contains the idea in the seed, to take into consideration this option for the new developments.
+
+## Paged List
+
+The component PagedList (https://www.nuget.org/packages/PagedList.Core/) is used to retrieve the paged list of patients. This component uses a one-based index but in the API requires a zero-based index. Thus, additions and substractions are coded to adapt both requirements
+
+The object returned is like follows:
+
 
 ## DB
 
