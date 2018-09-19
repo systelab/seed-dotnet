@@ -1,9 +1,8 @@
 ﻿namespace Main
 {
+    using System;
     using System.IO;
     using System.Text;
-
-    using AutoMapper;
 
     using Main.Models;
     using Main.Services;
@@ -180,12 +179,8 @@
             services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
             services.AddLogging();
 
-            var automapConfiguration = new AutoMapper.MapperConfiguration(cfg =>
-                {
-                    cfg.CreateMap<PatientViewModel, Patient>().ReverseMap();
-                    cfg.CreateMap<UserViewModel, UserManage>().ReverseMap();
-                });
-
+            var automapConfiguration = new SeedMapperConfiguration();
+                
             var mapper = automapConfiguration.CreateMapper();
 
             services.AddSingleton(mapper);

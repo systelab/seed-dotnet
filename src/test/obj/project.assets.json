@@ -24,6 +24,19 @@
           }
         }
       },
+      "AutoFixture/4.5.0": {
+        "type": "package",
+        "dependencies": {
+          "Fare": "[2.1.1, 3.0.0)",
+          "System.ComponentModel.Annotations": "4.3.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/AutoFixture.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/AutoFixture.dll": {}
+        }
+      },
       "AutoMapper/6.2.2": {
         "type": "package",
         "dependencies": {
@@ -65,6 +78,18 @@
         },
         "runtime": {
           "lib/netstandard1.3/Castle.Core.dll": {}
+        }
+      },
+      "Fare/2.1.1": {
+        "type": "package",
+        "dependencies": {
+          "NETStandard.Library": "1.6.1"
+        },
+        "compile": {
+          "lib/netstandard1.1/Fare.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.1/Fare.dll": {}
         }
       },
       "Libuv/1.10.0": {
@@ -3281,6 +3306,15 @@
           "lib/netstandard1.3/NuGet.Frameworks.dll": {}
         }
       },
+      "PagedList.Core/1.17.4": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp1.0/PagedList.Core.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp1.0/PagedList.Core.dll": {}
+        }
+      },
       "Remotion.Linq/2.1.1": {
         "type": "package",
         "dependencies": {
@@ -5832,6 +5866,7 @@
           "Microsoft.NET.Test.Sdk": "15.6.0",
           "Microsoft.NETCore.App": "2.0.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.0.2",
+          "PagedList.Core": "1.17.4",
           "SQLitePCLRaw.bundle_sqlcipher": "1.1.10",
           "Swashbuckle.AspNetCore": "2.2.0"
         },
@@ -5855,6 +5890,24 @@
         "content/allureConfig.json",
         "contentFiles/any/netstandard2.0/allureConfig.json",
         "lib/netstandard2.0/Allure.Commons.dll"
+      ]
+    },
+    "AutoFixture/4.5.0": {
+      "sha512": "vmqKF/rK80zfG/nzDRuzhF/r+27AdkLAniuBRgTxS9qOn+CoHhZ30WGxjSBo08BHxUGj0kDW1vgTW9NJZKRcjA==",
+      "type": "package",
+      "path": "autofixture/4.5.0",
+      "files": [
+        "autofixture.4.5.0.nupkg.sha512",
+        "autofixture.nuspec",
+        "lib/net452/AutoFixture.dll",
+        "lib/net452/AutoFixture.pdb",
+        "lib/net452/AutoFixture.xml",
+        "lib/netstandard1.5/AutoFixture.dll",
+        "lib/netstandard1.5/AutoFixture.pdb",
+        "lib/netstandard1.5/AutoFixture.xml",
+        "lib/netstandard2.0/AutoFixture.dll",
+        "lib/netstandard2.0/AutoFixture.pdb",
+        "lib/netstandard2.0/AutoFixture.xml"
       ]
     },
     "AutoMapper/6.2.2": {
@@ -5893,6 +5946,19 @@
         "lib/netstandard1.3/Castle.Core.dll",
         "lib/netstandard1.3/Castle.Core.xml",
         "readme.txt"
+      ]
+    },
+    "Fare/2.1.1": {
+      "sha512": "HaI8puqA66YU7/9cK4Sgbs1taUTP1Ssa4QT2PIzqJ7GvAbN1QgkjbRsjH+FSbMh1MJdvS0CIwQNLtFT+KF6KpA==",
+      "type": "package",
+      "path": "fare/2.1.1",
+      "files": [
+        "fare.2.1.1.nupkg.sha512",
+        "fare.nuspec",
+        "lib/net35/Fare.dll",
+        "lib/net35/Fare.xml",
+        "lib/netstandard1.1/Fare.dll",
+        "lib/netstandard1.1/Fare.xml"
       ]
     },
     "Libuv/1.10.0": {
@@ -9343,6 +9409,39 @@
         "lib/netstandard1.3/NuGet.Frameworks.xml",
         "nuget.frameworks.4.0.0.nupkg.sha512",
         "nuget.frameworks.nuspec"
+      ]
+    },
+    "PagedList.Core/1.17.4": {
+      "sha512": "Me111vdmlPp4GGeHqvNlnv4Raq1f1F77fDsJebuKsHCZXG4v4kMDzd5h1YVDv/Q7q9DuVgueR9mxp7eO7Yj4LA==",
+      "type": "package",
+      "path": "pagedlist.core/1.17.4",
+      "files": [
+        "lib/net45/PagedList.Core.dll",
+        "lib/net45/PagedList.Core.pdb",
+        "lib/net451/PagedList.Core.dll",
+        "lib/net451/PagedList.Core.pdb",
+        "lib/net461/PagedList.Core.dll",
+        "lib/net461/PagedList.Core.pdb",
+        "lib/net462/PagedList.Core.dll",
+        "lib/net462/PagedList.Core.pdb",
+        "lib/netcoreapp1.0/PagedList.Core.dll",
+        "lib/netcoreapp1.0/PagedList.Core.pdb",
+        "lib/netstandard1.0/PagedList.Core.dll",
+        "lib/netstandard1.0/PagedList.Core.pdb",
+        "lib/netstandard1.1/PagedList.Core.dll",
+        "lib/netstandard1.1/PagedList.Core.pdb",
+        "lib/netstandard1.2/PagedList.Core.dll",
+        "lib/netstandard1.2/PagedList.Core.pdb",
+        "lib/netstandard1.3/PagedList.Core.dll",
+        "lib/netstandard1.3/PagedList.Core.pdb",
+        "lib/netstandard1.4/PagedList.Core.dll",
+        "lib/netstandard1.4/PagedList.Core.pdb",
+        "lib/netstandard1.5/PagedList.Core.dll",
+        "lib/netstandard1.5/PagedList.Core.pdb",
+        "lib/netstandard1.6/PagedList.Core.dll",
+        "lib/netstandard1.6/PagedList.Core.pdb",
+        "pagedlist.core.1.17.4.nupkg.sha512",
+        "pagedlist.core.nuspec"
       ]
     },
     "Remotion.Linq/2.1.1": {
@@ -14962,6 +15061,7 @@
     ".NETCoreApp,Version=v2.0": [
       "Allure.Commons >= 2.2.0.7",
       "Allure.builder >= 1.0.0",
+      "AutoFixture >= 4.5.0",
       "MSTest.TestAdapter >= 1.2.0",
       "MSTest.TestFramework >= 1.2.0",
       "Microsoft.NET.Test.Sdk >= 15.6.0",
@@ -14975,26 +15075,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Synapse\\.nuget\\packages\\": {},
+    "C:\\Users\\jorozco\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
-    "restoreSettings": {
-      "hideWarningsAndErrors": true
-    },
     "restore": {
-      "projectUniqueName": "C:\\git\\systelab\\seed-dotnet\\src\\test\\test.csproj",
+      "projectUniqueName": "D:\\git\\seed-dotnet\\src\\test\\test.csproj",
       "projectName": "test",
-      "projectPath": "C:\\git\\systelab\\seed-dotnet\\src\\test\\test.csproj",
-      "packagesPath": "C:\\Users\\Synapse\\.nuget\\packages\\",
-      "outputPath": "C:\\git\\systelab\\seed-dotnet\\src\\test\\obj\\",
+      "projectPath": "D:\\git\\seed-dotnet\\src\\test\\test.csproj",
+      "packagesPath": "C:\\Users\\jorozco\\.nuget\\packages\\",
+      "outputPath": "D:\\git\\seed-dotnet\\src\\test\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\Synapse\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\jorozco\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -15002,16 +15099,17 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "http://bobthebuilder:8999/nuget": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp2.0": {
           "projectReferences": {
-            "C:\\git\\systelab\\seed-dotnet\\src\\Allure.xUnit\\Allure.builder.csproj": {
-              "projectPath": "C:\\git\\systelab\\seed-dotnet\\src\\Allure.xUnit\\Allure.builder.csproj"
+            "D:\\git\\seed-dotnet\\src\\Allure.xUnit\\Allure.builder.csproj": {
+              "projectPath": "D:\\git\\seed-dotnet\\src\\Allure.xUnit\\Allure.builder.csproj"
             },
-            "C:\\git\\systelab\\seed-dotnet\\src\\main\\main.csproj": {
-              "projectPath": "C:\\git\\systelab\\seed-dotnet\\src\\main\\main.csproj"
+            "D:\\git\\seed-dotnet\\src\\main\\main.csproj": {
+              "projectPath": "D:\\git\\seed-dotnet\\src\\main\\main.csproj"
             }
           }
         }
@@ -15028,6 +15126,10 @@
           "Allure.Commons": {
             "target": "Package",
             "version": "[2.2.0.7, )"
+          },
+          "AutoFixture": {
+            "target": "Package",
+            "version": "[4.5.0, )"
           },
           "MSTest.TestAdapter": {
             "target": "Package",

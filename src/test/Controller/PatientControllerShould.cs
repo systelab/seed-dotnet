@@ -1,107 +1,101 @@
 ﻿namespace Test.Controller
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+
+    using Allure.builder;
+    using Allure.builder.attributes;
+    using Allure.Commons;
+
+    using AutoFixture;
+
     using AutoMapper;
+
+    using Main;
     using Main.Controllers.Api;
     using Main.Models;
     using Main.Services;
     using Main.ViewModels;
+
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     using Moq;
 
     using Newtonsoft.Json;
 
-    using Xunit;
-    using Allure.Commons;
-    using Allure.builder;
-    using Allure.builder.attributes;
+    using PagedList.Core;
 
-    public  class PatientControllerShould
+    using Xunit;
+
+    using Assert = Xunit.Assert;
+
+    public class PatientControllerShould
     {
+        private readonly IMapper mapper;
+
         private readonly Mock<ISeedDotnetRepository> mockUserRepo;
 
         private readonly PatientControllerBuilder sutBuilder;
 
-        private readonly IMapper mapper;
-
         private List<Patient> lpatient;
+
+        private PagedList<Patient> pagedPatientList;
 
         public PatientControllerShould()
         {
             Mapper.Reset();
-            var automapConfiguration = new AutoMapper.MapperConfiguration(cfg =>
-                    { cfg.CreateMap<PatientViewModel, Patient>().ReverseMap(); });
+            var automapConfiguration = new SeedMapperConfiguration();
             this.mapper = automapConfiguration.CreateMapper();
-            this.sutBuilder = new PatientControllerBuilder(mapper);
+            this.sutBuilder = new PatientControllerBuilder(this.mapper);
             this.mockUserRepo = new Mock<ISeedDotnetRepository>();
 
             this.InitializeData();
             Test.createInstance();
         }
 
-        [Fact(DisplayName = "Create Patient Constructor Null Parameters")]
-        [Trait("Category", "Unit")]
-        public async Task CreatePatientConstructor_NullParameters_ThrowsArgumentNullException()
-        {
-            // Arrange & Act & Assert
-            string testId = "";
-            try
-            {
-                testId = Test.addTest(new testDefinition
-                {
-                    name = "Create Patient Constructor Null Parameters",
-                    description = "Create Patient Constructor with Null Parameters should Throws ArgumentNullException",
-                    storyName = "Patient Creation",
-                    featureName = "Negative Tests",
-                    epicName = "Unit Tests",
-                    listLinks = new List<link>{
-                                new link {isIssue=false, name ="RQS-62356", url="http://google.com" } }
-                });
-
-                Assert.Throws<ArgumentNullException>(() => { this.sutBuilder.WithRepository(null).Build(); });
-                Assert.Throws<ArgumentNullException>(() => { this.sutBuilder.WithLogger(null).Build(); });
-                Assert.Throws<ArgumentNullException>(() => { this.sutBuilder.WithMapper(null).Build(); });
-
-                Test.stopTest(testId, Status.passed, "Test success", "This was fantastic");
-            }
-            catch (Exception ex)
-            {
-                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
-                Assert.True(false);
-            }
-        }
-
         [Fact(DisplayName = "Create Patient Return Bad Request Given Invalid Patient")]
         public async Task CreatePatient_ReturnsBadRequest_GivenInvalidPatient()
         {
-            string testId = "";
+            string testId = string.Empty;
             try
             {
-                testId = Test.addTest(new testDefinition
-                {
-                    name = "Create Patient Return Bad Request Given Invalid Patient",
-                    description = "Return a bad request if you provide a invalid Patient",
-                    storyName = "Patient Creation",
-                    featureName = "Negative Tests",
-                    epicName = "Unit Tests" 
-                });
+                testId = Test.addTest(
+                    new testDefinition
+                        {
+                            name = "Create Patient Return Bad Request Given Invalid Patient",
+                            description = "Return a bad request if you provide a invalid Patient",
+                            storyName = "Patient Creation",
+                            featureName = "Negative Tests",
+                            epicName = "Unit Tests"
+                        });
 
                 Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
+
                 // Arrange
                 this.mockUserRepo.Setup(repo => repo.AddPatient(It.IsAny<Patient>()));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
                 sut.ModelState.AddModelError("error", "some error");
                 Test.stopStep(Status.passed);
 
-                Test.addStep(new step { description = "Act", name = "Step 2: Act", listParamenters = new List<Allure.Commons.Parameter> { { new Allure.Commons.Parameter { name = "Patient", value = null } } } });
+                Test.addStep(
+                    new step
+                        {
+                            description = "Act",
+                            name = "Step 2: Act",
+                            listParamenters =
+                                new List<Parameter> { { new Parameter { name = "Patient", value = null } } }
+                        });
+
                 // Act
                 var result = await sut.CreatePatient(patient: null);
                 Test.stopStep(Status.passed);
 
                 Test.addStep(new step { description = "Assert", name = "Step 3: Assert" });
+
                 // Assert
                 Assert.IsType<BadRequestObjectResult>(result);
                 Test.stopStep(Status.passed);
@@ -119,33 +113,48 @@
         [Fact(DisplayName = "Create a new Patient")]
         public async Task CreatePatient_Should_Create_A_New_Patient()
         {
-            string testId = "";
+            string testId = string.Empty;
             try
             {
-                testId = Test.addTest(new testDefinition
-                {
-                    name = "Create a new Patient",
-                    description = "This test should create a new patient",
-                    storyName = "Patient Creation",
-                    featureName = "Positive Tests",
-                    epicName = "Unit Tests"
-                });
+                testId = Test.addTest(
+                    new testDefinition
+                        {
+                            name = "Create a new Patient",
+                            description = "This test should create a new patient",
+                            storyName = "Patient Creation",
+                            featureName = "Positive Tests",
+                            epicName = "Unit Tests"
+                        });
 
                 // Arrange
                 Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
                 this.mockUserRepo.Setup(repo => repo.AddPatient(It.IsAny<Patient>()));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
-                PatientViewModel patient =
-                    new PatientViewModel { Name = "Carlos", Surname = "Carmona", Email = "ccarmona@werfen.com" };
+                PatientViewModel patient = new PatientViewModel
+                                               {
+                                                   Name = "Carlos", Surname = "Carmona", Email = "ccarmona@werfen.com"
+                                               };
 
                 Test.stopStep(Status.passed);
 
                 // Act
-                Test.addStep(new step { description = "Act", name = "Step 2: Act", listParamenters = new List<Allure.Commons.Parameter> {
-                    { new Allure.Commons.Parameter { name = "Email", value = "ccarmona@werfen.com" }},
-                    { new Allure.Commons.Parameter { name = "Name", value = "Carlos"}},
-                    { new Allure.Commons.Parameter { name = "Surname", value = "Carmona" }},
-                } });
+                Test.addStep(
+                    new step
+                        {
+                            description = "Act",
+                            name = "Step 2: Act",
+                            listParamenters = new List<Parameter>
+                                                  {
+                                                      {
+                                                          new Parameter
+                                                              {
+                                                                  name = "Email", value = "ccarmona@werfen.com"
+                                                              }
+                                                      },
+                                                      { new Parameter { name = "Name", value = "Carlos" } },
+                                                      { new Parameter { name = "Surname", value = "Carmona" } },
+                                                  }
+                        });
 
                 var result = sut.CreatePatient(patient);
 
@@ -156,9 +165,9 @@
                 var viewResult = Assert.IsType<OkObjectResult>(result.Result);
                 var model = Assert.IsType<PatientViewModel>(viewResult.Value);
                 this.mockUserRepo.Verify();
-                Xunit.Assert.Equal(patient.Email, model.Email);
-                Xunit.Assert.Equal(patient.Name, model.Name);
-                Xunit.Assert.Equal(patient.Surname, model.Surname);
+                Assert.Equal(patient.Email, model.Email);
+                Assert.Equal(patient.Name, model.Name);
+                Assert.Equal(patient.Surname, model.Surname);
 
                 Test.stopStep(Status.passed);
                 Test.stopTest(testId, Status.passed, "Test success", "Passed");
@@ -171,38 +180,96 @@
             }
         }
 
-        [Fact(DisplayName = "Get All Patients")]
-        public async Task GetAllPatients_Should_Return_List_Of_Patients()
+        [Fact(DisplayName = "Create Patient Constructor Null Parameters")]
+        [Trait("Category", "Unit")]
+        public async Task CreatePatientConstructor_NullParameters_ThrowsArgumentNullException()
         {
-
-            string testId = "";
+            // Arrange & Act & Assert
+            string testId = string.Empty;
             try
             {
-                testId = Test.addTest(new testDefinition
-                {
-                    name = "Get list of patients",
-                    description = "This test should return a list of patients",
-                    storyName = "Patient Retrieve",
-                    featureName = "Positive Tests",
-                    epicName = "Unit Tests"
-                });
+                testId = Test.addTest(
+                    new testDefinition
+                        {
+                            name = "Create Patient Constructor Null Parameters",
+                            description =
+                                "Create Patient Constructor with Null Parameters should Throws ArgumentNullException",
+                            storyName = "Patient Creation",
+                            featureName = "Negative Tests",
+                            epicName = "Unit Tests",
+                            listLinks = new List<link>
+                                            {
+                                                new link
+                                                    {
+                                                        isIssue = false, name = "RQS-62356", url = "http://google.com"
+                                                    }
+                                            }
+                        });
+
+                Assert.Throws<ArgumentNullException>(() => { this.sutBuilder.WithRepository(null).Build(); });
+                Assert.Throws<ArgumentNullException>(() => { this.sutBuilder.WithLogger(null).Build(); });
+                Assert.Throws<ArgumentNullException>(() => { this.sutBuilder.WithMapper(null).Build(); });
+
+                Test.stopTest(testId, Status.passed, "Test success", "This was fantastic");
+            }
+            catch (Exception ex)
+            {
+                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
+                Assert.True(false);
+            }
+        }
+
+        [Fact(DisplayName = "Get All Patients (middle page)")]
+        public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_Middle_Page()
+        {
+            await this.GetPagedPatient(3, 90, 18);
+        }
+
+        private async Task GetPagedPatient(int page, int totalElements, int elementsPerPage)
+        {
+            string testId = string.Empty;
+            IQueryable<Patient> list = this.GetPatientList(totalElements);
+            try
+            {
+                testId = Test.addTest(
+                    new testDefinition
+                        {
+                            name = "Get list of patients",
+                            description = "This test should return a list of patients",
+                            storyName = "Patient Retrieve",
+                            featureName = "Positive Tests",
+                            epicName = "Unit Tests"
+                        });
 
                 // Arrange
                 Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
-                this.mockUserRepo.Setup(repo => repo.GetAllPatients()).Returns(this.lpatient);
+                this.mockUserRepo.Setup(repo => repo.GetAllPatients(It.IsAny<int>(), It.IsAny<int>())).Returns(
+                new PagedList<Patient>(list, page + 1, elementsPerPage));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
                 Test.stopStep(Status.passed);
 
                 // Act
-                Test.addStep(new step { description = " Get all the patients", name = "Step 2: Act" });
-                var result = sut.GetAllPatients();
+                Test.addStep(
+                    new step { description = $" Get all the patients of page {page}, just {elementsPerPage} items", name = "Step 2: Act" });
+                var result = sut.GetAllPatients(page, 18);
                 Test.stopStep(Status.passed);
 
                 // Assert
-                Test.addStep(new step { description = "Check if the number the clients returned is correct", name = "Step 3: Assert" });
+                Test.addStep(
+                    new step
+                        {
+                            description = "Check if the number the patients returned is correct", name = "Step 3: Assert"
+                        });
                 var viewResult = Assert.IsType<OkObjectResult>(result);
-                var model = Assert.IsAssignableFrom<List<PatientViewModel>>(viewResult.Value);
-                Assert.Equal(3, model.Count());
+                var model = Assert.IsAssignableFrom<ExtendedPagedList<PatientViewModel>>(viewResult.Value);
+                Assert.Equal(elementsPerPage, model.NumberOfElements);
+                Assert.Equal(page, model.Number);
+                Assert.Equal(totalElements, model.TotalElements);
+
+                // compare the Ids of the patient and patientVM
+                CollectionAssert.AreEqual(
+                    list.Skip(page * elementsPerPage).Take(elementsPerPage).Select( p => p.Id).ToArray(),
+                    model.Content.Select(p => p.Id).ToArray());
                 Test.stopStep(Status.passed);
                 Test.stopTest(testId, Status.passed, "Test success", "Passed");
             }
@@ -210,24 +277,102 @@
             {
                 Test.stopStep(Status.failed);
                 Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
-                Assert.True(false);
+                Assert.True(false, ex.ToString());
+            }
+        }
+
+        private IQueryable<Patient> GetPatientList(int totalElements)
+        {
+            Fixture autoFixture = new Fixture();
+            return autoFixture.CreateMany<Patient>(totalElements).AsQueryable();
+        }
+
+        [Fact(DisplayName = "Get All Patients (first page)")]
+        public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_First_Page()
+        {
+            await this.GetPagedPatient(0, 90, 18);
+        }
+
+        [Fact(DisplayName = "Get All Patients (last page)")]
+        public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_Last_Page()
+        {
+            await this.GetPagedPatient(4, 90, 18);
+        }
+
+        [Fact(DisplayName = "Get All Patients (after last page)")]
+        public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_After_Last_Page()
+        {
+            int totalElements = 90;
+            int page = 5;
+            int elementsPerPage = 18;
+
+            string testId = string.Empty;
+            IQueryable<Patient> list = this.GetPatientList(totalElements);
+            try
+            {
+                testId = Test.addTest(
+                    new testDefinition
+                        {
+                            name = "Get list of patients",
+                            description = "This test should return a list of patients",
+                            storyName = "Patient Retrieve",
+                            featureName = "Positive Tests",
+                            epicName = "Unit Tests"
+                        });
+
+                // Arrange
+                Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
+                this.mockUserRepo.Setup(repo => repo.GetAllPatients(It.IsAny<int>(), It.IsAny<int>())).Returns(
+                new PagedList<Patient>(list, page + 1, elementsPerPage));
+                PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
+                Test.stopStep(Status.passed);
+
+                // Act
+                Test.addStep(
+                    new step { description = $" Get all the patients of page {page}, just {elementsPerPage} items", name = "Step 2: Act" });
+                var result = sut.GetAllPatients(page, 18);
+                Test.stopStep(Status.passed);
+
+                // Assert
+                Test.addStep(
+                    new step
+                        {
+                            description = "Check if the number the patients returned is correct", name = "Step 3: Assert"
+                        });
+                var viewResult = Assert.IsType<OkObjectResult>(result);
+                var model = Assert.IsAssignableFrom<ExtendedPagedList<PatientViewModel>>(viewResult.Value);
+                Assert.Equal(0, model.NumberOfElements);
+                Assert.Equal(page, model.Number);
+                Assert.Equal(totalElements, model.TotalElements);
+
+                // the list shall be empty
+                Assert.Equal(0, model.Content.Count());
+                Test.stopStep(Status.passed);
+                Test.stopTest(testId, Status.passed, "Test success", "Passed");
+            }
+            catch (Exception ex)
+            {
+                Test.stopStep(Status.failed);
+                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
+                Assert.True(false, ex.ToString());
             }
         }
 
         [Fact(DisplayName = "Get Patient")]
         public async Task GetPatients_Should_Return_Patient_Information()
         {
-            string testId = "";
+            string testId = string.Empty;
             try
             {
-                testId = Test.addTest(new testDefinition
-                {
-                    name = "Get list of patients",
-                    description = "This test should return a patient information",
-                    storyName = "Patient Retrieve",
-                    featureName = "Positive Tests",
-                    epicName = "Unit Tests"
-                });
+                testId = Test.addTest(
+                    new testDefinition
+                        {
+                            name = "Get list of patients",
+                            description = "This test should return a patient information",
+                            storyName = "Patient Retrieve",
+                            featureName = "Positive Tests",
+                            epicName = "Unit Tests"
+                        });
 
                 // Arrange
                 Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
@@ -236,76 +381,38 @@
                 Test.stopStep(Status.passed);
 
                 // Act
-                Test.addStep(new step
-                {
-                    description = " Get patient information",
-                    name = "Step 2: Act",
-                    listParamenters = new List<Allure.Commons.Parameter> {
-                    { new Allure.Commons.Parameter { name = "Patient ID", value = this.lpatient[1].Id.ToString() }} }
-                });
+                Test.addStep(
+                    new step
+                        {
+                            description = " Get patient information",
+                            name = "Step 2: Act",
+                            listParamenters = new List<Parameter>
+                                                  {
+                                                      {
+                                                          new Parameter
+                                                              {
+                                                                  name = "Patient ID",
+                                                                  value = this.lpatient[1].Id.ToString()
+                                                              }
+                                                      }
+                                                  }
+                        });
                 var result = sut.GetPatient(this.lpatient[1].Id);
                 Test.stopStep(Status.passed);
 
                 // Assert
-                Test.addStep(new step { description = "Check if the patient information returned is correct", name = "Step 3: Assert" });
-                var viewResult = Xunit.Assert.IsType<OkObjectResult>(result);
-                var model = Xunit.Assert.IsAssignableFrom<PatientViewModel>(viewResult.Value);
-                Xunit.Assert.Equal(this.lpatient[1].Email, model.Email);
-                Xunit.Assert.Equal(this.lpatient[1].Name, model.Name);
-                Xunit.Assert.Equal(this.lpatient[1].Surname, model.Surname);
-                Xunit.Assert.Equal(this.lpatient[1].Id, model.Id);
-                Test.stopStep(Status.passed);
-                Test.stopTest(testId, Status.passed, "Test success", "Passed");
-            }
-            catch (Exception ex)
-            {
-                Test.stopStep(Status.failed);
-                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
-                Assert.True(false);
-            }
-        }
-
-        [Fact(DisplayName = "Remove Patient")]
-        public async Task RemovePatient_Should_Remove_A_Existing_Patient()
-        {
-            string testId = "";
-            try
-            {
-                testId = Test.addTest(new testDefinition
-                {
-                    name = "Remove a Patient",
-                    description = "This test should remove a patient",
-                    storyName = "Patient Remove",
-                    featureName = "Positive Tests",
-                    epicName = "Unit Tests"
-                });
-
-                // Arrange
-                Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
-                this.mockUserRepo.Setup(repo => repo.GetPatient(It.IsAny<Patient>())).Returns(this.lpatient[0]);
-                this.mockUserRepo.Setup(repo => repo.DeletePatient(It.IsAny<Patient>())).Returns(this.lpatient);
-                PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
-
-                PatientViewModel patient =
-                    new PatientViewModel { Id = 2, Name = "Cerizo", Surname = "Remundo", Email = "cremundo@werfen.com" };
-                Test.stopStep(Status.passed);
-
-                // Act
-                Test.addStep(new step
-                {
-                    description = " Remove the patient",
-                    name = "Step 2: Act",
-                    listParamenters = new List<Allure.Commons.Parameter> {
-                    { new Allure.Commons.Parameter { name = "Patient ID", value = patient.Id.ToString() }} }
-                });
-                var result = sut.Remove(patient.Id);
-                Test.stopStep(Status.passed);
-
-                // Assert
-                Test.addStep(new step { description = "Check if the patient is removed", name = "Step 3: Assert" });
-                var viewResult = Assert.IsType<OkObjectResult>(result.Result);
-                var model = Assert.IsAssignableFrom<List<PatientViewModel>>(viewResult.Value);
-                Assert.Equal(3, model.Count());
+                Test.addStep(
+                    new step
+                        {
+                            description = "Check if the patient information returned is correct",
+                            name = "Step 3: Assert"
+                        });
+                var viewResult = Assert.IsType<OkObjectResult>(result);
+                var model = Assert.IsAssignableFrom<PatientViewModel>(viewResult.Value);
+                Assert.Equal(this.lpatient[1].Email, model.Email);
+                Assert.Equal(this.lpatient[1].Name, model.Name);
+                Assert.Equal(this.lpatient[1].Surname, model.Surname);
+                Assert.Equal(this.lpatient[1].Id, model.Id);
                 Test.stopStep(Status.passed);
                 Test.stopTest(testId, Status.passed, "Test success", "Passed");
             }
@@ -327,37 +434,57 @@
         [InlineData(null, null, null, 99)]
         public async Task InsertPatient_ValidPatient_InsertionOK(string name, string lastname, string email, int id)
         {
-            string testId = "";
+            string testId = string.Empty;
             try
             {
-                testId = Test.addTest(new testDefinition
-                {
-                    name = "Insert a Patient",
-                    description = "This test should insert a patient",
-                    storyName = "Insert a Patient",
-                    featureName = "Positive Tests",
-                    epicName = "Unit Tests"
-                });
+                testId = Test.addTest(
+                    new testDefinition
+                        {
+                            name = "Insert a Patient",
+                            description = "This test should insert a patient",
+                            storyName = "Insert a Patient",
+                            featureName = "Positive Tests",
+                            epicName = "Unit Tests"
+                        });
 
                 // Arrange
                 Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
-                PatientViewModel patientToInsert = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
+                PatientViewModel patientToInsert =
+                    new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
                 Patient mappedPatientToInsert = this.mapper.Map<Patient>(patientToInsert);
                 this.mockUserRepo.Setup(repo => repo.AddPatient(It.Is<Patient>(p => p.Equals(mappedPatientToInsert))));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
                 Test.stopStep(Status.passed);
 
                 // Act
-                Test.addStep(new step
-                {
-                    description = "Insert patient",
-                    name = "Step 2: Act",
-                    listParamenters = new List<Allure.Commons.Parameter> {
-                    { new Allure.Commons.Parameter { name = "Email", value = patientToInsert.Email }},
-                    { new Allure.Commons.Parameter { name = "Name", value = patientToInsert.Name}},
-                    { new Allure.Commons.Parameter { name = "Surname", value = patientToInsert.Surname }},
-                    { new Allure.Commons.Parameter { name = "Id", value = patientToInsert.Id.ToString() }}}
-                });
+                Test.addStep(
+                    new step
+                        {
+                            description = "Insert patient",
+                            name = "Step 2: Act",
+                            listParamenters = new List<Parameter>
+                                                  {
+                                                      {
+                                                          new Parameter
+                                                              {
+                                                                  name = "Email", value = patientToInsert.Email
+                                                              }
+                                                      },
+                                                      { new Parameter { name = "Name", value = patientToInsert.Name } },
+                                                      {
+                                                          new Parameter
+                                                              {
+                                                                  name = "Surname", value = patientToInsert.Surname
+                                                              }
+                                                      },
+                                                      {
+                                                          new Parameter
+                                                              {
+                                                                  name = "Id", value = patientToInsert.Id.ToString()
+                                                              }
+                                                      }
+                                                  }
+                        });
                 var result = await sut.CreatePatient(patientToInsert);
                 Test.stopStep(Status.passed);
 
@@ -378,8 +505,75 @@
             }
         }
 
-        private void InitializeData()
+        [Fact(DisplayName = "Remove Patient")]
+        public async Task RemovePatient_Should_Remove_A_Existing_Patient()
         {
+            string testId = string.Empty;
+            try
+            {
+                testId = Test.addTest(
+                    new testDefinition
+                        {
+                            name = "Remove a Patient",
+                            description = "This test should remove a patient",
+                            storyName = "Patient Remove",
+                            featureName = "Positive Tests",
+                            epicName = "Unit Tests"
+                        });
+
+                // Arrange
+                Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
+                this.mockUserRepo.Setup(repo => repo.GetPatient(It.IsAny<Patient>())).Returns(this.lpatient[0]);
+                this.mockUserRepo.Setup(repo => repo.DeletePatient(It.IsAny<Patient>())).Returns(this.lpatient);
+                PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
+
+                PatientViewModel patient = new PatientViewModel
+                                               {
+                                                   Id = 2,
+                                                   Name = "Cerizo",
+                                                   Surname = "Remundo",
+                                                   Email = "cremundo@werfen.com"
+                                               };
+                Test.stopStep(Status.passed);
+
+                // Act
+                Test.addStep(
+                    new step
+                        {
+                            description = " Remove the patient",
+                            name = "Step 2: Act",
+                            listParamenters = new List<Parameter>
+                                                  {
+                                                      {
+                                                          new Parameter
+                                                              {
+                                                                  name = "Patient ID", value = patient.Id.ToString()
+                                                              }
+                                                      }
+                                                  }
+                        });
+                var result = sut.Remove(patient.Id);
+                Test.stopStep(Status.passed);
+
+                // Assert
+                Test.addStep(new step { description = "Check if the patient is removed", name = "Step 3: Assert" });
+                var viewResult = Assert.IsType<OkObjectResult>(result.Result);
+                var model = Assert.IsAssignableFrom<List<PatientViewModel>>(viewResult.Value);
+                Assert.Equal(3, model.Count());
+                Test.stopStep(Status.passed);
+                Test.stopTest(testId, Status.passed, "Test success", "Passed");
+            }
+            catch (Exception ex)
+            {
+                Test.stopStep(Status.failed);
+                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
+                Assert.True(false);
+            }
+        }
+
+        private void InitializeData()
+        {         
+
             this.lpatient = new List<Patient>
                                 {
                                     new Patient
@@ -391,17 +585,11 @@
                                         },
                                     new Patient
                                         {
-                                            Id = 2,
-                                            Name = "Sofia",
-                                            Surname = "Corona",
-                                            Email = "scorona@werfen.com"
+                                            Id = 2, Name = "Sofia", Surname = "Corona", Email = "scorona@werfen.com"
                                         },
                                     new Patient
                                         {
-                                            Id = 3,
-                                            Name = "Marta",
-                                            Surname = "Sanchez",
-                                            Email = "msanchez@werfen.com"
+                                            Id = 3, Name = "Marta", Surname = "Sanchez", Email = "msanchez@werfen.com"
                                         }
                                 };
         }

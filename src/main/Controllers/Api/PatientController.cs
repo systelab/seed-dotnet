@@ -60,26 +60,34 @@
                 this.logger.LogError($"Failed to create the patient: {ex}");
                 return this.BadRequest("Error Occurred");
             }
-
-
         }
 
         /// <summary>
         /// Get list of all the patients stored in the database
         /// </summary>
-        /// <returns>result of the action</returns>
+        /// <param name="page">
+        /// The page Number.
+        /// </param>
+        /// <param name="elementsPerPage">
+        /// The elements Per Page.
+        /// </param>
+        /// <returns>
+        /// result of the action
+        /// </returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
-        public IActionResult GetAllPatients()
+        public IActionResult GetAllPatients([FromQuery(Name = "page")] int page, [FromQuery(Name = "size")] int elementsPerPage)
         {
             try
             {
-                var results = this.repository.GetAllPatients();
-                return this.Ok(this.mapper.Map<IEnumerable<PatientViewModel>>(results));
+                // PagedList is a one-based index. We offer a zero-based index, therefore we have to add 1 to the page number
+                var results = this.repository.GetAllPatients(page + 1, elementsPerPage);
+                return this.Ok(this.mapper.Map<ExtendedPagedList<PatientViewModel>>(results));
+                
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Failed to get the patient: {ex}");
+                this.logger.LogError($"Failed to get the patients for page {page} (number of elements per page {elementsPerPage}): {ex}");
                 return this.BadRequest("Error Occurred");
             }
         }
@@ -129,7 +137,7 @@
                     Patient patientToDelete = this.repository.GetPatient(lookupPatient);                    
                     if (patientToDelete == null)
                     {
-                        return this.GetAllPatients();
+                        throw new PatientNotFoundException();
                     }
 
                     var results = this.repository.DeletePatient(patientToDelete);

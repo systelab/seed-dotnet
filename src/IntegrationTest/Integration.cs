@@ -10,6 +10,7 @@
 
     using Main;
     using Main.Models;
+    using Main.Services;
     using Main.ViewModels;
 
     using Microsoft.AspNetCore.Hosting;
@@ -111,12 +112,12 @@
             this.ClearPatientData();
 
             // Act
-            var response = await this.CallGetPatientList().ConfigureAwait(false);
+            var response = await this.CallGetPatientList(0, 23).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();      
-            var patientList = JsonConvert.DeserializeObject<List<PatientViewModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            var patientList = JsonConvert.DeserializeObject<ExtendedPagedList<PatientViewModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             // Assert
-            Assert.Empty(patientList);
+            Assert.Empty(patientList.Content);
         }
 
         [Fact]
@@ -125,14 +126,33 @@
             // Arrange
             await this.Authorize().ConfigureAwait(false);
             // Act
-            var response = await this.CallGetPatientList().ConfigureAwait(false);
+            var response = await this.CallGetPatientList(0, 23).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            var patientList = JsonConvert.DeserializeObject<List<PatientViewModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            var patientList = JsonConvert.DeserializeObject<ExtendedPagedList<PatientViewModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             // Assert
-            Assert.NotEmpty(patientList);
-            Assert.Equal(this.KnownPatients, patientList, new JsonEqualityComparer());
+            Assert.NotEmpty(patientList.Content);
+            Assert.Equal(this.KnownPatients, patientList.Content, new JsonEqualityComparer());
+        }
+
+        [Fact]
+        public async Task GetListOfPatients_PopulatedList_Paged()
+        {
+            // Arrange
+            await this.Authorize().ConfigureAwait(false);
+            for (int i = 0; i < 3; i++)
+            {
+                // Act
+                var response = await this.CallGetPatientList(i, 1).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+                var patientList = JsonConvert.DeserializeObject<ExtendedPagedList<PatientViewModel>>(
+                    await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+
+                // Assert
+                Assert.NotEmpty(patientList.Content);
+                Assert.Equal(this.KnownPatients.Skip(i).Take(1), patientList.Content, new JsonEqualityComparer());
+            }
         }
 
         [Fact]
@@ -345,9 +365,9 @@
             return await this.BuildAuthorizedRequest($"seed/v1/patients/{id}").GetAsync().ConfigureAwait(false);
         }
 
-        private async Task<HttpResponseMessage> CallGetPatientList()
+        private async Task<HttpResponseMessage> CallGetPatientList(int page, int size)
         {
-            return await this.BuildAuthorizedRequest("seed/v1/patients").GetAsync().ConfigureAwait(false);
+            return await this.BuildAuthorizedRequest($"seed/v1/patients?page={page}&size={size}").GetAsync().ConfigureAwait(false);
         }
 
         private Task<HttpResponseMessage> CallUnauthorized(string uri)

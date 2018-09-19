@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
 
     using Main.Models;
+    using PagedList.Core;
 
     /// <summary>
     /// Repository with all the queries to the database using the entity framework
@@ -52,6 +53,23 @@
         public List<Patient> GetAllPatients()
         {
             return this.context.Patients.ToList();
+        }
+
+        /// <summary>
+        /// List all the patients using pagination
+        /// </summary>
+        /// <param name="pageNumber">
+        /// The page number.
+        /// </param>
+        /// <param name="elementsPerPage">
+        /// The elements per page.
+        /// </param>
+        /// <returns>
+        /// The list <see cref="PagedList"/>.
+        /// </returns>
+        public PagedList<Patient> GetAllPatients(int pageNumber, int elementsPerPage)
+        {
+            return new PagedList<Patient>(this.context.Patients, pageNumber, elementsPerPage);
         }
 
         /// <summary>
