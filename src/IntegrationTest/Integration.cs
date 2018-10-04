@@ -49,43 +49,48 @@
                             Email = "another_valid@email.com",
                             Id = 2,
                             Surname = "Maragall",
-                            Name = "Lluís"
+                            Name = "Lluís",
+                            MedicalNumber = "5656"
                         },
                     new PatientViewModel
                         {
                             Email = "third_email@email.com",
                             Id = 3,
                             Surname = "Malafont",
-                            Name = "Andreu"
+                            Name = "Andreu",
+                            MedicalNumber = "5656"
                         },
                     new PatientViewModel
                         {
                             Email = "fourth_email@email.com",
                             Id = 4,
                             Surname = "De la Cruz",
-                            Name = "Penélope"
+                            Name = "Penélope",
+                            MedicalNumber = "5656"
                         },
                 };
 
         [Theory]
-        [InlineData("joe", "doe", "email@valid.com", 1)]
-        [InlineData("joe", "", "email@valid.com", 10)]
-        [InlineData("joe", "doe", "", 10)]
-        [InlineData("joe", "doe", null, 10)]
-        [InlineData("joe", null, null, 10)]
-        [InlineData("", null, null, 10)]
-        [InlineData(null, null, null, 10)]
-        [InlineData("joe", "doe", "@invalid.com", 10)]
+        [InlineData("joe", "doe", "email@valid.com", 1, "valid")]
+        [InlineData("joe", "", "email@valid.com", 10, "valid")]
+        [InlineData("joe", "doe", "", 10, "valid")]
+        [InlineData("joe", "doe", null, 10, "valid")]
+        [InlineData("joe", null, null, 10, "valid")]
+        [InlineData("", null, null, 10, "valid")]
+        [InlineData(null, null, null, 10, "valid")]
+        [InlineData("joe", "doe", "@invalid.com", 10, "valid")]
         [InlineData("_joe_is_longer_than_255_characters_01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", 
-            "doe", "email@valid.com", 10)]
+            "doe", "email@valid.com", 10, "valid")]
         [InlineData("joe", 
             "_doe_is_longer_than_255_characters_01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
-            "email@valid.com", 10)]
-        public async Task CreatePatient_BadRequest(string name, string lastname, string email, int id)
+            "email@valid.com", 10, "valid")]
+        [InlineData("joe", "doe", "email@valid.com", 10,
+            "_medicalNumber_is_longer_than_255_characters_01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890")]
+        public async Task CreatePatient_BadRequest(string name, string lastname, string email, int id, string medicalNumber)
         {
             // Arrange
             await this.Authorize().ConfigureAwait(false);
-            PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
+            PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name, MedicalNumber = medicalNumber};
 
             // Act
             var response = await this.CallCreatePatient(patientToUpdate).ConfigureAwait(false);
@@ -93,12 +98,12 @@
         }
 
         [Theory]
-        [InlineData("joe", "doe", "email@valid.com", 10)]
-        public async Task CreatePatient_CreationOK(string name, string lastname, string email, int id)
+        [InlineData("joe", "doe", "email@valid.com", 10, "medicalNumber")]
+        public async Task CreatePatient_CreationOK(string name, string lastname, string email, int id, string medicalNumber)
         {
             // Arrange
             await this.Authorize().ConfigureAwait(false);
-            PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
+            PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name, MedicalNumber = medicalNumber};
 
             // Act
             var response = await this.CallCreatePatient(patientToUpdate).ConfigureAwait(false);

@@ -130,7 +130,7 @@
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
                 PatientViewModel patient = new PatientViewModel
                                                {
-                                                   Name = "Carlos", Surname = "Carmona", Email = "ccarmona@werfen.com"
+                                                   Name = "Carlos", Surname = "Carmona", Email = "ccarmona@werfen.com", MedicalNumber = "8898"
                                                };
 
                 Test.stopStep(Status.passed);
@@ -166,6 +166,7 @@
                 Assert.Equal(patient.Email, model.Email);
                 Assert.Equal(patient.Name, model.Name);
                 Assert.Equal(patient.Surname, model.Surname);
+                Assert.Equal(patient.MedicalNumber, model.MedicalNumber);
 
                 Test.stopStep(Status.passed);
                 Test.stopTest(testId, Status.passed, "Test success", "Passed");
@@ -359,6 +360,7 @@
                 Assert.Equal(this.listOfPatients[1].Email, model.Email);
                 Assert.Equal(this.listOfPatients[1].Name, model.Name);
                 Assert.Equal(this.listOfPatients[1].Surname, model.Surname);
+                Assert.Equal(this.listOfPatients[1].MedicalNumber, model.MedicalNumber);
                 Assert.Equal(this.listOfPatients[1].Id, model.Id);
                 Test.stopStep(Status.passed);
                 Test.stopTest(testId, Status.passed, "Test success", "Passed");
@@ -481,7 +483,8 @@
                                                    Id = 2,
                                                    Name = "Cerizo",
                                                    Surname = "Remundo",
-                                                   Email = "cremundo@werfen.com"
+                                                   Email = "cremundo@werfen.com",
+                                                   MedicalNumber = "8899"
                                                };
                 Test.stopStep(Status.passed);
 

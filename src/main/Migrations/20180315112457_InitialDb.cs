@@ -76,7 +76,8 @@ namespace main.Migrations
                     Dob = table.Column<DateTime>(nullable: false),
                     Email = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
-                    Surname = table.Column<string>(nullable: true)
+                    Surname = table.Column<string>(nullable: true),
+                    MedicalNumber = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
