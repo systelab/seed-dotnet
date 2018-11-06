@@ -24,6 +24,9 @@
     using System.Collections.Generic;
     using main.Models;
 
+    using Polly;
+    using Polly.CircuitBreaker;
+
     // This is 
     internal class Startup
     {
@@ -177,6 +180,8 @@
             services.AddScoped<IJwtHandler, JwtHandler>();
             services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
             services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
+            services.AddScoped<ISyncPolicy>(provider => 
+                Policy.Handle<Exception>().CircuitBreaker(2, TimeSpan.FromMinutes(1)));
             services.AddLogging();
 
             var automapConfiguration = new SeedMapperConfiguration();
