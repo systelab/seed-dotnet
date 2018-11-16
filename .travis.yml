@@ -1,6 +1,7 @@
 language: csharp
 mono: none
-dotnet: 2.0.2
+dist: xenial
+dotnet: 2.1.300
 install:
   - dotnet build ./src/main
   - dotnet build ./src/IntegrationTest
