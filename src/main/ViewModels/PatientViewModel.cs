@@ -22,6 +22,7 @@
         /// <summary>
         /// Gets or sets email address
         /// </summary>
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 
@@ -33,12 +34,14 @@
         /// <summary>
         /// Gets or sets the patient first name (Given name)
         /// </summary>
+        [Required]
         [StringLength(255, ErrorMessage = "Name cannot be longer than 255 characters")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the patient last name (Surname)
         /// </summary>
+        [Required]
         [StringLength(255, ErrorMessage = "Surname cannot be longer than 255 characters")]
         public string Surname { get; set; }
 
