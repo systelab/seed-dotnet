@@ -57,7 +57,7 @@
             {
                 // Save to the database
                 var newPatient = this.mapper.Map<Patient>(patient);
-                patient.MedicalNumber = this.medicalRecordNumberService.GetMedicalRecordNumber();
+                patient.MedicalNumber = this.medicalRecordNumberService.GetMedicalRecordNumber("http://localhost:9090");
                 await this.repository.AddPatient(newPatient);
                 return this.Ok(this.mapper.Map<PatientViewModel>(newPatient));
             }

@@ -2,6 +2,6 @@
 {
     public interface IMedicalRecordNumberService
     {
-        string GetMedicalRecordNumber();
+        string GetMedicalRecordNumber(string url);
     }
 }

@@ -9,21 +9,20 @@
 
     public class MedicalRecordNumberService : IMedicalRecordNumberService
     {
-        private readonly RestClient client;
-
         private readonly ISyncPolicy policy;
 
-        public MedicalRecordNumberService(string url, ISyncPolicy policy)
+        public MedicalRecordNumberService(ISyncPolicy policy)
         {
-            this.client = new RestClient(url);
             this.policy = policy;
         }
 
-        public string GetMedicalRecordNumber()
+        public string GetMedicalRecordNumber(string url)
         {
             try
             {
-                return this.policy.Execute<string>(() => this.client.Execute(new RestRequest()).Content);
+                RestClient client = new RestClient(url);
+
+                return this.policy.Execute<string>(() => client.Execute(new RestRequest("/identity/v1/medical-record-number", Method.GET, DataFormat.Json)).Content);
             }
             catch (Exception)
             {

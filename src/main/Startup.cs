@@ -23,6 +23,7 @@
     using Swashbuckle.AspNetCore.Swagger;
     using System.Collections.Generic;
     using main.Models;
+    using main.Services;
 
     using Polly;
     using Polly.CircuitBreaker;
@@ -177,6 +178,7 @@
                 });
 
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IMedicalRecordNumberService, MedicalRecordNumberService>();
             services.AddScoped<IJwtHandler, JwtHandler>();
             services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
             services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
