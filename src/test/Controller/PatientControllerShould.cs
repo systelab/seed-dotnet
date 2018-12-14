@@ -13,6 +13,8 @@
 
     using AutoMapper;
 
+    using main.Services;
+
     using Main;
     using Main.Controllers.Api;
     using Main.Models;
@@ -34,9 +36,12 @@
 
     public class PatientControllerShould
     {
+        private const string MockedMedicalRecordNumber = "MR_";
         private readonly IMapper mapper;
 
         private readonly Mock<ISeedDotnetRepository> mockUserRepo;
+
+        private readonly Mock<IMedicalRecordNumberService> medicalRecordMock;
 
         private readonly PatientControllerBuilder sutBuilder;
 
@@ -46,8 +51,11 @@
         {
             Mapper.Reset();
             var automapConfiguration = new SeedMapperConfiguration();
+            this.medicalRecordMock = new Mock<IMedicalRecordNumberService>();
+            this.medicalRecordMock.Setup(p => p.GetMedicalRecordNumber(It.IsAny<string>())).Returns(MockedMedicalRecordNumber);
+
             this.mapper = automapConfiguration.CreateMapper();
-            this.sutBuilder = new PatientControllerBuilder(this.mapper);
+            this.sutBuilder = new PatientControllerBuilder(this.mapper, this.medicalRecordMock.Object);
             this.mockUserRepo = new Mock<ISeedDotnetRepository>();
 
             this.InitializeData();
@@ -130,7 +138,7 @@
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
                 PatientViewModel patient = new PatientViewModel
                                                {
-                                                   Name = "Carlos", Surname = "Carmona", Email = "ccarmona@werfen.com", MedicalNumber = "8898"
+                                                   Name = "Carlos", Surname = "Carmona", Email = "ccarmona@werfen.com"
                                                };
 
                 Test.stopStep(Status.passed);
@@ -166,7 +174,7 @@
                 Assert.Equal(patient.Email, model.Email);
                 Assert.Equal(patient.Name, model.Name);
                 Assert.Equal(patient.Surname, model.Surname);
-                Assert.Equal(patient.MedicalNumber, model.MedicalNumber);
+                Assert.Equal(MockedMedicalRecordNumber, model.MedicalNumber);
 
                 Test.stopStep(Status.passed);
                 Test.stopTest(testId, Status.passed, "Test success", "Passed");
@@ -400,7 +408,7 @@
                 // Arrange
                 Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
                 PatientViewModel patientToInsert =
-                    new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
+                    new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name};
                 Patient mappedPatientToInsert = this.mapper.Map<Patient>(patientToInsert);
                 this.mockUserRepo.Setup(repo => repo.AddPatient(It.Is<Patient>(p => p.Equals(mappedPatientToInsert))));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
@@ -443,6 +451,8 @@
                 this.mockUserRepo.Verify();
                 var viewResult = Assert.IsType<OkObjectResult>(result);
                 var model = Assert.IsAssignableFrom<PatientViewModel>(viewResult.Value);
+                // we expect the MRN to be this string
+                patientToInsert.MedicalNumber = MockedMedicalRecordNumber;
                 Assert.Equal(JsonConvert.SerializeObject(patientToInsert), JsonConvert.SerializeObject(model));
                 Test.stopStep(Status.passed);
                 Test.stopTest(testId, Status.passed, "Test success", "Passed");
