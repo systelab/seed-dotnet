@@ -382,16 +382,17 @@
         }
 
         [Theory(DisplayName = "Insert Patient")]
-        [InlineData("joe", "doe", "email@valid.com", 99)]
-        [InlineData("joe", "", "email@valid.com", 99)]
-        [InlineData("joe", "doe", "", 99)]
-        [InlineData("joe", "doe", null, 99)]
-        [InlineData("joe", null, null, 99)]
-        [InlineData("", null, null, 99)]
-        [InlineData(null, null, null, 99)]
+        [InlineData("joe", "doe", "email@valid.com")]
+        [InlineData("joe", "", "email@valid.com")]
+        [InlineData("joe", "doe", "")]
+        [InlineData("joe", "doe", null)]
+        [InlineData("joe", null, null)]
+        [InlineData("", null, null)]
+        [InlineData(null, null, null)]
         [Trait("Category", "Unit")]
-        public async void InsertPatient_ValidPatient_InsertionOK(string name, string lastname, string email, int id)
+        public async void InsertPatient_ValidPatient_InsertionOK(string name, string lastname, string email)
         {
+            Guid id = Guid.NewGuid();
             string testId = string.Empty;
             try
             {
@@ -490,7 +491,7 @@
 
                 PatientViewModel patient = new PatientViewModel
                                                {
-                                                   Id = 2,
+                                                   Id = Guid.NewGuid(),
                                                    Name = "Cerizo",
                                                    Surname = "Remundo",
                                                    Email = "cremundo@werfen.com",
@@ -604,21 +605,21 @@
                                       {
                                           new Patient
                                               {
-                                                  Id = 1,
+                                                  Id = new Guid("35321823-4f70-40a7-8135-f7f2e9b5ea90"),
                                                   Name = "Arturo",
                                                   Surname = "Ciguendo",
                                                   Email = "aciguendo@werfen.com"
                                               },
                                           new Patient
                                               {
-                                                  Id = 2,
+                                                  Id = new Guid("4ab9c588-6177-4c1e-93da-694ebb034c07"),
                                                   Name = "Sofia",
                                                   Surname = "Corona",
                                                   Email = "scorona@werfen.com"
                                               },
                                           new Patient
                                               {
-                                                  Id = 3,
+                                                  Id = new Guid("7780fa2f-628e-472d-8503-e0e48e5a4875"),
                                                   Name = "Marta",
                                                   Surname = "Sanchez",
                                                   Email = "msanchez@werfen.com"

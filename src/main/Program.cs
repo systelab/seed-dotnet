@@ -6,6 +6,7 @@
 namespace Main
 {
     using System.IO;
+    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
 
     /// <summary>
@@ -22,6 +23,7 @@ namespace Main
             var host = BuildWebHost().Seed();
 
             host.Run();
+            // BuildWebHost(args).Run();
         }
 
         private static IWebHost BuildWebHost()
@@ -33,5 +35,9 @@ namespace Main
                 .UseStartup<Startup>()
                 .Build();
         }
+        //public static IWebHost BuildWebHost(string[] args) =>
+        //    WebHost.CreateDefaultBuilder(args)
+        //        .UseStartup<Startup>()
+        //        .Build();
     }
 }

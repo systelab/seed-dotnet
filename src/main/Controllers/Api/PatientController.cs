@@ -58,6 +58,7 @@
                 // Save to the database
                 var newPatient = this.mapper.Map<Patient>(patient);
                 newPatient.MedicalNumber = this.medicalRecordNumberService.GetMedicalRecordNumber("http://localhost:9090");
+                newPatient.Id = Guid.NewGuid();
                 await this.repository.AddPatient(newPatient);
                 return this.Ok(this.mapper.Map<PatientViewModel>(newPatient));
             }
@@ -106,7 +107,7 @@
         [Route("{uid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
-        public async Task<IActionResult> GetPatient(int uid)
+        public async Task<IActionResult> GetPatient(Guid uid)
         {
             try
             {
@@ -129,17 +130,17 @@
         [Route("{uid}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete]
-        public async Task<IActionResult> Remove(int uid)
+        public async Task<IActionResult> Remove(Guid uid)
         {
             try
             {
-                if (uid == 0 )
+                if (uid.Equals(Guid.Empty))
                 {
                     return this.BadRequest("Bad data");
                 }
                 else
                 {
-                    var lookupPatient = new Patient { Id = uid };
+                    var lookupPatient = new Patient {  Id = uid };
                     Patient patientToDelete = await this.repository.GetPatient(lookupPatient);                    
                     if (patientToDelete == null)
                     {
@@ -173,7 +174,7 @@
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         [Route("{uid}")]
-        public async Task<IActionResult> UpdatePatient(int uid, [FromBody] PatientViewModel patient)
+        public async Task<IActionResult> UpdatePatient(Guid uid, [FromBody] PatientViewModel patient)
         {
             if (!this.ModelState.IsValid)
             {
@@ -183,7 +184,7 @@
             // Save to the database
             var lookupPatient = new Patient { Id = uid };
             var results = await this.repository.GetPatient(lookupPatient);
-            if (results == null || results.Id == 0)
+            if (results == null || results.Id.Equals(Guid.Empty))
             {
                 return this.BadRequest("User does not exist");
             }
@@ -202,6 +203,11 @@
                 if (!string.IsNullOrWhiteSpace(patient.Surname))
                 {
                     results.Surname = patient.Surname;
+                }
+
+                if (!string.IsNullOrWhiteSpace(patient.MedicalNumber))
+                {
+                    results.MedicalNumber = patient.MedicalNumber;
                 }
 
                 await this.repository.UpdatePatient(results);

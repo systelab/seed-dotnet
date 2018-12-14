@@ -1,5 +1,6 @@
 ﻿namespace IntegrationTest
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
@@ -43,11 +44,11 @@
         public  PatientViewModel[] KnownPatients =>
             new[]
                 {
-                    new PatientViewModel { Email = "valid@email.com", Id = 1, Surname = "Pérez", Name = "Silvio" },
+                    new PatientViewModel { Email = "valid@email.com", Id = new Guid("89aca2d6-f261-4a2c-a927-2ab029fb7959"), Surname = "Pérez", Name = "Silvio" },
                     new PatientViewModel
                         {
                             Email = "another_valid@email.com",
-                            Id = 2,
+                            Id = new Guid("bd134275-c944-49aa-923b-a13b4a1ab54b"),
                             Surname = "Maragall",
                             Name = "Lluís",
                             MedicalNumber = "5656"
@@ -55,7 +56,7 @@
                     new PatientViewModel
                         {
                             Email = "third_email@email.com",
-                            Id = 3,
+                            Id = new Guid("b8ac6260-2b95-4b7d-bd09-0653e2ac1fb6"),
                             Surname = "Malafont",
                             Name = "Andreu",
                             MedicalNumber = "5656"
@@ -63,7 +64,7 @@
                     new PatientViewModel
                         {
                             Email = "fourth_email@email.com",
-                            Id = 4,
+                            Id = new Guid("6667cc4b-0efb-45c1-a57b-0d3089103e7b"),
                             Surname = "De la Cruz",
                             Name = "Penélope",
                             MedicalNumber = "5656"
@@ -71,23 +72,24 @@
                 };
 
         [Theory]
-        [InlineData("joe", "doe", "email@valid.com", 1, "valid")]
-        [InlineData("joe", "", "email@valid.com", 10, "valid")]
-        [InlineData("joe", "doe", "", 10, "valid")]
-        [InlineData("joe", "doe", null, 10, "valid")]
-        [InlineData("joe", null, null, 10, "valid")]
-        [InlineData("", null, null, 10, "valid")]
-        [InlineData(null, null, null, 10, "valid")]
-        [InlineData("joe", "doe", "@invalid.com", 10, "valid")]
+        [InlineData("joe", "doe", "email@valid.com", "bd134275-c944-49aa-923b-a13b4a1ab54b", "valid")]
+        [InlineData("joe", "", "email@valid.com", "c4c9b6b2-17ce-4b03-9d3e-db6b6856d99e", "valid")]
+        [InlineData("joe", "doe", "", "c4c9b6b2-17ce-4b03-9d3e-db6b6856d99e", "valid")]
+        [InlineData("joe", "doe", null, "c4c9b6b2-17ce-4b03-9d3e-db6b6856d99e", "valid")]
+        [InlineData("joe", null, null, "c4c9b6b2-17ce-4b03-9d3e-db6b6856d99e", "valid")]
+        [InlineData("", null, null, "c4c9b6b2-17ce-4b03-9d3e-db6b6856d99e", "valid")]
+        [InlineData(null, null, null, "c4c9b6b2-17ce-4b03-9d3e-db6b6856d99e", "valid")]
+        [InlineData("joe", "doe", "@invalid.com", "c4c9b6b2-17ce-4b03-9d3e-db6b6856d99e", "valid")]
         [InlineData("_joe_is_longer_than_255_characters_01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", 
-            "doe", "email@valid.com", 10, "valid")]
+            "doe", "email@valid.com", "c4c9b6b2-17ce-4b03-9d3e-db6b6856d99e", "valid")]
         [InlineData("joe", 
             "_doe_is_longer_than_255_characters_01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
-            "email@valid.com", 10, "valid")]
-        [InlineData("joe", "doe", "email@valid.com", 10,
+            "email@valid.com", "c4c9b6b2-17ce-4b03-9d3e-db6b6856d99e", "valid")]
+        [InlineData("joe", "doe", "email@valid.com", "c4c9b6b2-17ce-4b03-9d3e-db6b6856d99e",
             "_medicalNumber_is_longer_than_255_characters_01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890")]
-        public async Task CreatePatient_BadRequest(string name, string lastname, string email, int id, string medicalNumber)
+        public async Task CreatePatient_BadRequest(string name, string lastname, string email, string idGuid, string medicalNumber)
         {
+            Guid id = new Guid(idGuid);
             // Arrange
             await this.Authorize().ConfigureAwait(false);
             PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name, MedicalNumber = medicalNumber};
@@ -98,9 +100,10 @@
         }
 
         [Theory]
-        [InlineData("joe", "doe", "email@valid.com", 10, "medicalNumber")]
-        public async Task CreatePatient_CreationOK(string name, string lastname, string email, int id, string medicalNumber)
+        [InlineData("joe", "doe", "email@valid.com", "c4c9b6b2-17ce-4b03-9d3e-db6b6856d99e", "medicalNumber")]
+        public async Task CreatePatient_CreationOK(string name, string lastname, string email, string idGuid, string medicalNumber)
         {
+            Guid id = new Guid(idGuid);
             // Arrange
             await this.Authorize().ConfigureAwait(false);
             PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name, MedicalNumber = medicalNumber};
@@ -185,11 +188,12 @@
         }
 
         [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        [InlineData(4)]
-        public async Task GetPatient_Found(int id)
+        [InlineData("bd134275-c944-49aa-923b-a13b4a1ab54b")]
+        [InlineData("b8ac6260-2b95-4b7d-bd09-0653e2ac1fb6")]
+        [InlineData("6667cc4b-0efb-45c1-a57b-0d3089103e7b")]
+        public async Task GetPatient_Found(string idGuid)
         {
+            Guid id = new Guid(idGuid);
             // Arrange
             await this.Authorize().ConfigureAwait(false);
 
@@ -204,12 +208,10 @@
             Assert.Equal(this.KnownPatients.First(p => p.Id == id), patient, new JsonEqualityComparer());
         }
 
-        [Theory]
-        [InlineData(5)]
-        [InlineData(999)]
-        [InlineData(-1)]
-        public async Task GetPatient_NotFound(int id)
+        [Fact]
+        public async Task GetPatient_NotFound()
         {
+            Guid id = Guid.NewGuid();
             // Arrange
             await this.Authorize().ConfigureAwait(false);
 
@@ -246,11 +248,12 @@
         }
 
         [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        [InlineData(4)]
-        public async Task RemovePatient_Found(int id)
+        [InlineData("bd134275-c944-49aa-923b-a13b4a1ab54b")]
+        [InlineData("b8ac6260-2b95-4b7d-bd09-0653e2ac1fb6")]
+        [InlineData("6667cc4b-0efb-45c1-a57b-0d3089103e7b")]
+        public async Task RemovePatient_Found(string idGuid)
         {
+            Guid id = new Guid(idGuid);
             // Arrange
             await this.Authorize().ConfigureAwait(false);
 
@@ -260,11 +263,12 @@
         }
 
         [Theory]
-        [InlineData(5)]
-        [InlineData(999)]
-        [InlineData(-1)]
-        public async Task RemovePatient_NotFound(int id)
+        [InlineData("bd134225-c944-49aa-923b-a13b4a1ab54b")]
+        [InlineData("b8ac6230-2b95-4b7d-bd09-0653e2ac1fb6")]
+        [InlineData("6667ce4b-0efb-45c1-a57b-0d3089103e7b")]
+        public async Task RemovePatient_NotFound(string idGuid)
         {
+            Guid id = new Guid(idGuid);
             // Arrange
             await this.Authorize().ConfigureAwait(false);
 
@@ -282,12 +286,13 @@
         }
 
         [Theory]
-        [InlineData("joe", "doe", "email@valid.com", 1)]        
-        public async Task UpdatePatient_CreationOk(string name, string lastname, string email, int id)
+        [InlineData("joe", "doe", "email@valid.com", "5657")]        
+        public async Task UpdatePatient_CreationOk(string name, string lastname, string email, string medicalNumber)
         {
+            Guid id = new Guid("6667cc4b-0efb-45c1-a57b-0d3089103e7b");
             // Arrange
             await this.Authorize().ConfigureAwait(false);
-            PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
+            PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name, MedicalNumber = medicalNumber };
 
             // Act
             var response = await this.CallUpdatePatient(patientToUpdate).ConfigureAwait(false);
@@ -301,15 +306,16 @@
         }
 
         [Theory]
-        [InlineData("joe", "doe", "email@valid.com", 0)]
-        [InlineData("joe", "", "email@valid.com", 1)]
-        [InlineData("joe", "doe", "", 1)]
-        [InlineData("joe", "doe", null, 1)]
-        [InlineData("joe", null, null, 1)]
-        [InlineData("", null, null, 1)]
-        [InlineData(null, null, null, 1)]
-        public async Task UpdatePatient_BadRequest(string name, string lastname, string email, int id)
+        [InlineData("joe", "doe", "email@valid.com")]
+        [InlineData("joe", "", "email@valid.com")]
+        [InlineData("joe", "doe", "")]
+        [InlineData("joe", "doe", null)]
+        [InlineData("joe", null, null)]
+        [InlineData("", null, null)]
+        [InlineData(null, null, null)]
+        public async Task UpdatePatient_BadRequest(string name, string lastname, string email)
         {
+            Guid id = Guid.NewGuid();
             // Arrange
             await this.Authorize().ConfigureAwait(false);
             PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
@@ -358,12 +364,12 @@
             return await this.BuildAuthorizedRequest($"seed/v1/patients/patient").WithJsonContent(patient).PostAsync().ConfigureAwait(false);
         }
 
-        private async Task<HttpResponseMessage> CallDeletePatient(int id)
+        private async Task<HttpResponseMessage> CallDeletePatient(Guid id)
         {
             return await this.BuildAuthorizedRequest($"seed/v1/patients/{id}").SendAsync("DELETE").ConfigureAwait(false);
         }
 
-        private async Task<HttpResponseMessage> CallGetPatient(int id)
+        private async Task<HttpResponseMessage> CallGetPatient(Guid id)
         {
             return await this.BuildAuthorizedRequest($"seed/v1/patients/{id}").GetAsync().ConfigureAwait(false);
         }

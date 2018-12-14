@@ -1,4 +1,6 @@
-﻿namespace Main.ViewModels
+﻿using System;
+
+namespace Main.ViewModels
 {
     /// <summary>
     /// Model for someone's address
@@ -18,7 +20,7 @@
         /// <summary>
         /// Gets or sets the internal id
         /// </summary>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the street

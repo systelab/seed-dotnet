@@ -1,12 +1,12 @@
-﻿namespace Main.Models
+﻿using main.Models;
+
+namespace Main.Models
 {
-    public class Address
+    public class Address : BaseEntity
     {
         public string City { get; set; }
 
         public string Coordinates { get; set; }
-
-        public int Id { get; set; }
 
         public string Street { get; set; }
 
