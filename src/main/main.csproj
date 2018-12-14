@@ -42,6 +42,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.6" />
     <PackageReference Include="PagedList.Core" Version="1.17.4" />
+    <PackageReference Include="Polly" Version="6.1.2" />
+    <PackageReference Include="RestSharp" Version="106.5.4" />
     <PackageReference Include="SQLitePCLRaw.bundle_sqlcipher" Version="1.1.11" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
@@ -63,3 +65,4 @@
     </None>
   </ItemGroup>
 </Project>
+

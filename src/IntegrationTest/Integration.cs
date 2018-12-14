@@ -112,6 +112,8 @@
 
             // Assert
             Assert.NotNull(patient);
+            // We expect to have the MedicalNumber service to fail
+            patientToUpdate.MedicalNumber = "UNDEFINED";
             Assert.Equal(patientToUpdate, patient, new JsonEqualityComparer());
         }
 

@@ -6,6 +6,8 @@
 
     using AutoMapper;
 
+    using main.Services;
+
     using Main.Models;
     using Main.Services;
     using Main.ViewModels;
@@ -26,11 +28,14 @@
 
         private readonly IMapper mapper;
 
-        public PatientController(ISeedDotnetRepository repository, ILogger<PatientController> logger, IMapper mapper)
+        private readonly IMedicalRecordNumberService medicalRecordNumberService;
+
+        public PatientController(ISeedDotnetRepository repository, ILogger<PatientController> logger, IMapper mapper, IMedicalRecordNumberService medicalRecordNumberService)
         {
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            this.medicalRecordNumberService = medicalRecordNumberService ?? throw new ArgumentNullException(nameof(medicalRecordNumberService));
         }
 
         /// <summary>
@@ -52,6 +57,7 @@
             {
                 // Save to the database
                 var newPatient = this.mapper.Map<Patient>(patient);
+                newPatient.MedicalNumber = this.medicalRecordNumberService.GetMedicalRecordNumber("http://localhost:9090");
                 await this.repository.AddPatient(newPatient);
                 return this.Ok(this.mapper.Map<PatientViewModel>(newPatient));
             }

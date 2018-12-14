@@ -2,6 +2,8 @@
 {
     using AutoMapper;
 
+    using main.Services;
+
     using Main.Controllers.Api;
     using Main.Services;
 
@@ -17,11 +19,14 @@
 
         private IMapper mapper;
 
-        public PatientControllerBuilder(IMapper mapper)
+        private IMedicalRecordNumberService medicalRecordNumber;
+
+        public PatientControllerBuilder(IMapper mapper, IMedicalRecordNumberService medicalRecordNumber)
         {
             this.repository = new Mock<ISeedDotnetRepository>().Object;
             this.logger = new Mock<ILogger<PatientController>>().Object;
             this.mapper = mapper;
+            this.medicalRecordNumber = medicalRecordNumber;
         }
 
         public static implicit operator PatientController(PatientControllerBuilder instance)
@@ -31,7 +36,7 @@
 
         public PatientController Build()
         {
-            return new PatientController(this.repository, this.logger, this.mapper);
+            return new PatientController(this.repository, this.logger, this.mapper, this.medicalRecordNumber);
         }
 
         public PatientControllerBuilder WithRepository(ISeedDotnetRepository repository)
