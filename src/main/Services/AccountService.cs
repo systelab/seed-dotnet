@@ -1,10 +1,10 @@
-﻿namespace Main.Services
+﻿namespace main.Services
 {
     using System;
     using System.Threading.Tasks;
-
-    using Main.Models;
-
+    using main.Contracts;
+    using main.Entities;
+    using main.Entities.Models;
     using Microsoft.AspNetCore.Identity;
 
     internal class AccountService : IAccountService

@@ -1,7 +1,7 @@
 ﻿namespace main.Services
 {
     using System;
-
+    using main.Contracts;
     using Polly;
     using Polly.CircuitBreaker;
 

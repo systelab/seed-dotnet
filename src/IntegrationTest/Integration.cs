@@ -8,12 +8,11 @@
     using System.Threading.Tasks;
 
     using AutoMapper;
-
-    using Main;
-    using Main.Models;
-    using Main.Services;
-    using Main.ViewModels;
-
+    using main;
+    using main.Entities;
+    using main.Entities.Common;
+    using main.Entities.Models;
+    using main.Entities.ViewModels;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.Extensions.DependencyInjection;

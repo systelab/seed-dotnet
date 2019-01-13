@@ -1,19 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>Allure.builder</AssemblyName>
     <RootNamespace>Allure.builder</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Allure.Commons" Version="2.2.0.7" />
+    <PackageReference Include="Allure.Commons" Version="2.4.2.4" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
+    <PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
   </ItemGroup>
 
   <ItemGroup>
