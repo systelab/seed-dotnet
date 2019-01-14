@@ -89,7 +89,7 @@
             try
             {
                 // PagedList is a one-based index. We offer a zero-based index, therefore we have to add 1 to the page number
-                var results = this.unitOfWork.Patients.GetAllWithPaginationPatients(page + 1, elementsPerPage);
+                var results = await this.unitOfWork.Patients.GetAllWithPaginationPatients(page + 1, elementsPerPage);
                 return this.Ok(this.mapper.Map<ExtendedPagedList<PatientViewModel>>(results));
                 
             }

@@ -43,16 +43,8 @@
         public  PatientViewModel[] KnownPatients =>
             new[]
                 {
-                    new PatientViewModel { Email = "valid@email.com", Id = new Guid("89aca2d6-f261-4a2c-a927-2ab029fb7959"), Surname = "Pérez", Name = "Silvio" },
-                    new PatientViewModel
-                        {
-                            Email = "another_valid@email.com",
-                            Id = new Guid("bd134275-c944-49aa-923b-a13b4a1ab54b"),
-                            Surname = "Maragall",
-                            Name = "Lluís",
-                            MedicalNumber = "5656"
-                        },
-                    new PatientViewModel
+                    
+                     new PatientViewModel
                         {
                             Email = "third_email@email.com",
                             Id = new Guid("b8ac6260-2b95-4b7d-bd09-0653e2ac1fb6"),
@@ -62,12 +54,22 @@
                         },
                     new PatientViewModel
                         {
+                            Email = "another_valid@email.com",
+                            Id = new Guid("bd134275-c944-49aa-923b-a13b4a1ab54b"),
+                            Surname = "Maragall",
+                            Name = "Lluís",
+                            MedicalNumber = "5656"
+                        },
+ 
+                    new PatientViewModel
+                        {
                             Email = "fourth_email@email.com",
                             Id = new Guid("6667cc4b-0efb-45c1-a57b-0d3089103e7b"),
                             Surname = "De la Cruz",
                             Name = "Penélope",
                             MedicalNumber = "5656"
                         },
+                    new PatientViewModel { Email = "valid@email.com", Id = new Guid("89aca2d6-f261-4a2c-a927-2ab029fb7959"), Surname = "Pérez", Name = "Silvio" }
                 };
 
         [Theory]

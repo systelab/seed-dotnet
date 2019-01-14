@@ -7,6 +7,7 @@ using PagedList.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace main.Repository.Repositories
 {
@@ -52,11 +53,11 @@ namespace main.Repository.Repositories
             return q.ToList();
         }
 
-        public PagedList<Patient> GetAllWithPaginationPatients(int pageIndex, int pageSize)
+        public async Task<PagedList<Patient>> GetAllWithPaginationPatients(int pageIndex, int pageSize)
         {
-            return new PagedList<Patient>(context.Patients
+           return  await Task.Run(() => new PagedList<Patient>(context.Patients
                 .Include(c => c.Address)
-                .OrderBy(p => p.Name), pageIndex, pageSize);
+                .OrderBy(p => p.Name), pageIndex, pageSize));
         }
 
         public PatientAllergy GetPatientAllergy(Guid idPatient, Guid idAllergy)

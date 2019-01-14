@@ -11,7 +11,7 @@ namespace main.Contracts.Repository
 {
     public interface IPatientRepository : IRepositoryBase<Patient>
     {
-        PagedList<Patient> GetAllWithPaginationPatients(int pageIndex, int pageSize);
+        Task<PagedList<Patient>> GetAllWithPaginationPatients(int pageIndex, int pageSize);
 
         bool AddAllergy(PatientAllergy patientAllergy);
         List<PatientAllergy> GetAllergies(Guid idPatient);
