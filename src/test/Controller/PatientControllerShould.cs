@@ -12,14 +12,16 @@
     using AutoFixture;
 
     using AutoMapper;
-
+    using main.Contracts;
+    using main.Controllers.Api;
+    using main.Entities.Common;
+    using main.Entities.Models;
+    using main.Entities.ViewModels;
+    using main.Extensions;
     using main.Services;
 
-    using Main;
-    using Main.Controllers.Api;
-    using Main.Models;
-    using Main.Services;
-    using Main.ViewModels;
+
+
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -39,7 +41,7 @@
         private const string MockedMedicalRecordNumber = "MR_";
         private readonly IMapper mapper;
 
-        private readonly Mock<ISeedDotnetRepository> mockUserRepo;
+        private readonly Mock<IUnitOfWork> mockUserRepo;
 
         private readonly Mock<IMedicalRecordNumberService> medicalRecordMock;
 
@@ -56,7 +58,7 @@
 
             this.mapper = automapConfiguration.CreateMapper();
             this.sutBuilder = new PatientControllerBuilder(this.mapper, this.medicalRecordMock.Object);
-            this.mockUserRepo = new Mock<ISeedDotnetRepository>();
+            this.mockUserRepo = new Mock<IUnitOfWork>();
 
             this.InitializeData();
             Test.createInstance();
@@ -82,7 +84,7 @@
                 Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
 
                 // Arrange
-                this.mockUserRepo.Setup(repo => repo.AddPatient(It.IsAny<Patient>()));
+                this.mockUserRepo.Setup(repo => repo.Patients.Add(It.IsAny<Patient>()));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
                 sut.ModelState.AddModelError("error", "some error");
                 Test.stopStep(Status.passed);
@@ -170,7 +172,7 @@
                 Test.addStep(new step { description = "Assert", name = "Step 3: Assert" });
                 var viewResult = Assert.IsType<OkObjectResult>(result);
                 var model = Assert.IsType<PatientViewModel>(viewResult.Value);
-                this.mockUserRepo.Verify(repo => repo.AddPatient(It.IsAny<Patient>()));
+                this.mockUserRepo.Verify(repo => repo.Patients.Add(It.IsAny<Patient>()));
                 Assert.Equal(patient.Email, model.Email);
                 Assert.Equal(patient.Name, model.Name);
                 Assert.Equal(patient.Surname, model.Surname);
@@ -250,7 +252,7 @@
 
                 // Arrange
                 Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
-                this.mockUserRepo.Setup(repo => repo.GetAllPatients(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(
+                this.mockUserRepo.Setup(repo => repo.Patients.GetAllWithPagination(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(
                     new PagedList<Patient>(list, page + 1, elementsPerPage));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
                 Test.stopStep(Status.passed);
@@ -331,7 +333,7 @@
 
                 // Arrange
                 Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
-                this.mockUserRepo.Setup(repo => repo.GetPatient(It.IsAny<Patient>()))
+                this.mockUserRepo.Setup(repo => repo.Patients.Get(It.IsAny<Guid>()))
                     .ReturnsAsync(this.listOfPatients[1]);
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
                 Test.stopStep(Status.passed);
@@ -411,7 +413,7 @@
                 PatientViewModel patientToInsert =
                     new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name};
                 Patient mappedPatientToInsert = this.mapper.Map<Patient>(patientToInsert);
-                this.mockUserRepo.Setup(repo => repo.AddPatient(It.Is<Patient>(p => p.Equals(mappedPatientToInsert))));
+                this.mockUserRepo.Setup(repo => repo.Patients.Add(It.Is<Patient>(p => p.Equals(mappedPatientToInsert))));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
                 Test.stopStep(Status.passed);
 
@@ -485,7 +487,7 @@
 
                 // Arrange
                 Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
-                this.mockUserRepo.Setup(repo => repo.GetPatient(It.IsAny<Patient>()))
+                this.mockUserRepo.Setup(repo => repo.Patients.Get(It.IsAny<Guid>()))
                     .ReturnsAsync(this.listOfPatients[0]);
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
 
@@ -550,7 +552,7 @@
 
                 // Arrange
                 Test.addStep(new step { description = "Arrange", name = "Step 1: Arrange" });
-                this.mockUserRepo.Setup(repo => repo.GetAllPatients(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(
+                this.mockUserRepo.Setup(repo => repo.Patients.GetAllWithPagination(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(
                     new PagedList<Patient>(list, page + 1, elementsPerPage));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockUserRepo.Object);
                 Test.stopStep(Status.passed);
