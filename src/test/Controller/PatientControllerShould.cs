@@ -13,6 +13,7 @@
 
     using AutoMapper;
     using main.Contracts;
+    using main.Contracts.Repository;
     using main.Controllers.Api;
     using main.Entities.Common;
     using main.Entities.Models;
@@ -59,6 +60,9 @@
             this.mapper = automapConfiguration.CreateMapper();
             this.sutBuilder = new PatientControllerBuilder(this.mapper, this.medicalRecordMock.Object);
             this.mockUserRepo = new Mock<IUnitOfWork>();
+
+            this.mockUserRepo.Setup(p => p.Patients).Returns(new Mock<IPatientRepository>().Object);
+            this.mockUserRepo.Setup(p => p.Allergies).Returns(new Mock<IAllergyRepository>().Object);
 
             this.InitializeData();
             Test.createInstance();
@@ -142,7 +146,7 @@
                                                {
                                                    Name = "Carlos", Surname = "Carmona", Email = "ccarmona@werfen.com"
                                                };
-
+                
                 Test.stopStep(Status.passed);
 
                 // Act

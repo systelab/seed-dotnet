@@ -39,6 +39,7 @@ namespace main
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseSetting("https_port", "13080")
                 .Build();
     }
 }

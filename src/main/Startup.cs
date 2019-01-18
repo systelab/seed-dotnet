@@ -48,6 +48,7 @@
             }
             else
             {
+                app.UseHsts();
                 factory.AddDebug(LogLevel.Error);
             }
 
@@ -65,7 +66,7 @@
             app.UseCors("MyPolicy");
 
             app.UseStaticFiles();
-
+            app.UseHttpsRedirection();
             app.UseAuthentication();
 
             app.UseMvc(
