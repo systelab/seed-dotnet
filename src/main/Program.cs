@@ -9,6 +9,8 @@ namespace main
     using main;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Configuration;
 
     /// <summary>
     /// Main entry program
@@ -39,7 +41,7 @@ namespace main
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseSetting("https_port", "13080")
+                .UseSetting("https_port", "13080")               
                 .Build();
     }
 }
