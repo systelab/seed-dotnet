@@ -1,16 +1,13 @@
-﻿namespace Main.Controllers
+﻿namespace main.Controllers
 {
     using System;
     using System.Threading.Tasks;
 
     using AutoMapper;
-
-    using main.Models;
-
-    using Main.Models;
-    using Main.Services;
-    using Main.ViewModels;
-
+    using main.Contracts;
+    using main.Entities;
+    using main.Entities.Models;
+    using main.Entities.ViewModels;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;

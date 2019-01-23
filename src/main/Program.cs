@@ -3,11 +3,14 @@
 [assembly: InternalsVisibleTo("IntegrationTest")]
 [assembly: InternalsVisibleTo("test")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
-namespace Main
+namespace main
 {
     using System.IO;
+    using main;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Configuration;
 
     /// <summary>
     /// Main entry program
@@ -20,24 +23,13 @@ namespace Main
         /// <param name="args">not used</param>
         public static void Main(string[] args)
         {
-            var host = BuildWebHost().Seed();
-
-            host.Run();
-            // BuildWebHost(args).Run();
+             BuildWebHost(args).Run();
         }
 
-        private static IWebHost BuildWebHost()
-        {
-            return new WebHostBuilder()
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory()).UseUrls("http://0.0.0.0:13080")
-                .UseIISIntegration()
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseSetting("https_port", "13080")               
                 .Build();
-        }
-        //public static IWebHost BuildWebHost(string[] args) =>
-        //    WebHost.CreateDefaultBuilder(args)
-        //        .UseStartup<Startup>()
-        //        .Build();
     }
 }

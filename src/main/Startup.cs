@@ -1,32 +1,18 @@
-﻿namespace Main
+﻿namespace main
 {
-    using System;
-    using System.IO;
     using System.Text;
 
-    using Main.Models;
-    using Main.Services;
-    using Main.ViewModels;
+
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.PlatformAbstractions;
     using Microsoft.IdentityModel.Tokens;
 
     using Newtonsoft.Json.Serialization;
-
-    using Swashbuckle.AspNetCore.Swagger;
-    using System.Collections.Generic;
-    using main.Models;
-    using main.Services;
-
-    using Polly;
-    using Polly.CircuitBreaker;
+    using main.Extensions;
 
     // This is 
     internal class Startup
@@ -62,6 +48,7 @@
             }
             else
             {
+                app.UseHsts();
                 factory.AddDebug(LogLevel.Error);
             }
 
@@ -79,7 +66,7 @@
             app.UseCors("MyPolicy");
 
             app.UseStaticFiles();
-
+            app.UseHttpsRedirection();
             app.UseAuthentication();
 
             app.UseMvc(
@@ -102,7 +89,7 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(this.config);
-            if (this.env.IsEnvironment("Development"))
+             if (this.env.IsEnvironment("Development"))
             {
                 // Here you can set the services implemented only for DEV 
             }
@@ -110,59 +97,21 @@
             if (!this.env.IsEnvironment("Testing"))
             {
                 // Add Swagger reference to the project. Swagger is not needed when testing
-
-                services.AddSwaggerGen(
-                    c =>
-                        {
-                            c.OperationFilter<SwaggerConsumesOperationFilter>();
-                            c.AddSecurityDefinition("Bearer", new ApiKeyScheme
-                            {
-                                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                                Name = "Authorization",
-                                In = "header",
-                                Type = "apiKey"
-                            });
-                            c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
-                                {
-                                    { "Bearer", new string[] { } }
-                                });
-                            c.SwaggerDoc(
-                                "v1",
-                                new Info
-                                    {
-                                        Version = "v1",
-                                        Title = "Seed DotNet",
-                                        Description = "This is a seed project for a .Net WebApi",
-                                        TermsOfService = "None",
-                                    });
-                            // Set the comments path for the Swagger JSON and UI.
-                            var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                            var xmlPath = Path.Combine(basePath, "seed_dotnet.xml");
-                            c.IncludeXmlComments(xmlPath);
-                        });
+                services.ConfigureSwagger();
             }
-            
 
             // Allow use the API from other origins 
-            services.AddCors(
-                o => o.AddPolicy(
-                    "MyPolicy",
-                    builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials(); }));
+            services.ConfigureCors();
 
             // Set the context to the database
-            services.AddDbContext<SeedDotnetContext>();
-            services.AddTransient<SeedDotnetContextSeedData>();
-            // Set
-            services.AddIdentity<UserManage, IdentityRole>(
-                config =>
-                    {
-                        config.Password.RequireLowercase = true;
-                        config.Password.RequireUppercase = true;
-                        config.Password.RequireNonAlphanumeric = false;
-                        config.Password.RequiredLength = 8;
-                        config.Password.RequireDigit = false;
-                        config.User.RequireUniqueEmail = false;
-                    }).AddEntityFrameworkStores<SeedDotnetContext>();
+            services.ConfigureContext();
+
+            // Set Identity
+            services.ConfigureIdentity();
+
+            //Configure the Scopes
+            services.ConfigureScope();
+
 
             // Configure the authentication system
             services.AddAuthentication()
@@ -177,20 +126,12 @@
                     };
                 });
 
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IMedicalRecordNumberService, MedicalRecordNumberService>();
-            services.AddScoped<IJwtHandler, JwtHandler>();
-            services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
-            services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
-            services.AddScoped<ISyncPolicy>(provider => 
-                Policy.Handle<Exception>().CircuitBreaker(2, TimeSpan.FromMinutes(1)));
+           //Configure Logging
             services.AddLogging();
 
-            var automapConfiguration = new SeedMapperConfiguration();
-                
-            var mapper = automapConfiguration.CreateMapper();
+            //Configure Mappers
+            services.ConfigureMapper();
 
-            services.AddSingleton(mapper);
             services.AddMvc().AddJsonOptions(
                 config =>
                     {

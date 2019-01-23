@@ -1,7 +1,7 @@
 ### STAGE 1: Build ###
 
 # We label our stage as 'builder'
-FROM microsoft/dotnet:2.1-sdk as builder
+FROM microsoft/dotnet:2.2-sdk as builder
 
 # Change the workdir to the source dir
 WORKDIR /src
@@ -14,7 +14,7 @@ RUN dotnet publish --output /app/ --configuration Release
 
 ### STAGE 2: Setup ###
 # This is the runtime image
-FROM microsoft/dotnet:2.1-aspnetcore-runtime
+FROM microsoft/dotnet:2.2-aspnetcore-runtime
 
 WORKDIR /app
  

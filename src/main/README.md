@@ -11,6 +11,47 @@ Is the first file which is run when the application was launched. The main work 
 
 In our case the startup file as interesting parts contains:
 
+### Configure the HTTPS usage and redirection
+
+When using HTTPS the HTTP to HTTPS redirection must also be configured for those clients that try to access through HTTP
+
+[Enforcing HTTPS in ASP.NET Core](https://docs.microsoft.com/es-es/aspnet/core/security/enforcing-ssl?view=aspnetcore-2.2&tabs=visual-studio)
+
+At `Program.cs`
+
+```c#
+public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>()
+                .UseSetting("https_port", "13080")  // HTTPS port to use             
+                .Build();
+```
+
+At `Startup.cs`
+
+```c#
+ public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            ILoggerFactory factory)
+        {
+		/// Other configurations
+
+		app.UseHttpsRedirection();
+
+		/// More configurations 
+
+		}
+```
+
+At `launchSettings.json`
+
+```javascript
+// ...
+"applicationUrl": "https://localhost:13080/"
+// ...
+```
+
 ### Configure the CORS
 ```c#
 //Configure Services Method

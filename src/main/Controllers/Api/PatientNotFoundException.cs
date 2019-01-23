@@ -1,4 +1,4 @@
-﻿namespace Main.Controllers.Api
+﻿namespace main.Controllers.Api
 {
     using System;
     using System.Runtime.Serialization;

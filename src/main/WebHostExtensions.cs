@@ -1,7 +1,6 @@
-﻿namespace Main
+﻿namespace main
 {
-    using Main.Models;
-
+    using main.Extensions;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
 

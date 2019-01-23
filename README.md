@@ -10,7 +10,7 @@ The seed contains a Patient Management sample Web API.
 
 The app doesn't do much, just shows how to use different .NET Core patterns and other suggested tools together:
 
-* .NET Core 2.0.0
+* .NET Core 2.2.0
 * Entity Framework Core 6.0
 * JWT
 * CORS

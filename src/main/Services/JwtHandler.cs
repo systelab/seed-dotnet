@@ -4,9 +4,11 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
-using Main.Models;
+using main.Entities;
+using main.Entities.Models;
+using main.Contracts;
 
-namespace Main.Services
+namespace main.Services
 {
     internal class JwtHandler : IJwtHandler
     {
