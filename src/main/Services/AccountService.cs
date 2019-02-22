@@ -50,7 +50,7 @@
         public async Task<JsonWebToken> SignIn(string username, string password)
         {
             var user = await this.userManager.FindByNameAsync(username);
-            if (user != null)
+            if (user != null && !string.IsNullOrEmpty(password))
             {
                 var signInResult = await this.signInManager.CheckPasswordSignInAsync(user, password, false);
                 if (signInResult.Succeeded)

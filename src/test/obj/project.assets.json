@@ -17318,11 +17318,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Source\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\test\\test.csproj",
+      "projectUniqueName": "C:\\Seeds\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\test\\test.csproj",
       "projectName": "test",
-      "projectPath": "C:\\Source\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\test\\test.csproj",
+      "projectPath": "C:\\Seeds\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\test\\test.csproj",
       "packagesPath": "C:\\Users\\gmarquina\\.nuget\\packages\\",
-      "outputPath": "C:\\Source\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\test\\obj\\",
+      "outputPath": "C:\\Seeds\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\test\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -17341,11 +17341,11 @@
       "frameworks": {
         "netcoreapp2.2": {
           "projectReferences": {
-            "C:\\Source\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\Allure.xUnit\\Allure.builder.csproj": {
-              "projectPath": "C:\\Source\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\Allure.xUnit\\Allure.builder.csproj"
+            "C:\\Seeds\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\Allure.xUnit\\Allure.builder.csproj": {
+              "projectPath": "C:\\Seeds\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\Allure.xUnit\\Allure.builder.csproj"
             },
-            "C:\\Source\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\main\\main.csproj": {
-              "projectPath": "C:\\Source\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\main\\main.csproj"
+            "C:\\Seeds\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\main\\main.csproj": {
+              "projectPath": "C:\\Seeds\\Repos\\Systelab.ProDx\\systelab\\seed-dotnet\\src\\main\\main.csproj"
             }
           }
         }

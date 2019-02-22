@@ -43,9 +43,7 @@
         [HttpPost]
         [SwaggerConsumes("application/x-www-form-urlencoded")]
         public async Task<IActionResult> GetToken(string login, string password)
-        {
-            if (this.ModelState.IsValid)
-            {
+        {   
                 var result = await this.repository.SignIn(login, password);
                 if (result != null)
                 {
@@ -59,10 +57,7 @@
                 else
                 {
                     return this.BadRequest("Username or password incorrect");
-                }
-            }
-
-            return this.BadRequest("Username or password incorrect");
+                }            
         }
 
         /// <summary>
