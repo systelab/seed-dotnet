@@ -36,16 +36,15 @@
         /// <summary>
         /// Do the login and get the Token of the session
         /// </summary>
-        /// <param name="vm"></param>
+        /// <param name="login"></param>
+        /// <param name="password"></param>        
         /// <returns></returns>
         [Route("login")]
         [HttpPost]
         [SwaggerConsumes("application/x-www-form-urlencoded")]
-        public async Task<IActionResult> GetToken([FromForm] LoginViewModel vm)
-        {
-            if (this.ModelState.IsValid)
-            {
-                var result = await this.repository.SignIn(vm.login, vm.password);
+        public async Task<IActionResult> GetToken(string login, string password)
+        {   
+                var result = await this.repository.SignIn(login, password);
                 if (result != null)
                 {
                     this.Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
@@ -58,10 +57,7 @@
                 else
                 {
                     return this.BadRequest("Username or password incorrect");
-                }
-            }
-
-            return this.BadRequest("Username or password incorrect");
+                }            
         }
 
         /// <summary>
