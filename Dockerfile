@@ -23,6 +23,7 @@ WORKDIR /app
 # Copy build output file to use swagger
 COPY --from=builder /src/main/bin/Debug/netcoreapp2.2/seed_dotnet.xml .
  
+ 
 # Copy database  
 COPY  --from=builder /src/main/*.db .
  
