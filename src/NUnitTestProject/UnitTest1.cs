@@ -25,10 +25,10 @@ namespace NUnitTestProject
             public void Return4_WhenAdd2And2()
             {
                 int actualResult = 0;
-                var calculator = new Calculator();
+
                 AllureLifecycle.Instance.WrapInStep(() =>
                 {
-                    actualResult = calculator.Add(2, 2);
+                    actualResult = Calculator.Add(2, 2);
                 }, "Action:sum 2 plus 2");
                 AllureLifecycle.Instance.WrapInStep(() => { Assert.AreEqual(4, actualResult);},"Expected 4");
             }
@@ -40,12 +40,11 @@ namespace NUnitTestProject
             [AllureSubSuite("Add")]
             public void Return0_WhenAdd0And0()
             {
-                var calculator = new Calculator();
                 int actualResult = 0;
                 
                 AllureLifecycle.Instance.WrapInStep(() =>
                 {
-                    actualResult = calculator.Add(0, 0);
+                    actualResult = Calculator.Add(0, 0);
                 }, "Action:sum 0 plus 0");
                 AllureLifecycle.Instance.WrapInStep(() => { Assert.AreEqual(0, actualResult); }, "Expected 0");
             }
@@ -57,17 +56,16 @@ namespace NUnitTestProject
             [AllureSubSuite("Add")]
             public void ReturnMinus5_WhenAddMinus3AndMinus2()
             {
-                var calculator = new Calculator();
                 int actualResult = 0;
                
                 AllureLifecycle.Instance.WrapInStep(() =>
                 {
-                    actualResult = calculator.Add(0, 0);
+                    actualResult = Calculator.Add(0, 0);
                 }, "Action:sum 0 plus 0");
                 AllureLifecycle.Instance.WrapInStep(() => { Assert.AreNotEqual(1, actualResult); Assert.AreEqual(0, actualResult); }, "Not equal to 1, equal to 0");
                 AllureLifecycle.Instance.WrapInStep(() =>
                 {
-                    actualResult = calculator.Add(5, 0);
+                    actualResult = Calculator.Add(5, 0);
                 }, "Action:sum 5 plus 0");
                 AllureLifecycle.Instance.WrapInStep(() => { Assert.AreNotEqual(1, actualResult);
                     Assert.AreEqual(5, actualResult);
