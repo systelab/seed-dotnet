@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTest", "Integrat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Allure.builder", "Allure.xUnit\Allure.builder.csproj", "{C2ADE090-A70F-48E4-892A-87A1235FE3AC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NUnitTestProject", "NUnitTestProject\NUnitTestProject.csproj", "{72A31BBD-4140-4C3C-8168-76DEB7D49BD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{C2ADE090-A70F-48E4-892A-87A1235FE3AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2ADE090-A70F-48E4-892A-87A1235FE3AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2ADE090-A70F-48E4-892A-87A1235FE3AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72A31BBD-4140-4C3C-8168-76DEB7D49BD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72A31BBD-4140-4C3C-8168-76DEB7D49BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72A31BBD-4140-4C3C-8168-76DEB7D49BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72A31BBD-4140-4C3C-8168-76DEB7D49BD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
