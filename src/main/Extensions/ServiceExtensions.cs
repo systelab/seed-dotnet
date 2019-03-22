@@ -31,7 +31,7 @@ namespace main.Extensions
             services.AddCors(
                 o => o.AddPolicy(
                     "MyPolicy",
-                    builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials(); }));
+                    builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
         }
         public static void ConfigureSwagger(this IServiceCollection services)
         {

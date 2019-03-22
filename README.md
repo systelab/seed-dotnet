@@ -85,6 +85,11 @@ To run the project, press the run button provided by Visual Studio. The browser 
 
 After login (with username **Systelab** and password **Systelab**), copy the Token returned in the Authorization field before running any other REST end point.
 
+## HTTPS, Angular and Chrome with local trust certificate
+
+Chrome rejects automatically requests made from Angular to endpoints with untrusted certificates.
+
+To accept local signed certificates on development, paste this url on navigation bar chrome://flags/#allow-insecure-localhost and enable the setting **"Allow invalid certificates for resources loaded from localhost"**
 
 ## Docker
 
