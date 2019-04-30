@@ -433,7 +433,7 @@ namespace TestNUnit
 
     public class NunitLogger<T> : ILogger<T>, IDisposable
     {
-        private bool isEnabled = true;
+        private readonly bool isEnabled = true;
 
         public IDisposable BeginScope<TState>(TState state)
         {
