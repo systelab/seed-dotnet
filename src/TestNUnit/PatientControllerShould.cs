@@ -140,9 +140,9 @@ namespace TestNUnit
         private static T AssertAndGetModel<T>(IActionResult result)
         {
             Assert.IsInstanceOf<OkObjectResult>(result);
-            var okResult = (OkObjectResult) result;
+            var okResult = (OkObjectResult)result;
             Assert.IsInstanceOf<T>(okResult.Value);
-            return (T) okResult.Value;
+            return (T)okResult.Value;
         }
 
         [AllureEpic("Unit Tests")]
@@ -175,7 +175,7 @@ namespace TestNUnit
             var page = 5;
             var elementsPerPage = 18;
             IActionResult result = null;
-            
+
             var list = GetPatientList(totalElements);
             PatientController sut = null;
 
@@ -221,7 +221,7 @@ namespace TestNUnit
         [Test]
         public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_Last_Page()
         {
-            await GetPagedPatient(4, 90, 18).ConfigureAwait(false); 
+            await GetPagedPatient(4, 90, 18).ConfigureAwait(false);
         }
 
         [AllureEpic("Unit Tests")]
@@ -230,7 +230,7 @@ namespace TestNUnit
         [Test]
         public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_Middle_Page()
         {
-            await GetPagedPatient(3, 90, 18).ConfigureAwait(false); 
+            await GetPagedPatient(3, 90, 18).ConfigureAwait(false);
         }
 
         [AllureEpic("Unit Tests")]
@@ -290,7 +290,7 @@ namespace TestNUnit
                 // Arrange
 
                 patientToInsert =
-                    new PatientViewModel {Email = email, Id = id, Surname = lastname, Name = name};
+                    new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
                 var mappedPatientToInsert = mapper.Map<Patient>(patientToInsert);
                 mockPatientRepository.Setup(repo => repo.Add(It.Is<Patient>(p => p.Equals(mappedPatientToInsert))));
                 sut = sutBuilder.WithRepository(mockRepositories.Object);
@@ -365,7 +365,6 @@ namespace TestNUnit
         {
             IActionResult result = null;
             PatientController sut = null;
-            var testId = string.Empty;
             var list = GetPatientList(totalElements);
             AllureLifecycle.Instance.WrapInStep(() =>
             {
@@ -432,36 +431,36 @@ namespace TestNUnit
         }
     }
 
-    public class NunitLogger<T> : ILogger<T>
+    public class NunitLogger<T> : ILogger<T>, IDisposable
     {
+        private bool isEnabled = true;
+
         public IDisposable BeginScope<TState>(TState state)
         {
-            return NoopDisposable.Instance;
+            return this;
         }
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return true;
+            return this.isEnabled;
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            TestContext.WriteLine($"[{eventId}] {formatter(state, exception)}");
-            if (exception != null)
+            if (this.isEnabled)
             {
-                TestContext.WriteLine(exception.ToString());
+                TestContext.WriteLine($"[{eventId}] {formatter(state, exception)}");
+                if (exception != null)
+                {
+                    TestContext.WriteLine(exception.ToString());
+                }
             }
         }
 
-        private class NoopDisposable : IDisposable
+        public void Dispose()
         {
-            public static readonly NoopDisposable Instance = new NoopDisposable();
-
-            public void Dispose()
-            {
-                //Do nothing
-            }
+            //Do nothing
         }
     }
 }
