@@ -9,7 +9,7 @@
     using main.Entities.ViewModels;
     using PagedList.Core;
 
-    internal class SeedMapperConfiguration : MapperConfiguration
+    public class SeedMapperConfiguration : MapperConfiguration
     {
         public SeedMapperConfiguration()
             : base(
