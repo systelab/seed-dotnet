@@ -34,8 +34,6 @@ namespace TestNUnit
 
         private Mock<IMedicalRecordNumberService> medicalRecordMock;
 
-        private Mock<IAllergyRepository> mockAllergyRepository;
-
         private Mock<IPatientRepository> mockPatientRepository;
 
         private Mock<IUnitOfWork> mockRepositories;
@@ -58,7 +56,7 @@ namespace TestNUnit
             mapper = automapConfiguration.CreateMapper();
             mockRepositories = new Mock<IUnitOfWork>();
             mockPatientRepository = new Mock<IPatientRepository>();
-            mockAllergyRepository = new Mock<IAllergyRepository>();
+            Mock<IAllergyRepository> mockAllergyRepository = new Mock<IAllergyRepository>();
 
             mockRepositories.Setup(p => p.Patients).Returns(mockPatientRepository.Object);
             mockRepositories.Setup(p => p.Allergies).Returns(mockAllergyRepository.Object);
@@ -71,7 +69,6 @@ namespace TestNUnit
         {
             sutBuilder = new PatientControllerBuilder(mapper, medicalRecordMock.Object).WithLogger(nuniLogger);
         }
-
 
         [AllureEpic("Unit Tests")]
         [AllureFeature("Negative Tests")]
@@ -178,8 +175,7 @@ namespace TestNUnit
             var page = 5;
             var elementsPerPage = 18;
             IActionResult result = null;
-
-            var testId = string.Empty;
+            
             var list = GetPatientList(totalElements);
             PatientController sut = null;
 
@@ -216,7 +212,7 @@ namespace TestNUnit
         [Test]
         public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_First_Page()
         {
-            await GetPagedPatient(0, 90, 18);
+            await GetPagedPatient(0, 90, 18).ConfigureAwait(false);
         }
 
         [AllureEpic("Unit Tests")]
@@ -225,7 +221,7 @@ namespace TestNUnit
         [Test]
         public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_Last_Page()
         {
-            await GetPagedPatient(4, 90, 18);
+            await GetPagedPatient(4, 90, 18).ConfigureAwait(false); 
         }
 
         [AllureEpic("Unit Tests")]
@@ -234,7 +230,7 @@ namespace TestNUnit
         [Test]
         public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_Middle_Page()
         {
-            await GetPagedPatient(3, 90, 18);
+            await GetPagedPatient(3, 90, 18).ConfigureAwait(false); 
         }
 
         [AllureEpic("Unit Tests")]
@@ -401,7 +397,7 @@ namespace TestNUnit
             }, "Step 3: Assert. Check if the number the patients returned is correct");
         }
 
-        private IQueryable<Patient> GetPatientList(int totalElements)
+        private static IQueryable<Patient> GetPatientList(int totalElements)
         {
             var autoFixture = new Fixture();
             return autoFixture.CreateMany<Patient>(totalElements).AsQueryable();
@@ -452,7 +448,10 @@ namespace TestNUnit
             Func<TState, Exception, string> formatter)
         {
             TestContext.WriteLine($"[{eventId}] {formatter(state, exception)}");
-            if (exception != null) TestContext.WriteLine(exception.ToString());
+            if (exception != null)
+            {
+                TestContext.WriteLine(exception.ToString());
+            }
         }
 
         private class NoopDisposable : IDisposable
@@ -461,6 +460,7 @@ namespace TestNUnit
 
             public void Dispose()
             {
+                //Do nothing
             }
         }
     }
