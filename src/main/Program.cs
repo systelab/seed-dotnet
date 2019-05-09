@@ -2,6 +2,7 @@
 
 [assembly: InternalsVisibleTo("IntegrationTest")]
 [assembly: InternalsVisibleTo("test")]
+[assembly: InternalsVisibleTo("TestNUnit")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace main
 {
