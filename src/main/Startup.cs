@@ -8,6 +8,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Tokens;
+    using Migrations;
     using Newtonsoft.Json.Serialization;
     using SQLitePCL;
 
@@ -27,6 +28,9 @@
                 .AddJsonFile("appsettings.json").AddEnvironmentVariables();
 
             this.config = builder.Build();
+
+            //Migrations
+            DatabaseMigrationRunner.Start(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
         }
 
         public IConfiguration Configuration { get; }
@@ -72,7 +76,7 @@
                     config.MapRoute(
                         "Default",
                         "{controller}/{action}/{id?}",
-                        new {controller = "Home", action = "index"});
+                        new { controller = "Home", action = "index" });
                 });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.

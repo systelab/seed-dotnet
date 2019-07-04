@@ -32,19 +32,8 @@
 
         private DbConnection GetConnection()
         {
-            this.connection =
-                new SqliteConnection(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
-            // each connection will use the password for unencrypt the database.
-            // The following code executes the PRAGMA with two SQL Queries to prevent SQL-injection in the password
+            this.connection = new SqliteConnection(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
             this.connection.Open();
-            SqliteCommand command = this.connection.CreateCommand();
-            //command.CommandText = "SELECT quote($password);";
-            //command.Parameters.AddWithValue("$password", this.GetPassword());
-            //string quotedPassword = (string)command.ExecuteScalar();
-            //command.CommandText = "PRAGMA key = " + quotedPassword;
-            //command.Parameters.Clear();
-            //command.ExecuteNonQuery();
-
 
             return this.connection;
         }
@@ -71,7 +60,7 @@
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<PatientAllergy>()
-                .HasKey(t => new {t.IdAllergy, t.IdPatient});
+                .HasKey(t => new { t.IdAllergy, t.IdPatient });
         }
     }
 }

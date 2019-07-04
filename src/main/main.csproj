@@ -15,12 +15,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <Compile Remove="Migrations\20181214103832_seed_db_v1.cs" />
+    <Compile Remove="Migrations\20181214103832_seed_db_v1.Designer.cs" />
+    <Compile Remove="Migrations\20181214104107_seed_db_v2.cs" />
+    <Compile Remove="Migrations\20181214104107_seed_db_v2.Designer.cs" />
+    <Compile Remove="Migrations\20190113125024_seed-r7.cs" />
+    <Compile Remove="Migrations\20190113125024_seed-r7.Designer.cs" />
+    <Compile Remove="Migrations\20190113131416_seed-r7-v2.cs" />
+    <Compile Remove="Migrations\20190113131416_seed-r7-v2.Designer.cs" />
+    <Compile Remove="Migrations\SeedDotnetContextModelSnapshot.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.0.0" />
+    <PackageReference Include="FluentMigrator" Version="3.2.1" />
+    <PackageReference Include="FluentMigrator.Runner" Version="3.2.1" />
+    <PackageReference Include="FluentMigrator.Runner.Core" Version="3.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
@@ -65,7 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="seed_dotnetdb.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>
