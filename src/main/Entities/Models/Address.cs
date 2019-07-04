@@ -1,9 +1,7 @@
-﻿
-
-using main.Entities.Common;
-
-namespace main.Entities.Models
+﻿namespace main.Entities.Models
 {
+    using Common;
+
     public class Address : BaseEntity
     {
         public string City { get; set; }

@@ -1,14 +1,12 @@
 ﻿namespace main.Entities
 {
-    using System;
     using System.Data.Common;
-    using System.Security;
-    using main.Entities.Models;
-    using main.Entities.Models.Relations;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using Models;
+    using Models.Relations;
 
     public class SeedDotnetContext : IdentityDbContext<UserManage>
     {
@@ -38,8 +36,8 @@
                 new SqliteConnection(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
             // each connection will use the password for unencrypt the database.
             // The following code executes the PRAGMA with two SQL Queries to prevent SQL-injection in the password
-            connection.Open();
-            SqliteCommand command = connection.CreateCommand();
+            this.connection.Open();
+            SqliteCommand command = this.connection.CreateCommand();
             //command.CommandText = "SELECT quote($password);";
             //command.Parameters.AddWithValue("$password", this.GetPassword());
             //string quotedPassword = (string)command.ExecuteScalar();
@@ -48,7 +46,7 @@
             //command.ExecuteNonQuery();
 
 
-            return connection;
+            return this.connection;
         }
 
         public DbConnection CloseConnection()
@@ -58,10 +56,8 @@
                 this.connection.Close();
                 return this.connection;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         private string GetPassword()
@@ -75,8 +71,7 @@
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<PatientAllergy>()
-               .HasKey(t => new { t.IdAllergy, t.IdPatient });
-
+                .HasKey(t => new {t.IdAllergy, t.IdPatient});
         }
     }
 }

@@ -4,18 +4,15 @@
     using main.Contracts;
     using main.Controllers.Api;
     using Microsoft.Extensions.Logging;
-
     using Moq;
 
     internal class PatientControllerBuilder
     {
-        private IUnitOfWork unitOfWork;
-
+        private readonly IMedicalRecordNumberService medicalRecordNumber;
         private ILogger<PatientController> logger;
 
         private IMapper mapper;
-
-        private IMedicalRecordNumberService medicalRecordNumber;
+        private IUnitOfWork unitOfWork;
 
         public PatientControllerBuilder(IMapper mapper, IMedicalRecordNumberService medicalRecordNumber)
         {

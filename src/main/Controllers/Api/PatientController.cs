@@ -3,43 +3,44 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-
     using AutoMapper;
-    using main.Contracts;
-    using main.Entities.Common;
-    using main.Entities.Models;
-    using main.Entities.Models.Relations;
-    using main.Entities.ViewModels;
-    using main.Entities.ViewModels.Relations;
+    using Contracts;
+    using Entities.Common;
+    using Entities.Models;
+    using Entities.Models.Relations;
+    using Entities.ViewModels;
+    using Entities.ViewModels.Relations;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using PagedList.Core;
 
     [EnableCors("MyPolicy")]
     [Route("seed/v1/patients")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PatientController : Controller
     {
-        private readonly IUnitOfWork unitOfWork;
-
         private readonly ILogger<PatientController> logger;
 
         private readonly IMapper mapper;
 
         private readonly IMedicalRecordNumberService medicalRecordNumberService;
+        private readonly IUnitOfWork unitOfWork;
 
-        public PatientController(IUnitOfWork unitOfWork, ILogger<PatientController> logger, IMapper mapper, IMedicalRecordNumberService medicalRecordNumberService)
+        public PatientController(IUnitOfWork unitOfWork, ILogger<PatientController> logger, IMapper mapper,
+            IMedicalRecordNumberService medicalRecordNumberService)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            this.medicalRecordNumberService = medicalRecordNumberService ?? throw new ArgumentNullException(nameof(medicalRecordNumberService));
+            this.medicalRecordNumberService = medicalRecordNumberService ??
+                                              throw new ArgumentNullException(nameof(medicalRecordNumberService));
         }
 
         /// <summary>
-        /// Create a new patient in the database
+        ///     Create a new patient in the database
         /// </summary>
         /// <param name="patient">patient model</param>
         /// <returns>Task returning the status of the action</returns>
@@ -47,20 +48,15 @@
         [HttpPost]
         public async Task<IActionResult> CreatePatient([FromBody] PatientViewModel patient)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.BadRequest("Bad data");
-            }
+            if (!this.ModelState.IsValid) return this.BadRequest("Bad data");
 
             try
             {
                 // Save to the database
-                var newPatient = this.mapper.Map<Patient>(patient);
-                newPatient.MedicalNumber = this.medicalRecordNumberService.GetMedicalRecordNumber("http://localhost:9090");
-                if(patient.Id.Equals(Guid.Empty))
-                {
-                    newPatient.Id = Guid.NewGuid();
-                }
+                Patient newPatient = this.mapper.Map<Patient>(patient);
+                newPatient.MedicalNumber =
+                    this.medicalRecordNumberService.GetMedicalRecordNumber("http://localhost:9090");
+                if (patient.Id.Equals(Guid.Empty)) newPatient.Id = Guid.NewGuid();
                 await this.unitOfWork.Patients.Add(newPatient);
                 return this.Ok(this.mapper.Map<PatientViewModel>(newPatient));
             }
@@ -72,36 +68,38 @@
         }
 
         /// <summary>
-        /// Get list of all the patients stored in the database
+        ///     Get list of all the patients stored in the database
         /// </summary>
         /// <param name="page">
-        /// The page Number.
+        ///     The page Number.
         /// </param>
         /// <param name="elementsPerPage">
-        /// The elements Per Page.
+        ///     The elements Per Page.
         /// </param>
         /// <returns>
-        /// result of the action
+        ///     result of the action
         /// </returns>
         [HttpGet]
-        public async Task<IActionResult> GetAllPatients([FromQuery(Name = "page")] int page, [FromQuery(Name = "size")] int elementsPerPage)
+        public async Task<IActionResult> GetAllPatients([FromQuery(Name = "page")] int page,
+            [FromQuery(Name = "size")] int elementsPerPage)
         {
             try
             {
                 // PagedList is a one-based index. We offer a zero-based index, therefore we have to add 1 to the page number
-                var results = await this.unitOfWork.Patients.GetAllWithPaginationPatients(page + 1, elementsPerPage);
+                PagedList<Patient> results =
+                    await this.unitOfWork.Patients.GetAllWithPaginationPatients(page + 1, elementsPerPage);
                 return this.Ok(this.mapper.Map<ExtendedPagedList<PatientViewModel>>(results));
-                
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Failed to get the patients for page {page} (number of elements per page {elementsPerPage}): {ex}");
+                this.logger.LogError(
+                    $"Failed to get the patients for page {page} (number of elements per page {elementsPerPage}): {ex}");
                 return this.BadRequest("Error Occurred");
             }
         }
 
         /// <summary>
-        /// Get Information of a patient
+        ///     Get Information of a patient
         /// </summary>
         /// <param name="uid">The id of the patient that you want to retrieve information</param>
         /// <returns>result of the action</returns>
@@ -122,7 +120,7 @@
         }
 
         /// <summary>
-        /// Remove a specific patient
+        ///     Remove a specific patient
         /// </summary>
         /// <param name="uid">The id of the patient that you want to remove</param>
         /// <returns>Task with the result of the action</returns>
@@ -132,22 +130,13 @@
         {
             try
             {
-                if (uid.Equals(Guid.Empty))
-                {
-                    return this.BadRequest("Bad data");
-                }
-                else
-                {
-                    Patient patientToDelete = await this.unitOfWork.Patients.Get(uid);                    
-                    if (patientToDelete == null)
-                    {
-                        throw new PatientNotFoundException();
-                    }
+                if (uid.Equals(Guid.Empty)) return this.BadRequest("Bad data");
 
-                    await this.unitOfWork.Patients.Remove(patientToDelete);
-                    return this.Ok();
+                Patient patientToDelete = await this.unitOfWork.Patients.Get(uid);
+                if (patientToDelete == null) throw new PatientNotFoundException();
 
-                }
+                await this.unitOfWork.Patients.Remove(patientToDelete);
+                return this.Ok();
             }
             catch (Exception ex)
             {
@@ -157,81 +146,61 @@
         }
 
         /// <summary>
-        /// Update the information of an existing patient
+        ///     Update the information of an existing patient
         /// </summary>
         /// <param name="uid">
-        /// unique identifier of the patient
+        ///     unique identifier of the patient
         /// </param>
         /// <param name="patient">
-        /// patient model
+        ///     patient model
         /// </param>
         /// <returns>
-        /// The <see cref="Task"/>.
+        ///     The <see cref="Task" />.
         /// </returns>
         [HttpPut]
         [Route("{uid}")]
         public async Task<IActionResult> UpdatePatient(Guid uid, [FromBody] PatientViewModel patient)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.BadRequest("Bad data");
-            }
+            if (!this.ModelState.IsValid) return this.BadRequest("Bad data");
 
             // Save to the database
-            var results = await this.unitOfWork.Patients.Get(uid);
-            if (results == null || results.Id.Equals(Guid.Empty))
-            {
-                return this.BadRequest("User does not exist");
-            }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(patient.Name))
-                {
-                    results.Name = patient.Name;
-                }
+            Patient results = await this.unitOfWork.Patients.Get(uid);
+            if (results == null || results.Id.Equals(Guid.Empty)) return this.BadRequest("User does not exist");
 
-                if (!string.IsNullOrWhiteSpace(patient.Email))
-                {
-                    results.Email = patient.Email;
-                }
+            if (!string.IsNullOrWhiteSpace(patient.Name)) results.Name = patient.Name;
 
-                if (!string.IsNullOrWhiteSpace(patient.Surname))
-                {
-                    results.Surname = patient.Surname;
-                }
+            if (!string.IsNullOrWhiteSpace(patient.Email)) results.Email = patient.Email;
 
-                if (!string.IsNullOrWhiteSpace(patient.MedicalNumber))
-                {
-                    results.MedicalNumber = patient.MedicalNumber;
-                }
+            if (!string.IsNullOrWhiteSpace(patient.Surname)) results.Surname = patient.Surname;
 
-                await this.unitOfWork.Patients.Update(results);
-                return this.Ok(this.mapper.Map<PatientViewModel>(results));
-            }
+            if (!string.IsNullOrWhiteSpace(patient.MedicalNumber)) results.MedicalNumber = patient.MedicalNumber;
 
+            await this.unitOfWork.Patients.Update(results);
+            return this.Ok(this.mapper.Map<PatientViewModel>(results));
         }
+
         #region Relation with Allergies
+
         /// <summary>
-        /// Assign Allergy to patient
+        ///     Assign Allergy to patient
         /// </summary>
         /// <param name="patientAllergy">PatientAllergy model</param>
         /// <param name="uid">uid of the patient</param>
         /// <returns>Task returning the status of the action</returns>
         [Route("{uid}/allergies")]
         [HttpPost]
-        public async Task<IActionResult> CreatePatientAllergy([FromBody] PatientAllergyViewModel patientAllergy, Guid uid)
+        public async Task<IActionResult> CreatePatientAllergy([FromBody] PatientAllergyViewModel patientAllergy,
+            Guid uid)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.BadRequest("Bad data");
-            }
+            if (!this.ModelState.IsValid) return this.BadRequest("Bad data");
 
             try
             {
                 // Save to the database
                 patientAllergy.IdPatient = uid;
                 patientAllergy.Id = Guid.NewGuid();
-                var newPatientAllergy = this.unitOfWork.Patients.AddAllergy(this.mapper.Map<PatientAllergy>(patientAllergy));
+                bool newPatientAllergy =
+                    this.unitOfWork.Patients.AddAllergy(this.mapper.Map<PatientAllergy>(patientAllergy));
                 return this.Ok(patientAllergy);
             }
             catch (Exception ex)
@@ -242,13 +211,13 @@
         }
 
         /// <summary>
-        /// Get list of all the allergies of the patient
+        ///     Get list of all the allergies of the patient
         /// </summary>
         /// <param name="uid">
-        /// The patient uid
+        ///     The patient uid
         /// </param>
         /// <returns>
-        /// result of the action
+        ///     result of the action
         /// </returns>
         [HttpGet]
         [Route("{uid}/allergies")]
@@ -256,9 +225,8 @@
         {
             try
             {
-                var results = this.unitOfWork.Patients.GetAllergies(uid);
+                List<PatientAllergy> results = this.unitOfWork.Patients.GetAllergies(uid);
                 return this.Ok(this.mapper.Map<List<PatientAllergyViewModel>>(results));
-
             }
             catch (Exception ex)
             {
@@ -266,17 +234,18 @@
                 return this.BadRequest("Error Occurred");
             }
         }
+
         /// <summary>
-        /// Get list of all the allergies of the patient
+        ///     Get list of all the allergies of the patient
         /// </summary>
         /// <param name="uid">
-        /// The patient uid
+        ///     The patient uid
         /// </param>
         /// <param name="uidAllergy">
-        /// The allergy uid
+        ///     The allergy uid
         /// </param>
         /// <returns>
-        /// result of the action
+        ///     result of the action
         /// </returns>
         [HttpDelete]
         [Route("{uid}/allergies/{uidAllergy}")]
@@ -284,9 +253,8 @@
         {
             try
             {
-                var results = this.unitOfWork.Patients.RemoveAllergy(uid, uidAllergy);
+                bool results = this.unitOfWork.Patients.RemoveAllergy(uid, uidAllergy);
                 return this.Ok(results);
-
             }
             catch (Exception ex)
             {
@@ -296,55 +264,39 @@
         }
 
         /// <summary>
-        /// Update the information of an existing patient
+        ///     Update the information of an existing patient
         /// </summary>
         /// <param name="uid">
-        /// unique identifier of the patient
+        ///     unique identifier of the patient
         /// </param>
         /// <param name="patient">
-        /// patient model
+        ///     patient model
         /// </param>
         /// <returns>
-        /// The <see cref="Task"/>.
+        ///     The <see cref="Task" />.
         /// </returns>
         [HttpPut]
         [Route("{uid}/allergies/{uidAllergy}")]
-        public async Task<IActionResult> UpdatePatientAllergy(Guid uid, Guid uidAllergy, [FromBody] PatientAllergyViewModel patientAllergy)
+        public async Task<IActionResult> UpdatePatientAllergy(Guid uid, Guid uidAllergy,
+            [FromBody] PatientAllergyViewModel patientAllergy)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.BadRequest("Bad data");
-            }
+            if (!this.ModelState.IsValid) return this.BadRequest("Bad data");
 
             // Save to the database
-            var results =  this.unitOfWork.Patients.GetPatientAllergy(uid, uidAllergy);
-            if (results == null || results.Id.Equals(Guid.Empty))
-            {
-                return this.BadRequest("User does not exist");
-            }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(patientAllergy.Note))
-                {
-                    results.Note = patientAllergy.Note;
-                }
+            PatientAllergy results = this.unitOfWork.Patients.GetPatientAllergy(uid, uidAllergy);
+            if (results == null || results.Id.Equals(Guid.Empty)) return this.BadRequest("User does not exist");
 
-                if (patientAllergy.LastOcurrence != DateTime.MinValue)
-                {
-                    results.LastOcurrence = patientAllergy.LastOcurrence;
-                }
+            if (!string.IsNullOrWhiteSpace(patientAllergy.Note)) results.Note = patientAllergy.Note;
 
-                if (patientAllergy.AssertedDate != DateTime.MinValue)
-                {
-                    results.AssertedDate = patientAllergy.AssertedDate;
-                }
+            if (patientAllergy.LastOcurrence != DateTime.MinValue) results.LastOcurrence = patientAllergy.LastOcurrence;
+
+            if (patientAllergy.AssertedDate != DateTime.MinValue) results.AssertedDate = patientAllergy.AssertedDate;
 
 
-                this.unitOfWork.Patients.UpdatePatientAllergy(results);
-                return this.Ok(this.mapper.Map<PatientAllergyViewModel>(results));
-            }
-
+            this.unitOfWork.Patients.UpdatePatientAllergy(results);
+            return this.Ok(this.mapper.Map<PatientAllergyViewModel>(results));
         }
+
         #endregion
     }
 }

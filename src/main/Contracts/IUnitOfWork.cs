@@ -1,9 +1,8 @@
-﻿using main.Contracts.Repository;
-using System;
-
-
-namespace main.Contracts
+﻿namespace main.Contracts
 {
+    using System;
+    using Repository;
+
     public interface IUnitOfWork : IDisposable
     {
         /*Referencia a las interfaces */

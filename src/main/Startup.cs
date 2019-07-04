@@ -1,18 +1,15 @@
 ﻿namespace main
 {
     using System.Text;
-
-
-
+    using Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Tokens;
-
     using Newtonsoft.Json.Serialization;
-    using main.Extensions;
+    using SQLitePCL;
 
     // This is 
     internal class Startup
@@ -24,9 +21,9 @@
         public Startup(IHostingEnvironment env)
         {
             this.env = env;
-            SQLitePCL.Batteries_V2.Init();
+            Batteries_V2.Init();
 
-            var builder = new ConfigurationBuilder().SetBasePath(this.env.ContentRootPath)
+            IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(this.env.ContentRootPath)
                 .AddJsonFile("appsettings.json").AddEnvironmentVariables();
 
             this.config = builder.Build();
@@ -58,10 +55,10 @@
                 app.UseSwagger();
             }
             else
-            { 
+            {
                 factory.AddConsole();
             }
-            
+
 
             app.UseCors("MyPolicy");
 
@@ -71,15 +68,15 @@
 
             app.UseMvc(
                 config =>
-                    {
-                        config.MapRoute(
-                            name: "Default",
-                            template: "{controller}/{action}/{id?}",
-                            defaults: new { controller = "Home", action = "index" });
-                    });
+                {
+                    config.MapRoute(
+                        "Default",
+                        "{controller}/{action}/{id?}",
+                        new {controller = "Home", action = "index"});
+                });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
-            
+
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Seed .Net"); });
@@ -89,16 +86,14 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(this.config);
-             if (this.env.IsEnvironment("Development"))
+            if (this.env.IsEnvironment("Development"))
             {
                 // Here you can set the services implemented only for DEV 
             }
 
             if (!this.env.IsEnvironment("Testing"))
-            {
                 // Add Swagger reference to the project. Swagger is not needed when testing
                 services.ConfigureSwagger();
-            }
 
             // Allow use the API from other origins 
             services.ConfigureCors();
@@ -119,14 +114,15 @@
                 {
                     cfg.TokenValidationParameters = new TokenValidationParameters
                     {
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["jwt:secretKey"])),
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["jwt:secretKey"])),
                         ValidIssuer = this.config["jwt:issuer"],
                         ValidateAudience = false,
                         ValidateLifetime = true
                     };
                 });
 
-           //Configure Logging
+            //Configure Logging
             services.AddLogging();
 
             //Configure Mappers
@@ -134,10 +130,9 @@
 
             services.AddMvc().AddJsonOptions(
                 config =>
-                    {
-                        config.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    });
-   
+                {
+                    config.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                });
         }
     }
 }

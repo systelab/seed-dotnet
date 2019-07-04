@@ -1,60 +1,60 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
-
-namespace main.Migrations
+﻿namespace main.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class seedr7v2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "PatientAllergies",
-                columns: table => new
+                "PatientAllergies",
+                table => new
                 {
-                    IdAllergy = table.Column<Guid>(nullable: false),
-                    IdPatient = table.Column<Guid>(nullable: false),
-                    Id = table.Column<Guid>(nullable: false),
-                    CreationTime = table.Column<DateTime>(nullable: false),
-                    UpdateTime = table.Column<DateTime>(nullable: false),
+                    IdAllergy = table.Column<Guid>(),
+                    IdPatient = table.Column<Guid>(),
+                    Id = table.Column<Guid>(),
+                    CreationTime = table.Column<DateTime>(),
+                    UpdateTime = table.Column<DateTime>(),
                     AllergiesId = table.Column<Guid>(nullable: true),
                     PatientsId = table.Column<Guid>(nullable: true),
-                    Note = table.Column<string>(nullable: false),
-                    LastOcurrence = table.Column<DateTime>(nullable: false),
-                    AssertedDate = table.Column<DateTime>(nullable: false)
+                    Note = table.Column<string>(),
+                    LastOcurrence = table.Column<DateTime>(),
+                    AssertedDate = table.Column<DateTime>()
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PatientAllergies", x => new { x.IdAllergy, x.IdPatient });
+                    table.PrimaryKey("PK_PatientAllergies", x => new {x.IdAllergy, x.IdPatient});
                     table.UniqueConstraint("AK_PatientAllergies_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PatientAllergies_Allergies_AllergiesId",
-                        column: x => x.AllergiesId,
-                        principalTable: "Allergies",
-                        principalColumn: "Id",
+                        "FK_PatientAllergies_Allergies_AllergiesId",
+                        x => x.AllergiesId,
+                        "Allergies",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PatientAllergies_Patients_PatientsId",
-                        column: x => x.PatientsId,
-                        principalTable: "Patients",
-                        principalColumn: "Id",
+                        "FK_PatientAllergies_Patients_PatientsId",
+                        x => x.PatientsId,
+                        "Patients",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PatientAllergies_AllergiesId",
-                table: "PatientAllergies",
-                column: "AllergiesId");
+                "IX_PatientAllergies_AllergiesId",
+                "PatientAllergies",
+                "AllergiesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PatientAllergies_PatientsId",
-                table: "PatientAllergies",
-                column: "PatientsId");
+                "IX_PatientAllergies_PatientsId",
+                "PatientAllergies",
+                "PatientsId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "PatientAllergies");
+                "PatientAllergies");
         }
     }
 }

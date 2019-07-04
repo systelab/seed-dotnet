@@ -1,18 +1,17 @@
-﻿using main.Entities.Models;
-using PagedList.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-
-namespace main.Contracts
+﻿namespace main.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq.Expressions;
+    using System.Threading.Tasks;
+    using Entities.Models;
+    using PagedList.Core;
+
     /// <summary>
-    /// Interface with all the method needed
+    ///     Interface with all the method needed
     /// </summary>
     public interface IRepositoryBase<TEntity> where TEntity
-    : class
+        : class
     {
         Task<TEntity> Get(Guid id);
         IEnumerable<TEntity> GetAll();

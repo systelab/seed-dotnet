@@ -1,36 +1,34 @@
-﻿using main.Contracts;
-using main.Contracts.Repository;
-using main.Entities;
-using main.Repository.Repositories;
-
-
-namespace main.Repository
+﻿namespace main.Repository
 {
+    using Contracts;
+    using Contracts.Repository;
+    using Entities;
+    using Repositories;
+
     public class UnitOfWork : IUnitOfWork
     {
         private readonly SeedDotnetContext _context;
 
         public UnitOfWork(SeedDotnetContext context)
         {
-            _context = context;
-            Patients = new PatientRepository(_context);
-            Allergies = new AllergyRepository(_context);
-
+            this._context = context;
+            this.Patients = new PatientRepository(this._context);
+            this.Allergies = new AllergyRepository(this._context);
         }
 
-        public IPatientRepository Patients { get; private set; }
-        public IAllergyRepository Allergies { get; private set; }
+        public IPatientRepository Patients { get; }
+        public IAllergyRepository Allergies { get; }
 
 
         public int Complete()
         {
-            return _context.SaveChanges();
+            return this._context.SaveChanges();
         }
 
         public void Dispose()
         {
-            _context.Dispose();
-            _context.CloseConnection();
+            this._context.Dispose();
+            this._context.CloseConnection();
         }
     }
 }

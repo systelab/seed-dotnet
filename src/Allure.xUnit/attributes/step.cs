@@ -1,10 +1,8 @@
-﻿using Allure.Commons;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Allure.builder.attributes
+﻿namespace Allure.builder.attributes
 {
+    using System.Collections.Generic;
+    using Commons;
+
     public class step
     {
         public string id { set; get; }

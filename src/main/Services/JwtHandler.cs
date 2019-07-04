@@ -1,50 +1,48 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
-using main.Entities;
-using main.Entities.Models;
-using main.Contracts;
-
-namespace main.Services
+﻿namespace main.Services
 {
+    using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Text;
+    using Contracts;
+    using Entities;
+    using Entities.Models;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.IdentityModel.Tokens;
+
     internal class JwtHandler : IJwtHandler
     {
-        private readonly SigningCredentials _signingCredentials;
         private readonly IConfigurationRoot _config;
+        private readonly SigningCredentials _signingCredentials;
 
         public JwtHandler(IConfigurationRoot config)
         {
-            _config = config;
-            SecurityKey _securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["jwt:secretKey"]));
-            _signingCredentials = new SigningCredentials(_securityKey, SecurityAlgorithms.HmacSha256);
+            this._config = config;
+            SecurityKey _securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._config["jwt:secretKey"]));
+            this._signingCredentials = new SigningCredentials(_securityKey, SecurityAlgorithms.HmacSha256);
         }
 
         public JsonWebToken Create(UserManage user)
         {
-            var claims = new[]
+            Claim[] claims =
             {
-                new Claim(JwtRegisteredClaimNames.Sub,user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
             };
-            var nowUtc = DateTime.Now;
+            DateTime nowUtc = DateTime.Now;
 
-            var creds = _signingCredentials;
-            var expires = nowUtc.AddMinutes(int.Parse(_config["jwt:expiryMinutes"]));
-            var exp = (long)(new TimeSpan(expires.Ticks).TotalSeconds);
+            SigningCredentials creds = this._signingCredentials;
+            DateTime expires = nowUtc.AddMinutes(int.Parse(this._config["jwt:expiryMinutes"]));
+            long exp = (long) new TimeSpan(expires.Ticks).TotalSeconds;
 
 
-            var token = new JwtSecurityToken(
-                _config["jwt:issuer"],
-                 _config["Tokens:Audience"],
-                 claims,
-                 expires: DateTime.Now.AddMinutes(int.Parse(_config["jwt:expiryMinutes"])),
-                 signingCredentials: creds
-                );
-            var tokenx = new JwtSecurityTokenHandler().WriteToken(token);
+            JwtSecurityToken token = new JwtSecurityToken(this._config["jwt:issuer"], this._config["Tokens:Audience"],
+                claims,
+                expires: DateTime.Now.AddMinutes(int.Parse(this._config["jwt:expiryMinutes"])),
+                signingCredentials: creds
+            );
+            string tokenx = new JwtSecurityTokenHandler().WriteToken(token);
 
             return new JsonWebToken
             {

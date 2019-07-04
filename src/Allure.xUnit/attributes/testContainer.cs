@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace Allure.builder.attributes
+﻿namespace Allure.builder.attributes
 {
+    using System.Collections.Generic;
+
     public class testContainer
     {
         public string name { set; get; }
