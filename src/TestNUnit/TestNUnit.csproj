@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Allure.Commons" Version="2.4.2.4" />
     <PackageReference Include="AutoFixture" Version="4.10.0" />
     <PackageReference Include="Moq" Version="4.12.0" />
     <PackageReference Include="nunit" Version="3.12.0" />
@@ -18,6 +19,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\main\main.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="allureConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@ namespace TestNUnit
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using Allure.Commons;
@@ -46,6 +47,8 @@ namespace TestNUnit
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
+            Environment.SetEnvironmentVariable("ALLURE_CONFIG", Path.Combine(Environment.CurrentDirectory, AllureConstants.CONFIG_FILENAME));
+
             Mapper.Reset();
             SeedMapperConfiguration automapConfiguration = new SeedMapperConfiguration();
             this.medicalRecordMock = new Mock<IMedicalRecordNumberService>();

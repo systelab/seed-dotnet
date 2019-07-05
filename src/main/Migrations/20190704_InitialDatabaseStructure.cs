@@ -54,7 +54,7 @@
             {
                 ICreateTableWithColumnOrSchemaOrDescriptionSyntax patientsTable = this.Create.Table(patientsTableName);
                 patientsTable.WithColumn("Id").AsBinary().PrimaryKey().NotNullable();
-                patientsTable.WithColumn("AddressId").AsBinary().ForeignKey(addressTableName, "Id");
+                patientsTable.WithColumn("AddressId").AsBinary().ForeignKey(addressTableName, "Id").Nullable();
                 patientsTable.WithColumn("Dob").AsString().NotNullable();
                 patientsTable.WithColumn("Email").AsString().Nullable();
                 patientsTable.WithColumn("Name").AsString().Nullable();
