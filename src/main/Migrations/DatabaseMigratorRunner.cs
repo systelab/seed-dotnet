@@ -11,6 +11,10 @@ namespace main.Migrations
     /// </summary>
     public static class DatabaseMigrationRunner
     {
+        /// <summary>
+        /// Static method that runs the migration
+        /// </summary>
+        /// <param name="connectionString">Example: Data Source=database.db</param>
         public static void Start(string connectionString)
         {
             IServiceProvider serviceProvider = CreateServices(connectionString);
@@ -24,7 +28,8 @@ namespace main.Migrations
         private static IServiceProvider CreateServices(string connectionString)
         {
             Assembly[] assemblies = {
-                typeof(InitialDatabaseStructure).Assembly
+                typeof(InitialDatabaseStructure).Assembly,
+                typeof(InsertExampleData).Assembly
             };
 
             return new ServiceCollection()
