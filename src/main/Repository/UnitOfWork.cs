@@ -5,30 +5,44 @@
     using Entities;
     using Repositories;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly SeedDotnetContext _context;
+        private readonly SeedDotnetContext context;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
         public UnitOfWork(SeedDotnetContext context)
         {
-            this._context = context;
-            this.Patients = new PatientRepository(this._context);
-            this.Allergies = new AllergyRepository(this._context);
+            this.context = context;
+            this.Patients = new PatientRepository(this.context);
+            this.Allergies = new AllergyRepository(this.context);
         }
 
         public IPatientRepository Patients { get; }
         public IAllergyRepository Allergies { get; }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public int Complete()
         {
-            return this._context.SaveChanges();
+            return this.context.SaveChanges();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Dispose()
         {
-            this._context.Dispose();
-            this._context.CloseConnection();
+            this.context.Dispose();
+            this.context.CloseConnection();
         }
     }
 }

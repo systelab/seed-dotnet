@@ -23,8 +23,15 @@
     using Services;
     using Swashbuckle.AspNetCore.Swagger;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ServiceExtensions
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureCors(this IServiceCollection services)
         {
             services.AddCors(
@@ -33,6 +40,10 @@
                     builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureSwagger(this IServiceCollection services)
         {
             services.AddSwaggerGen(
@@ -67,6 +78,10 @@
                 });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureIdentity(this IServiceCollection services)
         {
             services.AddIdentity<UserManage, IdentityRole>(
@@ -81,6 +96,10 @@
                 }).AddEntityFrameworkStores<SeedDotnetContext>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureScope(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -96,6 +115,10 @@
                 Policy.Handle<Exception>().CircuitBreaker(2, TimeSpan.FromMinutes(1)));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureMapper(this IServiceCollection services)
         {
             MapperConfiguration automapConfiguration = new MapperConfiguration(cfg =>
@@ -140,10 +163,10 @@
             services.AddSingleton(mapper);
         }
 
-        public static void ConfigureLoggerService(this IServiceCollection services)
-        {
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureContext(this IServiceCollection services)
         {
             services.AddDbContext<SeedDotnetContext>();

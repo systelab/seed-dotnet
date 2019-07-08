@@ -50,7 +50,7 @@
             this.mockRepositories.Setup(p => p.Allergies).Returns(this.mockAllergyRepository.Object);
 
             this.InitializeData();
-            Test.createInstance();
+            Test.CreateInstance();
         }
 
         private const string MockedMedicalRecordNumber = "MR_";
@@ -85,7 +85,7 @@
             string testId = string.Empty;
             try
             {
-                testId = Test.addTest(
+                testId = Test.AddTest(
                     new testDefinition
                     {
                         name = "Insert a Patient",
@@ -96,17 +96,17 @@
                     });
 
                 // Arrange
-                Test.addStep(new step {description = "Arrange", name = "Step 1: Arrange"});
+                Test.AddStep(new step {description = "Arrange", name = "Step 1: Arrange"});
                 PatientViewModel patientToInsert =
                     new PatientViewModel {Email = email, Id = id, Surname = lastname, Name = name};
                 Patient mappedPatientToInsert = this.mapper.Map<Patient>(patientToInsert);
                 this.mockPatientRepository.Setup(repo =>
                     repo.Add(It.Is<Patient>(p => p.Equals(mappedPatientToInsert))));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Act
-                Test.addStep(
+                Test.AddStep(
                     new step
                     {
                         description = "Insert patient",
@@ -129,10 +129,10 @@
                         }
                     });
                 var result = await sut.CreatePatient(patientToInsert);
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Assert
-                Test.addStep(new step
+                Test.AddStep(new step
                     {description = "Check if the patient was inserted", name = "Step 3: Assert"});
                 this.mockRepositories.Verify();
                 var viewResult = Assert.IsType<OkObjectResult>(result);
@@ -140,13 +140,13 @@
                 // we expect the MRN to be this string
                 patientToInsert.MedicalNumber = MockedMedicalRecordNumber;
                 Assert.Equal(JsonConvert.SerializeObject(patientToInsert), JsonConvert.SerializeObject(model));
-                Test.stopStep(Status.passed);
-                Test.stopTest(testId, Status.passed, "Test success", "Passed");
+                Test.StopStep(Status.passed);
+                Test.StopTest(testId, Status.passed, "Test success", "Passed");
             }
             catch (Exception ex)
             {
-                Test.stopStep(Status.failed);
-                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
+                Test.StopStep(Status.failed);
+                Test.StopTest(testId, Status.passed, "Test failed", ex.ToString());
                 Assert.True(false);
             }
         }
@@ -157,7 +157,7 @@
             IQueryable<Patient> list = this.GetPatientList(totalElements);
             try
             {
-                testId = Test.addTest(
+                testId = Test.AddTest(
                     new testDefinition
                     {
                         name = "Get list of patients",
@@ -168,25 +168,25 @@
                     });
 
                 // Arrange
-                Test.addStep(new step {description = "Arrange", name = "Step 1: Arrange"});
+                Test.AddStep(new step {description = "Arrange", name = "Step 1: Arrange"});
                 this.mockPatientRepository
                     .Setup(repo => repo.GetAllWithPaginationPatients(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(
                         new PagedList<Patient>(list, page + 1, elementsPerPage));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Act
-                Test.addStep(
+                Test.AddStep(
                     new step
                     {
                         description = $" Get all the patients of page {page}, just {elementsPerPage} items",
                         name = "Step 2: Act"
                     });
                 var result = await sut.GetAllPatients(page, 18);
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Assert
-                Test.addStep(
+                Test.AddStep(
                     new step
                     {
                         description = "Check if the number the patients returned is correct",
@@ -202,13 +202,13 @@
                 CollectionAssert.AreEqual(
                     list.Skip(page * elementsPerPage).Take(elementsPerPage).Select(p => p.Id).ToArray(),
                     model.Content.Select(p => p.Id).ToArray());
-                Test.stopStep(Status.passed);
-                Test.stopTest(testId, Status.passed, "Test success", "Passed");
+                Test.StopStep(Status.passed);
+                Test.StopTest(testId, Status.passed, "Test success", "Passed");
             }
             catch (Exception ex)
             {
-                Test.stopStep(Status.failed);
-                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
+                Test.StopStep(Status.failed);
+                Test.StopTest(testId, Status.passed, "Test failed", ex.ToString());
                 Assert.True(false, ex.ToString());
             }
         }
@@ -254,7 +254,7 @@
             string testId = string.Empty;
             try
             {
-                testId = Test.addTest(
+                testId = Test.AddTest(
                     new testDefinition
                     {
                         name = "Create Patient Return Bad Request Given Invalid Patient",
@@ -264,14 +264,14 @@
                         epicName = "Unit Tests"
                     });
 
-                Test.addStep(new step {description = "Arrange", name = "Step 1: Arrange"});
+                Test.AddStep(new step {description = "Arrange", name = "Step 1: Arrange"});
 
                 // Arrange
                 PatientController sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
                 sut.ModelState.AddModelError("error", "some error");
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
-                Test.addStep(
+                Test.AddStep(
                     new step
                     {
                         description = "Act",
@@ -282,20 +282,20 @@
 
                 // Act
                 var result = await sut.CreatePatient(null);
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
-                Test.addStep(new step {description = "Assert", name = "Step 3: Assert"});
+                Test.AddStep(new step {description = "Assert", name = "Step 3: Assert"});
 
                 // Assert
                 Assert.IsType<BadRequestObjectResult>(result);
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
-                Test.stopTest(testId, Status.passed, "Test success", "Passed");
+                Test.StopTest(testId, Status.passed, "Test success", "Passed");
             }
             catch (Exception ex)
             {
-                Test.stopStep(Status.failed);
-                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
+                Test.StopStep(Status.failed);
+                Test.StopTest(testId, Status.passed, "Test failed", ex.ToString());
                 Assert.True(false);
             }
         }
@@ -307,7 +307,7 @@
             string testId = string.Empty;
             try
             {
-                testId = Test.addTest(
+                testId = Test.AddTest(
                     new testDefinition
                     {
                         name = "Create a new Patient",
@@ -318,17 +318,17 @@
                     });
 
                 // Arrange
-                Test.addStep(new step {description = "Arrange", name = "Step 1: Arrange"});
+                Test.AddStep(new step {description = "Arrange", name = "Step 1: Arrange"});
                 PatientController sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
                 PatientViewModel patient = new PatientViewModel
                 {
                     Name = "Carlos", Surname = "Carmona", Email = "ccarmona@werfen.com"
                 };
 
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Act
-                Test.addStep(
+                Test.AddStep(
                     new step
                     {
                         description = "Act",
@@ -346,10 +346,10 @@
 
                 var result = await sut.CreatePatient(patient);
 
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Assert
-                Test.addStep(new step {description = "Assert", name = "Step 3: Assert"});
+                Test.AddStep(new step {description = "Assert", name = "Step 3: Assert"});
                 var viewResult = Assert.IsType<OkObjectResult>(result);
                 var model = Assert.IsType<PatientViewModel>(viewResult.Value);
                 this.mockPatientRepository.Verify(repo => repo.Add(It.IsAny<Patient>()));
@@ -358,13 +358,13 @@
                 Assert.Equal(patient.Surname, model.Surname);
                 Assert.Equal(MockedMedicalRecordNumber, model.MedicalNumber);
 
-                Test.stopStep(Status.passed);
-                Test.stopTest(testId, Status.passed, "Test success", "Passed");
+                Test.StopStep(Status.passed);
+                Test.StopTest(testId, Status.passed, "Test success", "Passed");
             }
             catch (Exception ex)
             {
-                Test.stopStep(Status.failed);
-                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
+                Test.StopStep(Status.failed);
+                Test.StopTest(testId, Status.passed, "Test failed", ex.ToString());
                 Assert.True(false, ex.ToString());
             }
         }
@@ -377,7 +377,7 @@
             string testId = string.Empty;
             try
             {
-                testId = Test.addTest(
+                testId = Test.AddTest(
                     new testDefinition
                     {
                         name = "Create Patient Constructor Null Parameters",
@@ -399,11 +399,11 @@
                 Assert.Throws<ArgumentNullException>(() => { this.sutBuilder.WithLogger(null).Build(); });
                 Assert.Throws<ArgumentNullException>(() => { this.sutBuilder.WithMapper(null).Build(); });
 
-                Test.stopTest(testId, Status.passed, "Test success", "This was fantastic");
+                Test.StopTest(testId, Status.passed, "Test success", "This was fantastic");
             }
             catch (Exception ex)
             {
-                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
+                Test.StopTest(testId, Status.passed, "Test failed", ex.ToString());
                 Assert.True(false);
             }
         }
@@ -420,7 +420,7 @@
             IQueryable<Patient> list = this.GetPatientList(totalElements);
             try
             {
-                testId = Test.addTest(
+                testId = Test.AddTest(
                     new testDefinition
                     {
                         name = "Get list of patients",
@@ -431,25 +431,25 @@
                     });
 
                 // Arrange
-                Test.addStep(new step {description = "Arrange", name = "Step 1: Arrange"});
+                Test.AddStep(new step {description = "Arrange", name = "Step 1: Arrange"});
                 this.mockPatientRepository
                     .Setup(repo => repo.GetAllWithPaginationPatients(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(
                         new PagedList<Patient>(list, page + 1, elementsPerPage));
                 PatientController sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Act
-                Test.addStep(
+                Test.AddStep(
                     new step
                     {
                         description = $" Get all the patients of page {page}, just {elementsPerPage} items",
                         name = "Step 2: Act"
                     });
                 var result = await sut.GetAllPatients(page, 18);
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Assert
-                Test.addStep(
+                Test.AddStep(
                     new step
                     {
                         description = "Check if the number the patients returned is correct",
@@ -463,13 +463,13 @@
 
                 // the list shall be empty
                 Assert.False(model.Content.Any());
-                Test.stopStep(Status.passed);
-                Test.stopTest(testId, Status.passed, "Test success", "Passed");
+                Test.StopStep(Status.passed);
+                Test.StopTest(testId, Status.passed, "Test success", "Passed");
             }
             catch (Exception ex)
             {
-                Test.stopStep(Status.failed);
-                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
+                Test.StopStep(Status.failed);
+                Test.StopTest(testId, Status.passed, "Test failed", ex.ToString());
                 Assert.True(false, ex.ToString());
             }
         }
@@ -502,7 +502,7 @@
             string testId = string.Empty;
             try
             {
-                testId = Test.addTest(
+                testId = Test.AddTest(
                     new testDefinition
                     {
                         name = "Get list of patients",
@@ -513,14 +513,14 @@
                     });
 
                 // Arrange
-                Test.addStep(new step {description = "Arrange", name = "Step 1: Arrange"});
+                Test.AddStep(new step {description = "Arrange", name = "Step 1: Arrange"});
                 this.mockPatientRepository.Setup(repo => repo.Get(It.IsAny<Guid>()))
                     .ReturnsAsync(this.listOfPatients[1]);
                 PatientController sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Act
-                Test.addStep(
+                Test.AddStep(
                     new step
                     {
                         description = " Get patient information",
@@ -535,10 +535,10 @@
                         }
                     });
                 var result = await sut.GetPatient(this.listOfPatients[1].Id);
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Assert
-                Test.addStep(
+                Test.AddStep(
                     new step
                     {
                         description = "Check if the patient information returned is correct",
@@ -551,13 +551,13 @@
                 Assert.Equal(this.listOfPatients[1].Surname, model.Surname);
                 Assert.Equal(this.listOfPatients[1].MedicalNumber, model.MedicalNumber);
                 Assert.Equal(this.listOfPatients[1].Id, model.Id);
-                Test.stopStep(Status.passed);
-                Test.stopTest(testId, Status.passed, "Test success", "Passed");
+                Test.StopStep(Status.passed);
+                Test.StopTest(testId, Status.passed, "Test success", "Passed");
             }
             catch (Exception ex)
             {
-                Test.stopStep(Status.failed);
-                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
+                Test.StopStep(Status.failed);
+                Test.StopTest(testId, Status.passed, "Test failed", ex.ToString());
                 Assert.True(false);
             }
         }
@@ -569,7 +569,7 @@
             string testId = string.Empty;
             try
             {
-                testId = Test.addTest(
+                testId = Test.AddTest(
                     new testDefinition
                     {
                         name = "Remove a Patient",
@@ -580,7 +580,7 @@
                     });
 
                 // Arrange
-                Test.addStep(new step {description = "Arrange", name = "Step 1: Arrange"});
+                Test.AddStep(new step {description = "Arrange", name = "Step 1: Arrange"});
                 this.mockPatientRepository.Setup(repo => repo.Get(It.IsAny<Guid>()))
                     .ReturnsAsync(this.listOfPatients[0]);
                 PatientController sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
@@ -593,10 +593,10 @@
                     Email = "cremundo@werfen.com",
                     MedicalNumber = "8899"
                 };
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Act
-                Test.addStep(
+                Test.AddStep(
                     new step
                     {
                         description = " Remove the patient",
@@ -610,19 +610,19 @@
                         }
                     });
                 var result = await sut.Remove(patient.Id);
-                Test.stopStep(Status.passed);
+                Test.StopStep(Status.passed);
 
                 // Assert
-                Test.addStep(new step
+                Test.AddStep(new step
                     {description = "Check if the patient is removed", name = "Step 3: Assert"});
                 var viewResult = Assert.IsType<OkResult>(result);
-                Test.stopStep(Status.passed);
-                Test.stopTest(testId, Status.passed, "Test success", "Passed");
+                Test.StopStep(Status.passed);
+                Test.StopTest(testId, Status.passed, "Test success", "Passed");
             }
             catch (Exception ex)
             {
-                Test.stopStep(Status.failed);
-                Test.stopTest(testId, Status.passed, "Test failed", ex.ToString());
+                Test.StopStep(Status.failed);
+                Test.StopTest(testId, Status.passed, "Test failed", ex.ToString());
                 Assert.True(false, ex.ToString());
             }
         }
@@ -663,6 +663,7 @@
 
             public void Dispose()
             {
+                //This method is empty
             }
         }
     }

@@ -3,7 +3,7 @@
     using System;
 
     /// <inheritdoc />
-    internal class PatientNotFoundException : Exception
+    public class PatientNotFoundException : Exception
     {
     }
 }

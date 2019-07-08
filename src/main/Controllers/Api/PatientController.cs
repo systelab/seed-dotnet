@@ -17,6 +17,9 @@
     using Microsoft.Extensions.Logging;
     using PagedList.Core;
 
+    /// <summary>
+    /// 
+    /// </summary>
     [EnableCors("MyPolicy")]
     [Route("seed/v1/patients")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -29,6 +32,13 @@
         private readonly IMedicalRecordNumberService medicalRecordNumberService;
         private readonly IUnitOfWork unitOfWork;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="logger"></param>
+        /// <param name="mapper"></param>
+        /// <param name="medicalRecordNumberService"></param>
         public PatientController(IUnitOfWork unitOfWork, ILogger<PatientController> logger, IMapper mapper,
             IMedicalRecordNumberService medicalRecordNumberService)
         {
@@ -233,8 +243,6 @@
                 // Save to the database
                 patientAllergy.IdPatient = uid;
                 patientAllergy.Id = Guid.NewGuid();
-                bool newPatientAllergy =
-                    this.unitOfWork.Patients.AddAllergy(this.mapper.Map<PatientAllergy>(patientAllergy));
                 return this.Ok(patientAllergy);
             }
             catch (Exception ex)

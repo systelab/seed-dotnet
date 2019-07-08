@@ -8,21 +8,42 @@
     using Models;
     using Models.Relations;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class SeedDotnetContext : IdentityDbContext<UserManage>
     {
         private readonly IConfigurationRoot config;
         private SqliteConnection connection;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="options"></param>
         public SeedDotnetContext(IConfigurationRoot config, DbContextOptions options)
             : base(options)
         {
             this.config = config;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DbSet<Patient> Patients { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public DbSet<Allergy> Allergies { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public DbSet<PatientAllergy> PatientAllergies { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="optionsBuilder"></param>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
@@ -38,6 +59,10 @@
             return this.connection;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public DbConnection CloseConnection()
         {
             if (this.connection != null)
@@ -55,12 +80,16 @@
             return this.config["ConnectionStrings:password"];
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<PatientAllergy>()
-                .HasKey(t => new {t.IdAllergy, t.IdPatient});
+                .HasKey(t => new { t.IdAllergy, t.IdPatient });
         }
     }
 }

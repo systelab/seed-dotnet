@@ -6,7 +6,7 @@
     using attributes;
     using Commons;
 
-    public class Test
+    public static class Test
     {
         public enum Fixture
         {
@@ -16,23 +16,23 @@
             AfterScenario
         }
 
-        private static AllureLifecycle instance;
+        private static AllureLifecycle _instance;
 
-        public static void createInstance()
+        public static void CreateInstance()
         {
-            instance = AllureLifecycle.Instance;
+            _instance = AllureLifecycle.Instance;
         }
 
-        public static (string path, byte[] content) addAttachment(Attachment attach)
+        public static (string path, byte[] content) AddAttachment(Attachment attach)
         {
             File.WriteAllText(attach.source, attach.name);
             return (attach.source, File.ReadAllBytes(attach.source));
         }
 
-        public static string addTest(testDefinition test)
+        public static string AddTest(testDefinition test)
         {
-            TestResult tr = new TestResult();
-            tr.labels = new List<Label>();
+            TestResult tr = new TestResult {labels = new List<Label>()};
+
             if (string.IsNullOrWhiteSpace(test.id))
             {
                 test.id = Guid.NewGuid().ToString("N");
@@ -80,11 +80,11 @@
                 }
             }
 
-            instance = instance.StartTestCase(tr);
+            _instance = _instance.StartTestCase(tr);
             return tr.uuid;
         }
 
-        public static string addTestContainer(testContainer testContainer)
+        public static string AddTestContainer(testContainer testContainer)
         {
             TestResultContainer trc = new TestResultContainer();
 
@@ -125,11 +125,11 @@
                 }
             }
 
-            instance.StartTestContainer(trc);
+            _instance.StartTestContainer(trc);
             return trc.uuid;
         }
 
-        public static string addStep(step st)
+        public static string AddStep(step st)
         {
             StepResult str = new StepResult();
 
@@ -152,17 +152,17 @@
             }
 
             str.description = st.description;
-            instance.StartStep(uuid, str);
+            _instance.StartStep(uuid, str);
             return uuid;
         }
 
-        public static bool stopStep(Status status)
+        public static bool StopStep(Status status)
         {
             try
             {
-                instance.UpdateStep(x => x.status = status);
-                instance.UpdateStep(x => x.stage = Stage.finished);
-                instance.StopStep();
+                _instance.UpdateStep(x => x.status = status);
+                _instance.UpdateStep(x => x.stage = Stage.finished);
+                _instance.StopStep();
                 return true;
             }
             catch (Exception ex)
@@ -171,13 +171,13 @@
             }
         }
 
-        public static bool stopTest(string testId, Status status, string message, string trace)
+        public static bool StopTest(string testId, Status status, string message, string trace)
         {
             StatusDetails std = new StatusDetails
                 {flaky = false, known = true, message = message, trace = trace, muted = false};
-            instance = instance.UpdateTestCase(testId, x => x.status = status);
-            instance = instance.UpdateTestCase(testId, x => x.statusDetails = std);
-            instance.StopTestCase(testId)
+            _instance = _instance.UpdateTestCase(testId, x => x.status = status);
+            _instance = _instance.UpdateTestCase(testId, x => x.statusDetails = std);
+            _instance.StopTestCase(testId)
                 .WriteTestCase(testId);
 
             return true;
