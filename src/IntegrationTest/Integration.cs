@@ -292,7 +292,10 @@
                 {
                     List<Patient> patients = context.Patients.ToList();
 
-                    foreach (Patient patient in patients) context.Patients.Remove(patient);
+                    foreach (Patient patient in patients)
+                    {
+                        context.Patients.Remove(patient);
+                    }
 
                     context.SaveChanges();
                 }
@@ -307,7 +310,9 @@
                 using (SeedDotnetContext context = scope.ServiceProvider.GetRequiredService<SeedDotnetContext>())
                 {
                     foreach (PatientViewModel patient in patientList)
+                    {
                         context.Patients.Add(mapper.Map<Patient>(patient));
+                    }
 
                     context.SaveChanges();
                 }

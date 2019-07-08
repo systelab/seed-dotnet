@@ -24,7 +24,10 @@
                 {
                     IRestResponse response = client.Execute(
                         new RestRequest("/identity/v1/medical-record-number", Method.GET, DataFormat.Json));
-                    if (!response.IsSuccessful) throw response.ErrorException;
+                    if (!response.IsSuccessful)
+                    {
+                        throw response.ErrorException;
+                    }
 
                     return response.Content;
                 });

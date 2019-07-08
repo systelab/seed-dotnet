@@ -60,7 +60,7 @@
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<PatientAllergy>()
-                .HasKey(t => new { t.IdAllergy, t.IdPatient });
+                .HasKey(t => new {t.IdAllergy, t.IdPatient});
         }
     }
 }

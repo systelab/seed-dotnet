@@ -36,7 +36,10 @@
         public async Task<JsonWebToken> RefreshAccessToken(string token)
         {
             UserManage refreshToken = await this.GetRefreshToken(token).ConfigureAwait(false);
-            if (refreshToken == null) return null;
+            if (refreshToken == null)
+            {
+                return null;
+            }
 
             JsonWebToken jwt = this.jwtHandler.Create(refreshToken);
             jwt.RefreshToken = refreshToken.RefreshToken;

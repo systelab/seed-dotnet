@@ -40,13 +40,20 @@
         [HttpPost]
         public async Task<IActionResult> CreateAllergy([FromBody] AllergyViewModel allergy)
         {
-            if (!this.ModelState.IsValid) return this.BadRequest("Bad data");
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest("Bad data");
+            }
 
             try
             {
                 // Save to the database
                 Allergy newAllergy = this.mapper.Map<Allergy>(allergy);
-                if (allergy.Id.Equals(Guid.Empty)) newAllergy.Id = Guid.NewGuid();
+                if (allergy.Id.Equals(Guid.Empty))
+                {
+                    newAllergy.Id = Guid.NewGuid();
+                }
+
                 await this.unitOfWork.Allergies.Add(newAllergy);
                 return this.Ok(this.mapper.Map<AllergyViewModel>(newAllergy));
             }
@@ -120,12 +127,17 @@
         {
             try
             {
-                if (uid.Equals(Guid.Empty)) return this.BadRequest("Bad data");
+                if (uid.Equals(Guid.Empty))
+                {
+                    return this.BadRequest("Bad data");
+                }
 
                 Allergy allergyToDelete = await this.unitOfWork.Allergies.Get(uid);
                 if (allergyToDelete == null)
                     //TODO do here something general
+                {
                     throw new PatientNotFoundException();
+                }
 
                 await this.unitOfWork.Allergies.Remove(allergyToDelete);
                 return this.Ok();
@@ -153,17 +165,32 @@
         [Route("{uid}")]
         public async Task<IActionResult> UpdateAllergy(Guid uid, [FromBody] AllergyViewModel allergy)
         {
-            if (!this.ModelState.IsValid) return this.BadRequest("Bad data");
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest("Bad data");
+            }
 
             // Save to the database
             Allergy results = await this.unitOfWork.Allergies.Get(uid);
-            if (results == null || results.Id.Equals(Guid.Empty)) return this.BadRequest("User does not exist");
+            if (results == null || results.Id.Equals(Guid.Empty))
+            {
+                return this.BadRequest("User does not exist");
+            }
 
-            if (!string.IsNullOrWhiteSpace(allergy.Name)) results.Name = allergy.Name;
+            if (!string.IsNullOrWhiteSpace(allergy.Name))
+            {
+                results.Name = allergy.Name;
+            }
 
-            if (!string.IsNullOrWhiteSpace(allergy.Signs)) results.Signs = allergy.Signs;
+            if (!string.IsNullOrWhiteSpace(allergy.Signs))
+            {
+                results.Signs = allergy.Signs;
+            }
 
-            if (!string.IsNullOrWhiteSpace(allergy.Symptoms)) results.Symptoms = allergy.Symptoms;
+            if (!string.IsNullOrWhiteSpace(allergy.Symptoms))
+            {
+                results.Symptoms = allergy.Symptoms;
+            }
 
             await this.unitOfWork.Allergies.Update(results);
             return this.Ok(this.mapper.Map<AllergyViewModel>(results));

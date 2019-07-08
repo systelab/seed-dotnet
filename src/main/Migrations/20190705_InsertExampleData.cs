@@ -1,29 +1,20 @@
 ﻿namespace main.Migrations
 {
     using System.Collections.Generic;
-    using System.Data;
     using FluentMigrator;
-    using FluentMigrator.Builders.Create.Table;
 
     /// <summary>
-    /// Insertion of example data into different tables.
+    ///     Insertion of example data into different tables.
     /// </summary>
     [Migration(20190705141100)]
     public class InsertExampleData : Migration
     {
+        /// <summary>
+        /// Up method
+        /// </summary>
         public override void Up()
         {
-            string addressTableName = "Address";
-            string allergiesTableName = "Allergies";
-            string patientsTableName = "Patients";
-            string patientAllergiesTableName = "PatientAllergies";
-            string aspNetRolesTableName = "AspNetRoles";
             string aspNetUsersTableName = "AspNetUsers";
-            string aspNetRoleClaimsTableName = "AspNetRoleClaims";
-            string aspNetUsersClaimsTableName = "AspNetUserClaims";
-            string aspNetUserLoginsTableName = "AspNetUserLogins";
-            string aspNetUserRolesTableName = "AspNetUserRoles";
-            string aspNetUserTokensTableName = "AspNetUserTokens";
 
             if (this.Schema.Table(aspNetUsersTableName).Exists())
             {
@@ -153,10 +144,14 @@
                     this.Insert.IntoTable(aspNetUsersTableName).Row(user);
                 }
             }
-
         }
+
+        /// <summary>
+        /// Down method
+        /// </summary>
         public override void Down()
         {
+            //This method is empty because this script is responsible to create example data
         }
     }
 }

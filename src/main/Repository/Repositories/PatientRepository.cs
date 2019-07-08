@@ -64,8 +64,11 @@
         {
             if (this.context.PatientAllergies.Where(p => p.IdAllergy == idAllergy).Where(a => a.IdPatient == idPatient)
                     .Count() > 0)
+            {
                 return this.context.PatientAllergies.Where(p => p.IdAllergy == idAllergy)
                     .Where(a => a.IdPatient == idPatient).First();
+            }
+
             return null;
         }
 

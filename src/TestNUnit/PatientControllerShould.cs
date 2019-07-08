@@ -47,7 +47,8 @@ namespace TestNUnit
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
-            Environment.SetEnvironmentVariable("ALLURE_CONFIG", Path.Combine(Environment.CurrentDirectory, AllureConstants.CONFIG_FILENAME));
+            Environment.SetEnvironmentVariable("ALLURE_CONFIG",
+                Path.Combine(Environment.CurrentDirectory, AllureConstants.CONFIG_FILENAME));
 
             Mapper.Reset();
             SeedMapperConfiguration automapConfiguration = new SeedMapperConfiguration();
@@ -464,7 +465,10 @@ namespace TestNUnit
             if (this.isEnabled)
             {
                 TestContext.WriteLine($"[{eventId}] {formatter(state, exception)}");
-                if (exception != null) TestContext.WriteLine(exception.ToString());
+                if (exception != null)
+                {
+                    TestContext.WriteLine(exception.ToString());
+                }
             }
         }
     }

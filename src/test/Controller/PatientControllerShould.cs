@@ -651,7 +651,10 @@
             Func<TState, Exception, string> formatter)
         {
             this.testOutputHelper.WriteLine($"[{eventId}] {formatter(state, exception)}");
-            if (exception != null) this.testOutputHelper.WriteLine(exception.ToString());
+            if (exception != null)
+            {
+                this.testOutputHelper.WriteLine(exception.ToString());
+            }
         }
 
         private class NoopDisposable : IDisposable

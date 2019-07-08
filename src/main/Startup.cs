@@ -76,7 +76,7 @@
                     config.MapRoute(
                         "Default",
                         "{controller}/{action}/{id?}",
-                        new { controller = "Home", action = "index" });
+                        new {controller = "Home", action = "index"});
                 });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
@@ -97,7 +97,9 @@
 
             if (!this.env.IsEnvironment("Testing"))
                 // Add Swagger reference to the project. Swagger is not needed when testing
+            {
                 services.ConfigureSwagger();
+            }
 
             // Allow use the API from other origins 
             services.ConfigureCors();
