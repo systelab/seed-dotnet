@@ -23,12 +23,6 @@
             _instance = AllureLifecycle.Instance;
         }
 
-        public static (string path, byte[] content) AddAttachment(Attachment attach)
-        {
-            File.WriteAllText(attach.source, attach.name);
-            return (attach.source, File.ReadAllBytes(attach.source));
-        }
-
         public static string AddTest(testDefinition test)
         {
             TestResult tr = new TestResult {labels = new List<Label>()};
@@ -82,51 +76,6 @@
 
             _instance = _instance.StartTestCase(tr);
             return tr.uuid;
-        }
-
-        public static string AddTestContainer(testContainer testContainer)
-        {
-            TestResultContainer trc = new TestResultContainer();
-
-            if (string.IsNullOrWhiteSpace(testContainer.id))
-            {
-                testContainer.id = Guid.NewGuid().ToString("N");
-            }
-
-            trc.uuid = testContainer.id;
-            if (string.IsNullOrWhiteSpace(testContainer.name))
-            {
-                testContainer.name = "Container Name " + trc.uuid;
-            }
-
-            trc.name = testContainer.name;
-            if (!string.IsNullOrWhiteSpace(testContainer.description))
-            {
-                testContainer.description = "Container Description " + trc.uuid;
-            }
-
-            trc.description = testContainer.description;
-            if (testContainer.listLinks != null)
-            {
-                if (testContainer.listLinks.Count > 0)
-                {
-                    trc.links = new List<Link>();
-                    for (int i = 0; i < testContainer.listLinks.Count; i++)
-                    {
-                        if (testContainer.listLinks[i].isIssue)
-                        {
-                            Link.Issue(testContainer.listLinks[i].name, testContainer.listLinks[i].url);
-                        }
-                        else
-                        {
-                            Link.Tms(testContainer.listLinks[i].name, testContainer.listLinks[i].url);
-                        }
-                    }
-                }
-            }
-
-            _instance.StartTestContainer(trc);
-            return trc.uuid;
         }
 
         public static string AddStep(step st)
