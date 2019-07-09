@@ -1,10 +1,8 @@
 ﻿namespace main.Services
 {
     using System;
-    using main.Contracts;
+    using Contracts;
     using Polly;
-    using Polly.CircuitBreaker;
-
     using RestSharp;
 
     public class MedicalRecordNumberService : IMedicalRecordNumberService
@@ -22,23 +20,22 @@
             {
                 RestClient client = new RestClient(url);
 
-                return this.policy.Execute<string>(() =>
+                return this.policy.Execute(() =>
+                {
+                    IRestResponse response = client.Execute(
+                        new RestRequest("/identity/v1/medical-record-number", Method.GET, DataFormat.Json));
+                    if (!response.IsSuccessful)
                     {
+                        throw response.ErrorException;
+                    }
 
-                        IRestResponse response = client.Execute(
-                            new RestRequest("/identity/v1/medical-record-number", Method.GET, DataFormat.Json));
-                        if (!response.IsSuccessful)
-                        {
-                            throw response.ErrorException;
-                        }
-
-                        return response.Content;
-                    });
+                    return response.Content;
+                });
             }
             catch (Exception)
             {
                 return GetDefaultMedicalRecordNumber();
-            }            
+            }
         }
 
         private static string GetDefaultMedicalRecordNumber()

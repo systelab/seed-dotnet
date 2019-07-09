@@ -1,30 +1,49 @@
 ﻿namespace main.Entities
 {
-    using System;
     using System.Data.Common;
-    using System.Security;
-    using main.Entities.Models;
-    using main.Entities.Models.Relations;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using Models;
+    using Models.Relations;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class SeedDotnetContext : IdentityDbContext<UserManage>
     {
         private readonly IConfigurationRoot config;
         private SqliteConnection connection;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="options"></param>
         public SeedDotnetContext(IConfigurationRoot config, DbContextOptions options)
             : base(options)
         {
             this.config = config;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DbSet<Patient> Patients { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public DbSet<Allergy> Allergies { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public DbSet<PatientAllergy> PatientAllergies { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="optionsBuilder"></param>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
@@ -34,23 +53,16 @@
 
         private DbConnection GetConnection()
         {
-            this.connection =
-                new SqliteConnection(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
-            // each connection will use the password for unencrypt the database.
-            // The following code executes the PRAGMA with two SQL Queries to prevent SQL-injection in the password
-            connection.Open();
-            SqliteCommand command = connection.CreateCommand();
-            //command.CommandText = "SELECT quote($password);";
-            //command.Parameters.AddWithValue("$password", this.GetPassword());
-            //string quotedPassword = (string)command.ExecuteScalar();
-            //command.CommandText = "PRAGMA key = " + quotedPassword;
-            //command.Parameters.Clear();
-            //command.ExecuteNonQuery();
+            this.connection = new SqliteConnection(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
+            this.connection.Open();
 
-
-            return connection;
+            return this.connection;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public DbConnection CloseConnection()
         {
             if (this.connection != null)
@@ -58,10 +70,8 @@
                 this.connection.Close();
                 return this.connection;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         private string GetPassword()
@@ -70,13 +80,16 @@
             return this.config["ConnectionStrings:password"];
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<PatientAllergy>()
-               .HasKey(t => new { t.IdAllergy, t.IdPatient });
-
+                .HasKey(t => new { t.IdAllergy, t.IdPatient });
         }
     }
 }

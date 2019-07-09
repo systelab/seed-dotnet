@@ -1,15 +1,15 @@
-﻿using main.Entities;
-using System.Threading.Tasks;
-
-namespace main.Contracts
+﻿namespace main.Contracts
 {
+    using System.Threading.Tasks;
+    using Entities;
+
     /// <summary>
-    /// Service to manage logins
+    ///     Service to manage logins
     /// </summary>
     public interface IAccountService
     {
         /// <summary>
-        /// Login method
+        ///     Login method
         /// </summary>
         /// <param name="username">the user name</param>
         /// <param name="password">the user password</param>
@@ -17,7 +17,7 @@ namespace main.Contracts
         Task<JsonWebToken> SignIn(string username, string password);
 
         /// <summary>
-        /// Refresh the token
+        ///     Refresh the token
         /// </summary>
         /// <param name="token">token to refresh</param>
         /// <returns>the token refreshed</returns>

@@ -1,10 +1,10 @@
-using Allure.Commons;
-using NUnit.Allure.Attributes;
-using NUnit.Allure.Core;
-using NUnit.Framework;
-
 namespace NUnitTestProject
 {
+    using Allure.Commons;
+    using NUnit.Allure.Attributes;
+    using NUnit.Allure.Core;
+    using NUnit.Framework;
+
     [TestFixture]
     [AllureNUnit]
     [AllureEpic("Allure for C#")]
@@ -20,7 +20,7 @@ namespace NUnitTestProject
         [AllureSubSuite("Add")]
         public static void Return0_WhenAdd0And0()
         {
-            var actualResult = 0;
+            int actualResult = 0;
 
             AllureLifecycle.Instance.WrapInStep(() => { actualResult = Calculator.Add(0, 0); }, "Action:sum 0 plus 0");
             AllureLifecycle.Instance.WrapInStep(() => { Assert.AreEqual(0, actualResult); }, "Expected 0");
@@ -36,7 +36,7 @@ namespace NUnitTestProject
         [AllureSubSuite("Add")]
         public static void Return4_WhenAdd2And2()
         {
-            var actualResult = 0;
+            int actualResult = 0;
 
             AllureLifecycle.Instance.WrapInStep(() => { actualResult = Calculator.Add(2, 2); }, "Action:sum 2 plus 2");
             AllureLifecycle.Instance.WrapInStep(() => { Assert.AreEqual(4, actualResult); }, "Expected 4");
@@ -50,7 +50,7 @@ namespace NUnitTestProject
         [AllureSubSuite("Add")]
         public static void ReturnMinus5_WhenAddMinus3AndMinus2()
         {
-            var actualResult = 0;
+            int actualResult = 0;
 
             AllureLifecycle.Instance.WrapInStep(() => { actualResult = Calculator.Add(0, 0); }, "Action:sum 0 plus 0");
             AllureLifecycle.Instance.WrapInStep(() =>

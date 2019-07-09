@@ -1,12 +1,10 @@
-﻿using main.Entities.Models;
-using System;
-
-namespace main.Entities.ViewModels.Relations
+﻿namespace main.Entities.ViewModels.Relations
 {
-  
+    using System;
+    using Models;
+
     public class PatientAllergyViewModel
     {
-
         public Guid IdAllergy { get; set; }
 
         public Guid IdPatient { get; set; }

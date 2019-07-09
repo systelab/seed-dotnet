@@ -1,30 +1,34 @@
-﻿
-using Microsoft.AspNetCore.Mvc.Controllers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
-namespace main.Entities
+﻿namespace main.Entities
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using Microsoft.AspNetCore.Mvc.Controllers;
+    using Swashbuckle.AspNetCore.Swagger;
+    using Swashbuckle.AspNetCore.SwaggerGen;
+
     internal class SwaggerConsumesOperationFilter : IOperationFilter
     {
         /// <summary>
-        /// Apply the filter
+        ///     Apply the filter
         /// </summary>
         /// <param name="operation">Swagger description</param>
         /// <param name="context">Context of the operation filter</param>
-        public  void Apply(Operation operation, OperationFilterContext context)
+        public void Apply(Operation operation, OperationFilterContext context)
         {
-            var action = context?.ApiDescription?.ActionDescriptor as ControllerActionDescriptor;
-            var attribute = action?.MethodInfo.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(SwaggerConsumesAttribute));
+            ControllerActionDescriptor action = context?.ApiDescription?.ActionDescriptor as ControllerActionDescriptor;
+            CustomAttributeData attribute =
+                action?.MethodInfo.CustomAttributes.FirstOrDefault(a =>
+                    a.AttributeType == typeof(SwaggerConsumesAttribute));
 
             if (attribute != null)
             {
-                var primaryContentType = attribute.ConstructorArguments[0].Value as string;
-                var secondaryContentTypes = (attribute.ConstructorArguments[1].Value as IReadOnlyList<CustomAttributeTypedArgument>).Select(s => s.Value.ToString()).ToArray();
+                string primaryContentType = attribute.ConstructorArguments[0].Value as string;
+                string[] secondaryContentTypes =
+                    (attribute.ConstructorArguments[1].Value as IReadOnlyList<CustomAttributeTypedArgument>)
+                    .Select(s => s.Value.ToString()).ToArray();
 
-                var contentTypes = new List<string> { primaryContentType };
+                List<string> contentTypes = new List<string> {primaryContentType};
                 contentTypes.AddRange(secondaryContentTypes);
 
                 operation.Consumes = contentTypes;

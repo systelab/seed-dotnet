@@ -1,24 +1,23 @@
-﻿using AutoMapper;
-using main.Contracts;
-using main.Controllers.Api;
-using Microsoft.Extensions.Logging;
-using Moq;
-
-namespace Test.Controller
+﻿namespace Test.Controller
 {
+    using AutoMapper;
+    using main.Contracts;
+    using main.Controllers.Api;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+
     internal class PatientControllerBuilder
     {
+        private readonly IMedicalRecordNumberService medicalRecordNumber;
         private ILogger<PatientController> logger;
 
         private IMapper mapper;
-
-        private readonly IMedicalRecordNumberService medicalRecordNumber;
         private IUnitOfWork unitOfWork;
 
         public PatientControllerBuilder(IMapper mapper, IMedicalRecordNumberService medicalRecordNumber)
         {
-            unitOfWork = new Mock<IUnitOfWork>().Object;
-            logger = new Mock<ILogger<PatientController>>().Object;
+            this.unitOfWork = new Mock<IUnitOfWork>().Object;
+            this.logger = new Mock<ILogger<PatientController>>().Object;
             this.mapper = mapper;
             this.medicalRecordNumber = medicalRecordNumber;
         }
@@ -30,7 +29,7 @@ namespace Test.Controller
 
         public PatientController Build()
         {
-            return new PatientController(unitOfWork, logger, mapper, medicalRecordNumber);
+            return new PatientController(this.unitOfWork, this.logger, this.mapper, this.medicalRecordNumber);
         }
 
         public PatientControllerBuilder WithRepository(IUnitOfWork unitOfWork)

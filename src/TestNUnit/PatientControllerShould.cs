@@ -1,29 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Allure.Commons;
-using AutoFixture;
-using AutoMapper;
-using main.Contracts;
-using main.Contracts.Repository;
-using main.Controllers.Api;
-using main.Entities.Common;
-using main.Entities.Models;
-using main.Entities.ViewModels;
-using main.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Newtonsoft.Json;
-using NUnit.Allure.Attributes;
-using NUnit.Allure.Core;
-using NUnit.Framework;
-using PagedList.Core;
-using Test.Controller;
-
 namespace TestNUnit
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Allure.Commons;
+    using AutoFixture;
+    using AutoMapper;
+    using main.Contracts;
+    using main.Contracts.Repository;
+    using main.Controllers.Api;
+    using main.Entities.Common;
+    using main.Entities.Models;
+    using main.Entities.ViewModels;
+    using main.Extensions;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+    using Newtonsoft.Json;
+    using NUnit.Allure.Attributes;
+    using NUnit.Allure.Core;
+    using NUnit.Framework;
+    using PagedList.Core;
+    using Test.Controller;
+
     [AllureNUnit]
     public class PatientControllerShould
     {
@@ -46,28 +47,32 @@ namespace TestNUnit
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
-            Mapper.Reset();
-            var automapConfiguration = new SeedMapperConfiguration();
-            medicalRecordMock = new Mock<IMedicalRecordNumberService>();
-            medicalRecordMock.Setup(p => p.GetMedicalRecordNumber(It.IsAny<string>()))
-                .Returns(MockedMedicalRecordNumber);
-            nuniLogger = new NunitLogger<PatientController>();
+            Environment.SetEnvironmentVariable("ALLURE_CONFIG",
+                Path.Combine(Environment.CurrentDirectory, AllureConstants.CONFIG_FILENAME));
 
-            mapper = automapConfiguration.CreateMapper();
-            mockRepositories = new Mock<IUnitOfWork>();
-            mockPatientRepository = new Mock<IPatientRepository>();
+            Mapper.Reset();
+            SeedMapperConfiguration automapConfiguration = new SeedMapperConfiguration();
+            this.medicalRecordMock = new Mock<IMedicalRecordNumberService>();
+            this.medicalRecordMock.Setup(p => p.GetMedicalRecordNumber(It.IsAny<string>()))
+                .Returns(MockedMedicalRecordNumber);
+            this.nuniLogger = new NunitLogger<PatientController>();
+
+            this.mapper = automapConfiguration.CreateMapper();
+            this.mockRepositories = new Mock<IUnitOfWork>();
+            this.mockPatientRepository = new Mock<IPatientRepository>();
             Mock<IAllergyRepository> mockAllergyRepository = new Mock<IAllergyRepository>();
 
-            mockRepositories.Setup(p => p.Patients).Returns(mockPatientRepository.Object);
-            mockRepositories.Setup(p => p.Allergies).Returns(mockAllergyRepository.Object);
+            this.mockRepositories.Setup(p => p.Patients).Returns(this.mockPatientRepository.Object);
+            this.mockRepositories.Setup(p => p.Allergies).Returns(mockAllergyRepository.Object);
 
-            InitializeData();
+            this.InitializeData();
         }
 
         [SetUp]
         public void SetUp()
         {
-            sutBuilder = new PatientControllerBuilder(mapper, medicalRecordMock.Object).WithLogger(nuniLogger);
+            this.sutBuilder =
+                new PatientControllerBuilder(this.mapper, this.medicalRecordMock.Object).WithLogger(this.nuniLogger);
         }
 
         [AllureEpic("Unit Tests")]
@@ -78,10 +83,10 @@ namespace TestNUnit
         [Test]
         public async Task CreatePatient_ReturnsBadRequest_GivenInvalidPatient()
         {
-            PatientController sut = sutBuilder.WithRepository(mockRepositories.Object);
-            sut = sutBuilder.WithRepository(mockRepositories.Object);
-            var patient = new PatientViewModel();
-            var result = await sut.CreatePatient(patient);
+            PatientController sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
+            sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
+            PatientViewModel patient = new PatientViewModel();
+            IActionResult result = await sut.CreatePatient(patient);
             await AllureLifecycle.Instance.WrapInStep(async () =>
             {
                 // Arrange
@@ -107,12 +112,12 @@ namespace TestNUnit
         [Test]
         public async Task CreatePatient_Should_Create_A_New_Patient()
         {
-            var patient = new PatientViewModel();
+            PatientViewModel patient = new PatientViewModel();
             PatientController sut = null;
 
             AllureLifecycle.Instance.WrapInStep(() =>
                 {
-                    sut = sutBuilder.WithRepository(mockRepositories.Object);
+                    sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
                     patient = new PatientViewModel
                     {
                         Name = "Carlos",
@@ -125,24 +130,24 @@ namespace TestNUnit
             // Arrange
             await AllureLifecycle.Instance.WrapInStep(async () =>
             {
-                var result = await sut.CreatePatient(patient);
+                IActionResult result = await sut.CreatePatient(patient);
 
                 // Assert
-                var model = AssertAndGetModel<PatientViewModel>(result);
-                mockPatientRepository.Verify(repo => repo.Add(It.IsAny<Patient>()));
+                PatientViewModel model = AssertAndGetModel<PatientViewModel>(result);
+                this.mockPatientRepository.Verify(repo => repo.Add(It.IsAny<Patient>()));
                 Assert.AreEqual(patient.Email, model.Email);
                 Assert.AreEqual(patient.Name, model.Name);
                 Assert.AreEqual(patient.Surname, model.Surname);
                 Assert.AreEqual(MockedMedicalRecordNumber, model.MedicalNumber);
-            }, $" The emal, name, surname and medical numer are the injected values.");
+            }, " The emal, name, surname and medical numer are the injected values.");
         }
 
         private static T AssertAndGetModel<T>(IActionResult result)
         {
             Assert.IsInstanceOf<OkObjectResult>(result);
-            var okResult = (OkObjectResult)result;
+            OkObjectResult okResult = (OkObjectResult) result;
             Assert.IsInstanceOf<T>(okResult.Value);
-            return (T)okResult.Value;
+            return (T) okResult.Value;
         }
 
         [AllureEpic("Unit Tests")]
@@ -157,10 +162,10 @@ namespace TestNUnit
             AllureLifecycle.Instance.WrapInStep(() =>
             {
                 // Arrange & Act & Assert
-                Assert.Throws<ArgumentNullException>(() => { sutBuilder.WithRepository(null).Build(); });
-                Assert.Throws<ArgumentNullException>(() => { sutBuilder.WithLogger(null).Build(); });
-                Assert.Throws<ArgumentNullException>(() => { sutBuilder.WithMapper(null).Build(); });
-            }, $"Throws ArgumentNullException");
+                Assert.Throws<ArgumentNullException>(() => { this.sutBuilder.WithRepository(null).Build(); });
+                Assert.Throws<ArgumentNullException>(() => { this.sutBuilder.WithLogger(null).Build(); });
+                Assert.Throws<ArgumentNullException>(() => { this.sutBuilder.WithMapper(null).Build(); });
+            }, "Throws ArgumentNullException");
         }
 
         [AllureEpic("Unit Tests")]
@@ -171,21 +176,21 @@ namespace TestNUnit
         [Test]
         public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_After_Last_Page()
         {
-            var totalElements = 90;
-            var page = 5;
-            var elementsPerPage = 18;
+            int totalElements = 90;
+            int page = 5;
+            int elementsPerPage = 18;
             IActionResult result = null;
 
-            var list = GetPatientList(totalElements);
+            IQueryable<Patient> list = GetPatientList(totalElements);
             PatientController sut = null;
 
             AllureLifecycle.Instance.WrapInStep(() =>
             {
                 // Arrange
-                mockPatientRepository
+                this.mockPatientRepository
                     .Setup(repo => repo.GetAllWithPaginationPatients(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(
                         new PagedList<Patient>(list, page + 1, elementsPerPage));
-                sut = sutBuilder.WithRepository(mockRepositories.Object);
+                sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
             }, "Action: Create a Patient List");
 
             await AllureLifecycle.Instance.WrapInStep(async () =>
@@ -196,7 +201,8 @@ namespace TestNUnit
 
             AllureLifecycle.Instance.WrapInStep(() =>
             {
-                var model = AssertAndGetModel<ExtendedPagedList<PatientViewModel>>(result);
+                ExtendedPagedList<PatientViewModel> model =
+                    AssertAndGetModel<ExtendedPagedList<PatientViewModel>>(result);
                 Assert.AreEqual(0, model.NumberOfElements);
                 Assert.AreEqual(page, model.Number);
                 Assert.AreEqual(totalElements, model.TotalElements);
@@ -212,7 +218,7 @@ namespace TestNUnit
         [Test]
         public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_First_Page()
         {
-            await GetPagedPatient(0, 90, 18).ConfigureAwait(false);
+            await this.GetPagedPatient(0, 90, 18).ConfigureAwait(false);
         }
 
         [AllureEpic("Unit Tests")]
@@ -221,7 +227,7 @@ namespace TestNUnit
         [Test]
         public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_Last_Page()
         {
-            await GetPagedPatient(4, 90, 18).ConfigureAwait(false);
+            await this.GetPagedPatient(4, 90, 18).ConfigureAwait(false);
         }
 
         [AllureEpic("Unit Tests")]
@@ -230,7 +236,7 @@ namespace TestNUnit
         [Test]
         public async Task GetAllPatients_Paged_Should_Return_List_Of_Patients_Middle_Page()
         {
-            await GetPagedPatient(3, 90, 18).ConfigureAwait(false);
+            await this.GetPagedPatient(3, 90, 18).ConfigureAwait(false);
         }
 
         [AllureEpic("Unit Tests")]
@@ -246,24 +252,24 @@ namespace TestNUnit
             await AllureLifecycle.Instance.WrapInStep(async () =>
             {
                 // Arrange
-                mockPatientRepository.Setup(repo => repo.Get(It.IsAny<Guid>()))
-                    .ReturnsAsync(listOfPatients[1]);
-                sut = sutBuilder.WithRepository(mockRepositories.Object);
+                this.mockPatientRepository.Setup(repo => repo.Get(It.IsAny<Guid>()))
+                    .ReturnsAsync(this.listOfPatients[1]);
+                sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
 
                 // Act
-                result = await sut.GetPatient(listOfPatients[1].Id);
-            }, $"Action: Step 1: Arrange. Get patient information with id: ¨{listOfPatients[1].Id}");
+                result = await sut.GetPatient(this.listOfPatients[1].Id);
+            }, $"Action: Step 1: Arrange. Get patient information with id: ¨{this.listOfPatients[1].Id}");
 
 
             AllureLifecycle.Instance.WrapInStep(() =>
             {
                 // Assert
-                var model = AssertAndGetModel<PatientViewModel>(result);
-                Assert.AreEqual(listOfPatients[1].Email, model.Email);
-                Assert.AreEqual(listOfPatients[1].Name, model.Name);
-                Assert.AreEqual(listOfPatients[1].Surname, model.Surname);
-                Assert.AreEqual(listOfPatients[1].MedicalNumber, model.MedicalNumber);
-                Assert.AreEqual(listOfPatients[1].Id, model.Id);
+                PatientViewModel model = AssertAndGetModel<PatientViewModel>(result);
+                Assert.AreEqual(this.listOfPatients[1].Email, model.Email);
+                Assert.AreEqual(this.listOfPatients[1].Name, model.Name);
+                Assert.AreEqual(this.listOfPatients[1].Surname, model.Surname);
+                Assert.AreEqual(this.listOfPatients[1].MedicalNumber, model.MedicalNumber);
+                Assert.AreEqual(this.listOfPatients[1].Id, model.Id);
             }, "Check if the patient information returned is correct");
         }
 
@@ -283,17 +289,18 @@ namespace TestNUnit
         {
             IActionResult result = null;
             PatientController sut = null;
-            var id = Guid.NewGuid();
-            var patientToInsert = new PatientViewModel();
+            Guid id = Guid.NewGuid();
+            PatientViewModel patientToInsert = new PatientViewModel();
             AllureLifecycle.Instance.WrapInStep(() =>
             {
                 // Arrange
 
                 patientToInsert =
-                    new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
-                var mappedPatientToInsert = mapper.Map<Patient>(patientToInsert);
-                mockPatientRepository.Setup(repo => repo.Add(It.Is<Patient>(p => p.Equals(mappedPatientToInsert))));
-                sut = sutBuilder.WithRepository(mockRepositories.Object);
+                    new PatientViewModel {Email = email, Id = id, Surname = lastname, Name = name};
+                Patient mappedPatientToInsert = this.mapper.Map<Patient>(patientToInsert);
+                this.mockPatientRepository.Setup(repo =>
+                    repo.Add(It.Is<Patient>(p => p.Equals(mappedPatientToInsert))));
+                sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
             }, "Action: Step 1: Arrange");
 
             await AllureLifecycle.Instance.WrapInStep(async () =>
@@ -306,8 +313,8 @@ namespace TestNUnit
             AllureLifecycle.Instance.WrapInStep(() =>
             {
                 // Assert
-                mockRepositories.Verify();
-                var model = AssertAndGetModel<PatientViewModel>(result);
+                this.mockRepositories.Verify();
+                PatientViewModel model = AssertAndGetModel<PatientViewModel>(result);
 
                 // we expect the MRN to be this string
                 patientToInsert.MedicalNumber = MockedMedicalRecordNumber;
@@ -325,13 +332,13 @@ namespace TestNUnit
         {
             IActionResult result = null;
             PatientController sut = null;
-            var patient = new PatientViewModel();
+            PatientViewModel patient = new PatientViewModel();
             AllureLifecycle.Instance.WrapInStep(() =>
             {
                 // Arrange
-                mockPatientRepository.Setup(repo => repo.Get(It.IsAny<Guid>()))
-                    .ReturnsAsync(listOfPatients[0]);
-                sut = sutBuilder.WithRepository(mockRepositories.Object);
+                this.mockPatientRepository.Setup(repo => repo.Get(It.IsAny<Guid>()))
+                    .ReturnsAsync(this.listOfPatients[0]);
+                sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
 
                 patient = new PatientViewModel
                 {
@@ -341,7 +348,7 @@ namespace TestNUnit
                     Email = "cremundo@werfen.com",
                     MedicalNumber = "8899"
                 };
-            }, $"Action: Step 1: Arrange");
+            }, "Action: Step 1: Arrange");
 
             await AllureLifecycle.Instance.WrapInStep(async () =>
             {
@@ -365,14 +372,15 @@ namespace TestNUnit
         {
             IActionResult result = null;
             PatientController sut = null;
-            var list = GetPatientList(totalElements);
+            IQueryable<Patient> list = GetPatientList(totalElements);
             AllureLifecycle.Instance.WrapInStep(() =>
             {
                 // Arrange
-                mockPatientRepository.Setup(repo => repo.GetAllWithPaginationPatients(It.IsAny<int>(), It.IsAny<int>()))
+                this.mockPatientRepository
+                    .Setup(repo => repo.GetAllWithPaginationPatients(It.IsAny<int>(), It.IsAny<int>()))
                     .ReturnsAsync(
                         new PagedList<Patient>(list, page + 1, elementsPerPage));
-                sut = sutBuilder.WithRepository(mockRepositories.Object);
+                sut = this.sutBuilder.WithRepository(this.mockRepositories.Object);
             }, "Action: Step 1: Arrange");
 
             await AllureLifecycle.Instance.WrapInStep(async () =>
@@ -384,7 +392,8 @@ namespace TestNUnit
             AllureLifecycle.Instance.WrapInStep(() =>
             {
                 // Assert
-                var model = AssertAndGetModel<ExtendedPagedList<PatientViewModel>>(result);
+                ExtendedPagedList<PatientViewModel> model =
+                    AssertAndGetModel<ExtendedPagedList<PatientViewModel>>(result);
                 Assert.AreEqual(elementsPerPage, model.NumberOfElements);
                 Assert.AreEqual(page, model.Number);
                 Assert.AreEqual(totalElements, model.TotalElements);
@@ -398,13 +407,13 @@ namespace TestNUnit
 
         private static IQueryable<Patient> GetPatientList(int totalElements)
         {
-            var autoFixture = new Fixture();
+            Fixture autoFixture = new Fixture();
             return autoFixture.CreateMany<Patient>(totalElements).AsQueryable();
         }
 
         private void InitializeData()
         {
-            listOfPatients = new List<Patient>
+            this.listOfPatients = new List<Patient>
             {
                 new Patient
                 {
@@ -435,6 +444,11 @@ namespace TestNUnit
     {
         private readonly bool isEnabled = true;
 
+        public void Dispose()
+        {
+            //Do nothing
+        }
+
         public IDisposable BeginScope<TState>(TState state)
         {
             return this;
@@ -456,11 +470,6 @@ namespace TestNUnit
                     TestContext.WriteLine(exception.ToString());
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            //Do nothing
         }
     }
 }

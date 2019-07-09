@@ -1,13 +1,11 @@
-﻿using main.Contracts.Repository;
-using main.Entities;
-using main.Entities.Models;
-using Microsoft.EntityFrameworkCore;
-using PagedList.Core;
-using System;
-using System.Linq;
-
-namespace main.Repository.Repositories
+﻿namespace main.Repository.Repositories
 {
+    using System.Linq;
+    using Contracts.Repository;
+    using Entities;
+    using Entities.Models;
+    using PagedList.Core;
+
     public class AllergyRepository : RepositoryBase<Allergy>, IAllergyRepository
     {
         public AllergyRepository(SeedDotnetContext context)
@@ -15,12 +13,10 @@ namespace main.Repository.Repositories
         {
         }
 
-
         public PagedList<Allergy> GetAllWithPaginationAllergy(int pageIndex, int pageSize)
         {
-            return new PagedList<Allergy>(context.Allergies
+            return new PagedList<Allergy>(this.context.Allergies
                 .OrderBy(p => p.Name), pageIndex, pageSize);
         }
-
     }
 }

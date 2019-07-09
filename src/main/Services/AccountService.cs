@@ -2,9 +2,9 @@
 {
     using System;
     using System.Threading.Tasks;
-    using main.Contracts;
-    using main.Entities;
-    using main.Entities.Models;
+    using Contracts;
+    using Entities;
+    using Entities.Models;
     using Microsoft.AspNetCore.Identity;
 
     internal class AccountService : IAccountService
@@ -35,13 +35,13 @@
 
         public async Task<JsonWebToken> RefreshAccessToken(string token)
         {
-            var refreshToken = await this.GetRefreshToken(token).ConfigureAwait(false);
+            UserManage refreshToken = await this.GetRefreshToken(token).ConfigureAwait(false);
             if (refreshToken == null)
             {
                 return null;
             }
 
-            var jwt = this.jwtHandler.Create(refreshToken);
+            JsonWebToken jwt = this.jwtHandler.Create(refreshToken);
             jwt.RefreshToken = refreshToken.RefreshToken;
 
             return jwt;
@@ -49,14 +49,14 @@
 
         public async Task<JsonWebToken> SignIn(string username, string password)
         {
-            var user = await this.userManager.FindByNameAsync(username);
+            UserManage user = await this.userManager.FindByNameAsync(username);
             if (user != null && !string.IsNullOrEmpty(password))
             {
-                var signInResult = await this.signInManager.CheckPasswordSignInAsync(user, password, false);
+                SignInResult signInResult = await this.signInManager.CheckPasswordSignInAsync(user, password, false);
                 if (signInResult.Succeeded)
                 {
-                    var jwt = this.jwtHandler.Create(user);
-                    var refreshToken = this.passwordHasher.HashPassword(user, Guid.NewGuid().ToString())
+                    JsonWebToken jwt = this.jwtHandler.Create(user);
+                    string refreshToken = this.passwordHasher.HashPassword(user, Guid.NewGuid().ToString())
                         .Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
                     jwt.RefreshToken = refreshToken;
                     user.RefreshToken = refreshToken;

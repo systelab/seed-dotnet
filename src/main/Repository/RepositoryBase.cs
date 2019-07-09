@@ -1,22 +1,22 @@
-﻿using main.Contracts;
-using main.Entities;
-using main.Entities.Models;
-using Microsoft.EntityFrameworkCore;
-using PagedList.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-
-namespace main.Repository
+﻿namespace main.Repository
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Threading.Tasks;
+    using Contracts;
+    using Entities;
+    using Entities.Models;
+    using Microsoft.EntityFrameworkCore;
+    using PagedList.Core;
+
     public class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : class
     {
         protected readonly SeedDotnetContext context;
 
         /// <summary>
-        /// Set the context of the app
+        ///     Set the context of the app
         /// </summary>
         /// <param name="_context"></param>
         public RepositoryBase(SeedDotnetContext _context)
@@ -38,32 +38,32 @@ namespace main.Repository
 
         public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
         {
-            return context.Set<TEntity>().Where(predicate);
+            return this.context.Set<TEntity>().Where(predicate);
         }
 
         public TEntity SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
         {
-            return context.Set<TEntity>().SingleOrDefault(predicate);
+            return this.context.Set<TEntity>().SingleOrDefault(predicate);
         }
 
         public async Task<TEntity> Get(Guid id)
         {
-            return context.Set<TEntity>().Find(id);
+            return this.context.Set<TEntity>().Find(id);
         }
 
         public IEnumerable<TEntity> GetAll()
         {
-            return context.Set<TEntity>().ToList();
+            return this.context.Set<TEntity>().ToList();
         }
 
         public async Task<PagedList<TEntity>> GetAllWithPagination(int pageIndex, int pageSize)
         {
-            return new PagedList<TEntity>(context.Set<TEntity>(), pageIndex, pageSize);
+            return new PagedList<TEntity>(this.context.Set<TEntity>(), pageIndex, pageSize);
         }
 
         public async Task Remove(TEntity entity)
         {
-            this.context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            this.context.Entry(entity).State = EntityState.Deleted;
             this.context.SaveChanges();
         }
 
@@ -72,23 +72,27 @@ namespace main.Repository
             this.context.Set<TEntity>().RemoveRange(Entities);
             this.context.SaveChanges();
         }
+
         public async Task Update(TEntity entity)
         {
-            this.context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            this.context.Entry(entity).State = EntityState.Modified;
             this.context.SaveChanges();
         }
+
         public int GetCountTotalItems()
         {
-            return context.Set<TEntity>().Count();
+            return this.context.Set<TEntity>().Count();
         }
 
         /// <summary>
-        /// Get the user information providing a refresh token, in this case we are using a database but you can use other system.
+        ///     Get the user information providing a refresh token, in this case we are using a database but you can use other
+        ///     system.
         /// </summary>
-        /// <param name="token">token to refresh
+        /// <param name="token">
+        ///     token to refresh
         /// </param>
         /// <returns>
-        /// The <see cref="Task"/>.
+        ///     The <see cref="Task" />.
         /// </returns>
         public async Task<UserManage> GetUserManageWithRefreshToken(string token)
         {
@@ -96,19 +100,18 @@ namespace main.Repository
         }
 
         /// <summary>
-        /// Update the refresh token of the user session
+        ///     Update the refresh token of the user session
         /// </summary>
-        /// <param name="user">user to refresh the token
+        /// <param name="user">
+        ///     user to refresh the token
         /// </param>
         /// <returns>
-        /// The <see cref="Task"/>.
+        ///     The <see cref="Task" />.
         /// </returns>
         public async Task UpdateRefreshToken(UserManage user)
         {
             this.context.Entry(user).State = EntityState.Modified;
             await this.context.SaveChangesAsync();
         }
-
     }
-
 }

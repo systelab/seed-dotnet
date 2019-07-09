@@ -1,13 +1,8 @@
-﻿
-using main.Entities.Models;
-using PagedList.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace main.Contracts.Repository
+﻿namespace main.Contracts.Repository
 {
+    using Entities.Models;
+    using PagedList.Core;
+
     public interface IAllergyRepository : IRepositoryBase<Allergy>
     {
         PagedList<Allergy> GetAllWithPaginationAllergy(int pageIndex, int pageSize);
