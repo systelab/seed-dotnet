@@ -240,7 +240,7 @@ The object returned is like follows:
 
 ## DB
 
-The seed have a integrated SQLLite database, where the information of the users and the patients will stored. This database is intended only for this seed project. In your future projects you can use the database you want.
+The seed have a integrated SQLite database, where the information of the users and the patients will stored. This database is intended only for this seed project. In your future projects you can use the database you want.
 
 These are the changes that you need to do to change the database:
 
@@ -252,8 +252,27 @@ These are the changes that you need to do to change the database:
   },
  ```
  
- - In the seed_dotnetContext.cs change the database property of the option builder for the correct one
+ - In the SeedDotnetContext.cs change the database property of the option builder for the correct one
  
  ```c#
     optionsBuilder.UseSqlite(_config["ConnectionStrings:seed_dotnetContextConnection"]);
  ```
+ 
+## Database migrations
+
+### FluentMigrator
+
+The seed has implemented a new functionality of migrations of database schemas. A NuGet package called **FluentMigrator** is used, you can read the documentation here (https://fluentmigrator.github.io/api/index.html).
+
+- You can easily change the database SQLite to SQLServer engine by changing the **DatabaseMigratorRunner.cs** file. 
+Change the following line:
+	
+```c#
+	.ConfigureRunner(configureRunner => configureRunner.AddSQLite()
+```
+for:
+```c#
+	.ConfigureRunner(configureRunner => configureRunner.AddSqlServer()
+```
+
+*Note:* All the most common databases are supported.
