@@ -132,7 +132,7 @@
         private static void OnBreak(Exception exception, CircuitState circuitState, TimeSpan timeSpan, Context context)
         {
             var logger = NLog.LogManager.GetCurrentClassLogger();
-            logger.Error($"Circuit break with state {circuitState} using {context.PolicyKey} at {context.OperationKey}, due to: {exception}.");
+            logger.Error($"Circuit break with state {circuitState} using {context.PolicyKey} at {context.OperationKey}, due to: {exception} in {timeSpan.TotalSeconds}.");
         }
 
         
