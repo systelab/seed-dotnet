@@ -18,6 +18,8 @@
     using Microsoft.Extensions.PlatformAbstractions;
     using PagedList.Core;
     using Polly;
+    using Polly.CircuitBreaker;
+
     using Repository;
     using Repository.Repositories;
     using Services;
@@ -112,9 +114,28 @@
             services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
             services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
             services.AddScoped<ISyncPolicy>(provider =>
-                Policy.Handle<Exception>().CircuitBreaker(2, TimeSpan.FromMinutes(1)));
+                Policy.Handle<Exception>().CircuitBreaker(2, TimeSpan.FromMinutes(1), onBreak: OnBreak, onReset: OnReset, onHalfOpen: OnHalfOpen));
         }
 
+        private static void OnHalfOpen()
+        {
+            var logger = NLog.LogManager.GetCurrentClassLogger();
+            logger.Error($"Circuit half open");
+        }
+
+        private static void OnReset(Context context)
+        {
+            var logger = NLog.LogManager.GetCurrentClassLogger();
+            logger.Error($"Circuit reset for {context.PolicyKey} at {context.OperationKey}");
+        }
+
+        private static void OnBreak(Exception exception, CircuitState circuitState, TimeSpan timeSpan, Context context)
+        {
+            var logger = NLog.LogManager.GetCurrentClassLogger();
+            logger.Error($"Circuit break with state {circuitState} using {context.PolicyKey} at {context.OperationKey}, due to: {exception}.");
+        }
+
+        
         /// <summary>
         /// 
         /// </summary>

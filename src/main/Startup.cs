@@ -1,5 +1,6 @@
 ﻿namespace main
 {
+    using System;
     using System.Text;
     using Extensions;
     using Microsoft.AspNetCore.Builder;
@@ -21,16 +22,25 @@
 
         public Startup(IHostingEnvironment env)
         {
-            this.env = env;
-            Batteries_V2.Init();
+            var logger = NLog.LogManager.GetCurrentClassLogger();
+            try
+            {
+                this.env = env;
+                Batteries_V2.Init();
 
-            IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(this.env.ContentRootPath)
-                .AddJsonFile("appsettings.json").AddEnvironmentVariables();
+                IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(this.env.ContentRootPath)
+                    .AddJsonFile("appsettings.json").AddEnvironmentVariables();
 
-            this.config = builder.Build();
+                this.config = builder.Build();
 
-            //Migrations
-            DatabaseMigrationRunner.Start(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
+                //Migrations
+                DatabaseMigrationRunner.Start(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e);
+                throw;
+            }
         }
 
         public IConfiguration Configuration { get; }
@@ -128,8 +138,6 @@
                     };
                 });
 
-            //Configure Logging
-            services.AddLogging();
 
             //Configure Mappers
             services.ConfigureMapper();
