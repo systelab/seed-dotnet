@@ -30,6 +30,4 @@ COPY  --from=builder /src/main/*.db .
 # Copy build output 
 COPY --from=builder /app .
  
-HEALTHCHECK CMD curl --fail https://localhost:13080/health || exit 1
- 
-ENTRYPOINT ["dotnet", "main.dll"]
+ENTRYPOINT ["dotnet", "main.dll --launch-profile seed-dotnet]
