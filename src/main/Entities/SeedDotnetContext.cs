@@ -58,22 +58,7 @@
             this.connection.Open();
 
             return this.connection;
-        }
-
-        public bool Test()
-        {
-            try
-            {
-                using (var connection = this.GetConnection())
-                {
-                    return connection != null;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
+        }        
 
         /// <summary>
         /// 
