@@ -194,7 +194,6 @@
             });
 
             //Add HangFire
-            // services.ConfigureHangFire();
             services.AddHangfire(config =>
             {
                 var options = new SQLiteStorageOptions
