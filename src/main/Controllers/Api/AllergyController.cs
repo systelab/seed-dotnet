@@ -14,8 +14,10 @@
     using Microsoft.Extensions.Logging;
     using PagedList.Core;
 
+
+    [ApiVersion("1")]
     [EnableCors("MyPolicy")]
-    [Route("seed/v1/allergies")]
+    [Route("seed/v{version:apiVersion}/allergies")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AllergyController : Controller
     {
