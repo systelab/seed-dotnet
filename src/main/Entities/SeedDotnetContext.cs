@@ -1,5 +1,6 @@
 ﻿namespace main.Entities
 {
+    using System;
     using System.Data.Common;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.Data.Sqlite;
@@ -57,7 +58,7 @@
             this.connection.Open();
 
             return this.connection;
-        }
+        }        
 
         /// <summary>
         /// 
