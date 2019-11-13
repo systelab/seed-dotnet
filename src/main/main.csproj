@@ -31,6 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.Network" Version="2.2.2" />
+    <PackageReference Include="AspNetCore.HealthChecks.Sqlite" Version="2.2.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.System" Version="2.2.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="2.2.32" />
     <PackageReference Include="AutoMapper" Version="8.0.0" />
     <PackageReference Include="FluentMigrator" Version="3.2.1" />
     <PackageReference Include="FluentMigrator.Runner" Version="3.2.1" />
@@ -39,6 +43,7 @@
     <PackageReference Include="Hangfire.SQLite" Version="1.4.2" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="3.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.2.0" />

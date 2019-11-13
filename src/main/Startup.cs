@@ -7,6 +7,8 @@
     using global::Hangfire;
     using global::Hangfire.SQLite;
     using main.Hangfire;
+    using HealthChecks.Network;
+    using main.Healthchecks;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
@@ -92,6 +94,7 @@
             });
 
             app.UseResponseCompression();
+            app.UseHealthChecks("/health");
 
             app.UseMvc(
                 config =>
@@ -143,6 +146,8 @@
             // Set the context to the database
             services.ConfigureContext();
 
+            services.AddHealthChecks();
+
             // Set Identity
             services.ConfigureIdentity();
 
@@ -179,6 +184,11 @@
                 options.Providers.Add<GzipCompressionProvider>();
                 options.EnableForHttps = true;
             });
+            // add some healthchecks
+            services.AddHealthChecks().AddCheck<ExampleHealthCheck>("exampleHealthCheck")
+                .AddSqlite(this.config["ConnectionStrings:seed_dotnetContextConnection"])
+                .AddDiskStorageHealthCheck(options => options.AddDrive(@"C:\", minimumFreeMegabytes: 1000))
+                .AddPingHealthCheck(options => options.AddHost("www.google.com", 1000));
 
             services.AddMvc().AddJsonOptions(
                 config =>
