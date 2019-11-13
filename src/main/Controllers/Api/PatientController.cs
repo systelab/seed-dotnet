@@ -20,8 +20,9 @@
     /// <summary>
     /// 
     /// </summary>
+    [ApiVersion("1")]
     [EnableCors("MyPolicy")]
-    [Route("seed/v1/patients")]
+    [Route("seed/v{version:apiVersion}/patients")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PatientController : Controller
     {
