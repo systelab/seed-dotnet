@@ -45,17 +45,17 @@ namespace IntegrationTest
             this.client = this.server.CreateClient();
 
             this.ClearPatientData();
-            this.SeedPatient(this.KnownPatients);
+            this.SeedPatient(KnownPatients);
         }
 
         [SetUp]
         public void SetUp()
         {
             this.ClearPatientData();
-            this.SeedPatient(this.KnownPatients);
+            this.SeedPatient(KnownPatients);
         }
         
-        public PatientViewModel[] KnownPatients =>
+        public static PatientViewModel[] KnownPatients =>
             new[]
             {
                 new PatientViewModel
@@ -182,7 +182,7 @@ namespace IntegrationTest
 
             // Assert
             Assert.NotNull(patient);
-            patient.Should().BeEquivalentTo(this.KnownPatients.First(p=> p.Id == id));
+            patient.Should().BeEquivalentTo(KnownPatients.First(p=> p.Id == id));
         }
 
         [AllureTms("RemovePatient_Found")]
@@ -237,7 +237,7 @@ namespace IntegrationTest
 
             // Assert
             Assert.NotNull(patient);
-            patient.Should().NotBeEquivalentTo(this.KnownPatients.First(p => p.Id == id));
+            patient.Should().NotBeEquivalentTo(KnownPatients.First(p => p.Id == id));
             patient.Should().BeEquivalentTo(patientToUpdate);
         }
 
@@ -300,7 +300,7 @@ namespace IntegrationTest
 
             // Assert
             patientList.Content.Should().NotBeEmpty();
-            patientList.Content.Should().BeEquivalentTo(this.KnownPatients);
+            patientList.Content.Should().BeEquivalentTo(KnownPatients);
         }
 
         [AllureTms("GetListOfPatients_PopulatedList_Paged")]
@@ -320,7 +320,7 @@ namespace IntegrationTest
                         await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                // Assert
                patientList.Content.Should().NotBeEmpty();
-               patientList.Content.Should().BeEquivalentTo(this.KnownPatients.Skip(i).Take(1));
+               patientList.Content.Should().BeEquivalentTo(KnownPatients.Skip(i).Take(1));
             }
         }
 
