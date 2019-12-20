@@ -115,9 +115,11 @@ docker run -p 13080:13080 systelab/seed-dotnet
 
 The app will be available at http://localhost:13080
 
+# Documentation
+See [Documentation](doc/README.md) section for further details about other technical specifications.
+
 [git]: https://git-scm.com/
 [dotnet]:https://www.microsoft.com/net/download/windows
 [scoop]:http://scoop.sh/
 [test]:https://github.com/systelab/seed-dotnet/blob/master/src/test.bat
 [app]:https://github.com/systelab/seed-dotnet/blob/master/src/app.bat
-
