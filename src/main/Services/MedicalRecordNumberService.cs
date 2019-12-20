@@ -2,6 +2,9 @@
 {
     using System;
     using Contracts;
+
+    using Microsoft.Extensions.Logging;
+
     using Polly;
     using RestSharp;
 
@@ -9,9 +12,12 @@
     {
         private readonly ISyncPolicy policy;
 
-        public MedicalRecordNumberService(ISyncPolicy policy)
+        private readonly ILogger<MedicalRecordNumberService> logger;
+
+        public MedicalRecordNumberService(ISyncPolicy policy, ILogger<MedicalRecordNumberService> logger)
         {
-            this.policy = policy;
+            this.policy = policy ?? throw new ArgumentNullException(nameof(policy));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public string GetMedicalRecordNumber(string url)
@@ -34,6 +40,7 @@
             }
             catch (Exception)
             {
+                this.logger.LogWarning("Unable to retrieve medical record number from external service, returning default");
                 return GetDefaultMedicalRecordNumber();
             }
         }
