@@ -12,6 +12,7 @@
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
     [ApiVersion("1")]
@@ -21,16 +22,19 @@
     {
         private readonly IMapper mapper;
 
+        private readonly ILogger<AuthController> logger;
+
         private readonly IAccountService repository;
 
         private readonly UserManager<UserManage> userManager;
 
         /// <inheritdoc />
-        public AuthController(UserManager<UserManage> userManager, IAccountService repository, IMapper mapper)
+        public AuthController(UserManager<UserManage> userManager, IAccountService repository, IMapper mapper, ILogger<AuthController> logger)
         {
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
             this.userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -51,6 +55,8 @@
                 this.Response.Headers.Add("Refresh", result.RefreshToken);
                 return this.Ok("Done");
             }
+
+            this.logger.LogWarning($"Bad request, username {login} or password incorrect");
 
             return this.BadRequest("Username or password incorrect");
         }
@@ -100,6 +106,8 @@
                     "origin, content-type, accept, authorization, ETag, if-none-match");
                 return this.Ok();
             }
+
+            this.logger.LogDebug($"Refreshed token {refreshToken}");
 
             return this.BadRequest("Refresh token was not found.");
         }
