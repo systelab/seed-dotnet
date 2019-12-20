@@ -2,13 +2,18 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/main",
+      "sslPort": 0
+    },
     "iisExpress": {
-      "applicationUrl": "https://localhost:13080/"
+      "applicationUrl": "https://localhost:13080/",
+      "sslPort": 0
     }
   },
   "profiles": {
     "IIS Express": {
-      "commandName": "IISExpress",
+      "commandName": "IIS",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
