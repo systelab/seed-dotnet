@@ -1,10 +1,11 @@
-version: "2"
+version: "2.1"
 services:
   backend1:
     image: systelab/seed-dotnet:latest
     ports:
       - "8080:8080"
       - "8443:8443"
+     
   identity:
     image: systelab/identity:latest
     ports:

@@ -15,8 +15,9 @@
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
+    [ApiVersion("1")]
     [EnableCors("MyPolicy")]
-    [Route("seed/v1/users")]
+    [Route("seed/v{version:apiVersion}/users")]
     public class AuthController : Controller
     {
         private readonly IMapper mapper;
@@ -52,9 +53,6 @@
             {
                 this.Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
                 this.Response.Headers.Add("Refresh", result.RefreshToken);
-                this.Response.Headers.Add(
-                    "Access-Control-Expose-Headers",
-                    "origin, content-type, accept, authorization, ETag, if-none-match");
                 return this.Ok("Done");
             }
 

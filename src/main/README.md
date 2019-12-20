@@ -198,6 +198,53 @@ services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
             
 ```  
 
+### Configuration of Hangfire
+
+Hangfire is an easy way to perform background processing without any Windows process. https://www.hangfire.io/
+
+Creation of a New Job:
+
+Step 1: 
+
+Include in the hangfire.contracts the interface of the new job
+
+Step 2:
+
+Include in Hangfire.jobs, a class to implement the interface of the new job.
+
+To be able to execute the job include the following lines referring to the new job:
+
+ public async Task NewJobExample(IJobCancellationToken token)
+	{
+		token.ThrowIfCancellationRequested();
+		await NewJobExample(DateTime.Now);
+	}
+
+Step 3:
+Include the job execution reference in the HangfireJobScheduler.
+
+	RecurringJob.RemoveIfExists("New Job Name");
+    RecurringJob.AddOrUpdate<NewJobExample>("New Job Name",
+    job => job.NewJobExample(JobCancellationToken.Null),
+    Cron.Daily, TimeZoneInfo.Local);
+
+Step 4: 
+
+Launch the application and access to https://{domain}/hangfire
+
+For more information access to https://docs.hangfire.io/en/latest/
+
+### Versioning of the API
+
+The solution has included Microsoft.AspNetCore.Mvc.Versioning to manage the versions of the API.
+
+For each controller you can define the default API version setting the following decorator:
+[ApiVersion("1")]
+
+If you manage different versions in the same controller you can define to which API version is related the endpoint setting the following decorator:
+[MapToApiVersion("2")]
+
+
 ### The model mapper
 
 Automapper is used to map the Model to the View Model and viceversa. 
@@ -276,6 +323,44 @@ for:
 ```
 
 *Note:* All the most common databases are supported.
+
+=======
+## Healthcheck
+
+ASP.NET contains extenstions for healtcheck endpoints. Check [here](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-2.2) for the full reference.
+
+Basically, it consists in three elements:
+
+- Adding the service endpoint with an url
+- Adding the health check providers
+- Optionally publishing the results to another system or implementing a minimal UI to consume the data
+
+For instance, the healthcheck can be consumed by Docker, as it has been done in this seed. 
+
+In this case the seed reports the health status at the endpoint `\health`
+
+In case of a healthy state, the HTTP request will return 200
+In case of an unhealthy state, the HTTP request will return 503
+
+You can check this value with a browser.
+
+### Custom health checks
+
+You can (should) implement your own healthchecks based on your application logic. The seed shows an example of that with the class `ExampleHealthCheck`
+
+### Ready-to-use health checks
+
+There is a bunch on already implemented health checks [here](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks)
+
+The seed uses the Sqlite, the System (Disk usage) and Network (basic ping connectivity) health checks
+
+
+### Publishing of status
+
+The health checks can be published to specialized servers like [Prometheus](https://prometheus.io/). This is left as part of a future evolution of the seed.
+
+[This page](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#healthcheck-push-results) shows some of the publishers already implemented 
+
 
 ## Logging
 
