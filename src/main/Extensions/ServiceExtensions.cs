@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
     using AutoMapper;
     using Contracts;
     using Contracts.Repository;
@@ -192,6 +193,35 @@
         {
             services.AddDbContext<SeedDotnetContext>();
             services.AddTransient<SeedDotnetContextSeedData>();
+        }
+
+        /// <summary>
+        /// Import certificates in the solution trust collection
+        /// </summary>
+        /// <param name="services"></param>
+        public static void ConfigureCertificate(this IServiceCollection services)
+        {
+            string pathToCAFile = "./CERTIFICATE_NAME.p7b";
+
+            // ADD CA certificate to local trust store
+            X509Store localTrustStore = new X509Store(StoreName.Root);
+            X509Certificate2Collection certificateCollection = new X509Certificate2Collection();
+    
+            try
+            {
+                certificateCollection.Import(pathToCAFile);
+                localTrustStore.Open(OpenFlags.ReadWrite);
+                localTrustStore.AddRange(certificateCollection);
+            }
+            catch (Exception ex)
+            {
+                Console.Write("Root certificate import failed: " + ex.Message);
+
+            }
+            finally
+            {
+                localTrustStore.Close();
+            }
         }
     }
 }

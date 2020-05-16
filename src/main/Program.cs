@@ -9,7 +9,8 @@ namespace main
 {
     using System;
     using System.IO;
-
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Logging;
@@ -64,6 +65,30 @@ namespace main
                         })
                 .UseNLog()
                 .Build();
+
+            ////Example of how to import a pfx certificate to serve the application in https using Kestrel
+            
+            //var cert = new X509Certificate2("./CERTIFICATE_NAME.pfx", "CERTIFICATE_PASSWORD");
+            //return new WebHostBuilder()
+            //     .UseKestrel(options =>
+            //     {
+            //         options.Listen(IPAddress.Any, 443, listenOptions =>
+            //         {
+            //             listenOptions.UseHttps(cert);
+
+            //         });
+
+            //     })
+            //    .UseContentRoot(Directory.GetCurrentDirectory())
+            //    .UseStartup<Startup>()
+            //    .ConfigureLogging(
+            //        logging =>
+            //        {
+            //            logging.ClearProviders();
+            //            logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+            //        })
+            //    .UseNLog()
+            //    .Build();
         }
     }
 }
