@@ -14,6 +14,10 @@ This model is a extend from the class IdentityUser, we extend the class to add m
 
 This model represent the structure of the data which are going to save about the patients.
 
+### Email.cs
+
+This model represent the structure of the data which is used for the email.
+
 ###JsonWebToken
 This model represent the structure of the JWT token response.
 

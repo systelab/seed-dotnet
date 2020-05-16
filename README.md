@@ -91,6 +91,10 @@ Chrome rejects automatically requests made from Angular to endpoints with untrus
 
 To accept local signed certificates on development, paste this url on navigation bar chrome://flags/#allow-insecure-localhost and enable the setting **"Allow invalid certificates for resources loaded from localhost"**
 
+## Mail
+
+To send an email you need to configure the SMTP host, SMTP Username, and SMTP password. This solution is allowing you to send an email example using the SMTP configuration you provided.
+
 ## Docker
 
 ### Build docker image

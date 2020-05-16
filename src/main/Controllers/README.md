@@ -81,3 +81,14 @@ Providing Patient information ,with the patient Id informed, update the informat
 
 
 [PatientViewModel]: https://github.com/systelab/seed-dotnet/blob/master/seed_dotnet/ViewModels/PatientViewModel.cs
+
+
+## EmailController
+
+Contains the REST end point needed to send an email example.
+
+### SendEmail
+
+Providing a model with the email of the receiver and a subject, the solution sends an example email.
+
+[EmailViewModel]: https://github.com/systelab/seed-dotnet/blob/master/seed_dotnet/ViewModels/EmailViewModel.cs
