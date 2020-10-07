@@ -14,6 +14,7 @@
     using Entities.Models.Relations;
     using Entities.ViewModels;
     using Entities.ViewModels.Relations;
+    using main.Mail;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.PlatformAbstractions;
@@ -114,6 +115,7 @@
             services.AddScoped<IJwtHandler, JwtHandler>();
             services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
             services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
+            services.AddScoped <IMailService, MailService>();
             services.AddScoped<ISyncPolicy>(provider =>
                 Policy.Handle<Exception>().CircuitBreaker(2, TimeSpan.FromMinutes(1), onBreak: OnBreak, onReset: OnReset, onHalfOpen: OnHalfOpen));
         }
@@ -154,6 +156,7 @@
                 cfg.CreateMap<UserViewModel, UserManage>().ReverseMap();
                 cfg.CreateMap<AllergyViewModel, Allergy>().ReverseMap();
                 cfg.CreateMap<PatientAllergyViewModel, PatientAllergy>().ReverseMap();
+                cfg.CreateMap<EmailViewModel, Email>().ReverseMap();
 
                 #region Pagination configurations
 

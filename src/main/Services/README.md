@@ -11,3 +11,8 @@ Also we can find the interface to create a new JWT token [IJwtHandler] and the i
 [ISeed_dotnetRepository]:https://github.com/systelab/seed-dotnet/blob/master/seed_dotnet/Services/ISeed_dotnetRepository.cs
 [IAccountService]:https://github.com/systelab/seed-dotnet/blob/master/src/main/Services/IAccountService.cs
 [IJwtHandler]:https://github.com/systelab/seed-dotnet/blob/master/src/main/Services/IJwtHandler.cs
+
+## MailService
+
+The mail service contains the methods to create the email template an sending the email.
+
