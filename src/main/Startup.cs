@@ -163,6 +163,8 @@
             //Configure the Scopes
             services.ConfigureScope();
 
+            // Add certificates
+            services.ConfigureCertificate();
 
             // Configure the authentication system
             services.AddAuthentication()
