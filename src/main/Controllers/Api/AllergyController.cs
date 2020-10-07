@@ -2,30 +2,33 @@
 {
     using System;
     using System.Threading.Tasks;
+
     using AutoMapper;
-    using Contracts;
-    using Entities.Common;
-    using Entities.Models;
-    using Entities.ViewModels;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
+
+    using main.Contracts;
+    using main.Entities.Common;
+    using main.Entities.Models;
+    using main.Entities.ViewModels;
+    using main.Services;
+
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using PagedList.Core;
 
+    using X.PagedList;
 
     [ApiVersion("1")]
     [EnableCors("MyPolicy")]
     [Route("seed/v{version:apiVersion}/allergies")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     public class AllergyController : Controller
     {
         private readonly ILogger<AllergyController> logger;
 
         private readonly IMapper mapper;
-        private readonly IUnitOfWork unitOfWork;
 
+        private readonly IUnitOfWork unitOfWork;
 
         public AllergyController(IUnitOfWork unitOfWork, ILogger<AllergyController> logger, IMapper mapper)
         {
@@ -42,11 +45,6 @@
         [HttpPost]
         public async Task<IActionResult> CreateAllergy([FromBody] AllergyViewModel allergy)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.BadRequest("Bad data");
-            }
-
             try
             {
                 // Save to the database
@@ -79,20 +77,17 @@
         ///     result of the action
         /// </returns>
         [HttpGet]
-        public async Task<IActionResult> GetAllAllergies([FromQuery(Name = "page")] int page,
-            [FromQuery(Name = "size")] int elementsPerPage)
+        public async Task<IActionResult> GetAllAllergies([FromQuery(Name = "page")] int page, [FromQuery(Name = "size")] int elementsPerPage)
         {
             try
             {
                 // PagedList is a one-based index. We offer a zero-based index, therefore we have to add 1 to the page number
-                PagedList<Allergy> results =
-                    this.unitOfWork.Allergies.GetAllWithPaginationAllergy(page + 1, elementsPerPage);
+                IPagedList<Allergy> results = this.unitOfWork.Allergies.GetAllWithPaginationAllergy(page + 1, elementsPerPage);
                 return this.Ok(this.mapper.Map<ExtendedPagedList<AllergyViewModel>>(results));
             }
             catch (Exception ex)
             {
-                this.logger.LogError(
-                    $"Failed to get the allergies for page {page} (number of elements per page {elementsPerPage}): {ex}");
+                this.logger.LogError($"Failed to get the allergies for page {page} (number of elements per page {elementsPerPage}): {ex}");
                 return this.BadRequest("Error Occurred");
             }
         }

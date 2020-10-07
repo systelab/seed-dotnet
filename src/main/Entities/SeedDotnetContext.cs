@@ -1,13 +1,14 @@
 ﻿namespace main.Entities
 {
-    using System;
     using System.Data.Common;
+
+    using main.Entities.Models;
+    using main.Entities.Models.Relations;
+
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
-    using Models;
-    using Models.Relations;
 
     /// <summary>
     /// 
@@ -15,6 +16,7 @@
     public class SeedDotnetContext : IdentityDbContext<UserManage>
     {
         private readonly IConfigurationRoot config;
+
         private SqliteConnection connection;
 
         /// <summary>
@@ -31,11 +33,8 @@
         /// <summary>
         /// 
         /// </summary>
-        public DbSet<Patient> Patients { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
         public DbSet<Allergy> Allergies { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
@@ -44,21 +43,7 @@
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="optionsBuilder"></param>
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-
-            optionsBuilder.UseSqlite(this.GetConnection());
-        }
-
-        private DbConnection GetConnection()
-        {
-            this.connection = new SqliteConnection(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
-            this.connection.Open();
-
-            return this.connection;
-        }        
+        public DbSet<Patient> Patients { get; set; }
 
         /// <summary>
         /// 
@@ -75,10 +60,15 @@
             return null;
         }
 
-        private string GetPassword()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="optionsBuilder"></param>
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // modify this code to retrieve the password from a secure key repository. Obviously, avoid using the configuration file!
-            return this.config["ConnectionStrings:password"];
+            base.OnConfiguring(optionsBuilder);
+
+            optionsBuilder.UseSqlite(this.GetConnection());
         }
 
         /// <summary>
@@ -89,8 +79,21 @@
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<PatientAllergy>()
-                .HasKey(t => new { t.IdAllergy, t.IdPatient });
+            modelBuilder.Entity<PatientAllergy>().HasKey(t => new { t.IdAllergy, t.IdPatient });
+        }
+
+        private DbConnection GetConnection()
+        {
+            this.connection = new SqliteConnection(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
+            this.connection.Open();
+
+            return this.connection;
+        }
+
+        private string GetPassword()
+        {
+            // modify this code to retrieve the password from a secure key repository. Obviously, avoid using the configuration file!
+            return this.config["ConnectionStrings:password"];
         }
     }
 }

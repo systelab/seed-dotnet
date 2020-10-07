@@ -2,22 +2,26 @@
 {
     using System;
     using System.Threading.Tasks;
+
     using AutoMapper;
-    using Contracts;
-    using Entities.Common;
-    using Entities.ViewModels;
+
+    using main.Contracts;
+    using main.Entities.Common;
+    using main.Entities.ViewModels;
+
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-
 
     [ApiVersion("1")]
     [EnableCors("MyPolicy")]
     [Route("seed/v{version:apiVersion}/emails")]
     public class EmailController : Controller
     {
-        private readonly ILogger<EmailController> logger;
         private readonly IMailService emailService;
+
+        private readonly ILogger<EmailController> logger;
+
         private readonly IMapper mapper;
 
         public EmailController(ILogger<EmailController> logger, IMapper mapper, IMailService emailService)
@@ -35,25 +39,11 @@
         [HttpPost]
         public async Task<IActionResult> SendEmail([FromBody] EmailViewModel email)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.BadRequest("Bad data");
-            }
-
-            try
-            {
-                Email newEmail = this.mapper.Map<Email>(email);
-                newEmail.body = this.emailService.GetEmailTest();
-                await this.emailService.SendEmail(newEmail);
-                await Task.CompletedTask;
-                return this.Ok(true);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError($"Failed sending the email: {ex}");
-                return this.BadRequest("Error Occurred");
-            }
+            Email newEmail = this.mapper.Map<Email>(email);
+            newEmail.body = this.emailService.GetEmailTest();
+            await this.emailService.SendEmail(newEmail);
+            this.logger.LogDebug($"Email sent to {email.emailTo}");
+            return this.Ok();
         }
-
     }
 }

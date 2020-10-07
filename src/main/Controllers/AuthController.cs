@@ -2,12 +2,14 @@
 {
     using System;
     using System.Threading.Tasks;
+
     using AutoMapper;
-    using Contracts;
-    using Entities;
-    using Entities.Models;
-    using Entities.ViewModels;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
+
+    using main.Contracts;
+    using main.Entities;
+    using main.Entities.Models;
+    using main.Entities.ViewModels;
+
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Identity;
@@ -20,9 +22,9 @@
     [Route("seed/v{version:apiVersion}/users")]
     public class AuthController : Controller
     {
-        private readonly IMapper mapper;
-
         private readonly ILogger<AuthController> logger;
+
+        private readonly IMapper mapper;
 
         private readonly IAccountService repository;
 
@@ -53,12 +55,13 @@
             {
                 this.Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
                 this.Response.Headers.Add("Refresh", result.RefreshToken);
+                this.logger.LogDebug($"User logged: {login}");
                 return this.Ok("Done");
             }
 
             this.logger.LogWarning($"Bad request, username {login} or password incorrect");
 
-            return this.BadRequest("Username or password incorrect");
+            return this.Unauthorized("Username or password incorrect");
         }
 
         /// <summary>
@@ -71,7 +74,7 @@
         ///     The <see cref="Task" />.
         /// </returns>
         [Route("{uid}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult> GetUserInformation(int uid)
         {
@@ -81,7 +84,7 @@
                 return this.Ok(this.mapper.Map<UserViewModel>(user));
             }
 
-            return this.BadRequest("Not logged");
+            return this.Unauthorized("Not logged");
         }
 
         /// <summary>
@@ -101,9 +104,7 @@
             {
                 this.Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
                 this.Response.Headers.Add("Refresh", result.RefreshToken);
-                this.Response.Headers.Add(
-                    "Access-Control-Expose-Headers",
-                    "origin, content-type, accept, authorization, ETag, if-none-match");
+                this.Response.Headers.Add("Access-Control-Expose-Headers", "origin, content-type, accept, authorization, ETag, if-none-match");
                 return this.Ok();
             }
 

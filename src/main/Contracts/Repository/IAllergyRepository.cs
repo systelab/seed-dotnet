@@ -1,10 +1,11 @@
 ﻿namespace main.Contracts.Repository
 {
-    using Entities.Models;
-    using PagedList.Core;
+    using main.Entities.Models;
+
+    using X.PagedList;
 
     public interface IAllergyRepository : IRepositoryBase<Allergy>
     {
-        PagedList<Allergy> GetAllWithPaginationAllergy(int pageIndex, int pageSize);
+        IPagedList<Allergy> GetAllWithPaginationAllergy(int pageIndex, int pageSize);
     }
 }

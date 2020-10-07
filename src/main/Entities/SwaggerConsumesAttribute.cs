@@ -1,6 +1,7 @@
 ﻿namespace main.Entities
 {
     using System;
+
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>

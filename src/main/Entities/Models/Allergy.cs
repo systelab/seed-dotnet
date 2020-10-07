@@ -1,7 +1,8 @@
 ﻿namespace main.Entities.Models
 {
     using System.ComponentModel.DataAnnotations;
-    using Common;
+
+    using main.Entities.Common;
 
     public class Allergy : BaseEntity
     {

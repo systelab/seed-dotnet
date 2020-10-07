@@ -2,9 +2,11 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using Contracts;
-    using Entities;
-    using Entities.Models;
+
+    using main.Contracts;
+    using main.Entities;
+    using main.Entities.Models;
+
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>

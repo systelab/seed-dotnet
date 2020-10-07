@@ -32,6 +32,12 @@
         public Guid Id { get; set; }
 
         /// <summary>
+        ///     Gets or sets the patient medical number (Medical number)
+        /// </summary>
+        [StringLength(255, ErrorMessage = "Medical number cannot be longer than 255 characters")]
+        public string MedicalNumber { get; set; }
+
+        /// <summary>
         ///     Gets or sets the patient first name (Given name)
         /// </summary>
         [Required]
@@ -44,11 +50,5 @@
         [Required]
         [StringLength(255, ErrorMessage = "Surname cannot be longer than 255 characters")]
         public string Surname { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the patient medical number (Medical number)
-        /// </summary>
-        [StringLength(255, ErrorMessage = "Medical number cannot be longer than 255 characters")]
-        public string MedicalNumber { get; set; }
     }
 }

@@ -3,132 +3,98 @@
     using System;
     using System.IO.Compression;
     using System.Text;
-    using Extensions;
+    using System.Text.Json.Serialization;
+
     using global::Hangfire;
     using global::Hangfire.SQLite;
+
+    using main.Entities;
+    using main.Extensions;
     using main.Hangfire;
-    using HealthChecks.Network;
     using main.Healthchecks;
+    using main.Migrations;
+
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Tokens;
-    using Migrations;
-    using Newtonsoft.Json.Serialization;
-    using SQLitePCL;
+
+    using Serilog;
 
     // This is 
     internal class Startup
     {
-        private readonly IConfigurationRoot config;
-
-        private readonly IHostingEnvironment env;
-
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
-            var logger = NLog.LogManager.GetCurrentClassLogger();
-            try
-            {
-                this.env = env;
-                Batteries_V2.Init();
+            this.Configuration = configuration;
+            this.Environment = environment;
 
-                IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(this.env.ContentRootPath)
-                    .AddJsonFile("appsettings.json").AddEnvironmentVariables();
-
-                this.config = builder.Build();
-
-                //Migrations
-                DatabaseMigrationRunner.Start(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
-            }
-            catch (Exception e)
-            {
-                logger.Error(e);
-                throw;
-            }
+            //Migrations
+            DatabaseMigrationRunner.Start(this.Configuration.GetConnectionString("ContextConnection"));
         }
 
         public IConfiguration Configuration { get; }
 
+        public IWebHostEnvironment Environment { get; set; }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(
-            IApplicationBuilder app,
-            IHostingEnvironment env,
-            ILoggerFactory factory)
+        public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
         {
             // Configure how to display the errors and the level of severity
-            if (env.IsEnvironment("Development"))
+            if (this.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                factory.AddDebug(LogLevel.Information);
             }
             else
             {
                 app.UseHsts();
-                factory.AddDebug(LogLevel.Error);
             }
 
-            if (!env.IsEnvironment("Testing"))
+            if (!this.Environment.IsProduction())
             {
-                factory.AddDebug(LogLevel.Information);
                 app.UseSwagger();
             }
-            else
-            {
-                factory.AddConsole();
-            }
-
 
             app.UseCors("MyPolicy");
 
             app.UseStaticFiles();
+            app.UseSerilogRequestLogging();
             app.UseHttpsRedirection();
             app.UseAuthentication();
 
-            app.Use((context, next) =>
-            {
-                context.Response.Headers["Access-Control-Expose-Headers"] = "origin, content-type, accept, authorization, ETag, if-none-match";
-                context.Response.Headers["Access-Control-Max-Age"] = "1209600";
-                context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH";
-                context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
-                context.Response.Headers["Access-Control-Allow-Headers"] = "origin, content-type, accept, authorization, Etag, if-none-match";
-                context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-                context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
-                context.Response.Headers["X-Frame-Options"] = "deny";
-                context.Response.Headers["Strict-Transport-Security"] = "max-age=300; includeSubDomains";
-                return next.Invoke();
-            });
+            app.Use(
+                (context, next) =>
+                    {
+                        context.Response.Headers["Access-Control-Expose-Headers"] = "origin, content-type, accept, authorization, ETag, if-none-match";
+                        context.Response.Headers["Access-Control-Max-Age"] = "1209600";
+                        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH";
+                        context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+                        context.Response.Headers["Access-Control-Allow-Headers"] = "origin, content-type, accept, authorization, Etag, if-none-match";
+                        context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+                        context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+                        context.Response.Headers["X-Frame-Options"] = "deny";
+                        context.Response.Headers["Strict-Transport-Security"] = "max-age=300; includeSubDomains";
+                        return next.Invoke();
+                    });
 
             app.UseResponseCompression();
             app.UseHealthChecks("/health");
 
-            app.UseMvc(
-                config =>
-                {
-                    config.MapRoute(
-                        "Default",
-                        "{controller}/{action}/{id?}",
-                        new {controller = "Home", action = "index"});
-                });
-
             // Enable middleware to serve generated Swagger as a JSON endpoint.
-
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Seed .Net"); });
 
-            app.UseHangfireDashboard("/hangfire", new DashboardOptions
-            {
-                Authorization = new[] { new HangFireAuthenticationFilter() }
-            });
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new HangFireAuthenticationFilter() } });
 
-            app.UseHangfireServer(new BackgroundJobServerOptions
-            {
-                WorkerCount = 1,
-            });
+            app.UseHangfireServer(new BackgroundJobServerOptions { WorkerCount = 1 });
 
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
             HangfireJobScheduler.ScheduleRecurringJobs();
@@ -137,13 +103,20 @@
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(this.config);
-            if (this.env.IsEnvironment("Development"))
+            string connectionString = this.Configuration.GetConnectionString("seed_dotnetContextConnection");
+            IConfigurationSection appPathsSection = this.Configuration.GetSection("AppPaths");
+
+            IConfigurationSection appSettingsSection = this.Configuration.GetSection("AppSettings");
+            AppSettingsModel appSettingsModel = appSettingsSection.Get<AppSettingsModel>();
+            services.AddSingleton(appSettingsModel);
+            services.AddDbContext<SeedDotnetContext>(options => options.UseSqlite(connectionString));
+
+            if (this.Environment.IsDevelopment())
             {
                 // Here you can set the services implemented only for DEV 
             }
 
-            if (!this.env.IsEnvironment("Testing"))
+            if (!this.Environment.IsProduction())
                 // Add Swagger reference to the project. Swagger is not needed when testing
             {
                 services.ConfigureSwagger();
@@ -167,19 +140,26 @@
             services.ConfigureCertificate();
 
             // Configure the authentication system
-            services.AddAuthentication()
-                .AddJwtBearer(cfg =>
-                {
-                    cfg.TokenValidationParameters = new TokenValidationParameters
+            services.AddAuthentication(
+                x =>
                     {
-                        IssuerSigningKey =
-                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["jwt:secretKey"])),
-                        ValidIssuer = this.config["jwt:issuer"],
-                        ValidateAudience = false,
-                        ValidateLifetime = true
-                    };
-                });
-
+                        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                        x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    }).AddJwtBearer(
+                bearerOptions =>
+                    {
+                        bearerOptions.RequireHttpsMetadata = false;
+                        bearerOptions.SaveToken = true;
+                        bearerOptions.TokenValidationParameters = new TokenValidationParameters
+                                                                      {
+                                                                          ValidateIssuerSigningKey = true,
+                                                                          IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettingsModel.Secret)),
+                                                                          ValidateAudience = false,
+                                                                          ValidIssuer = appSettingsModel.Issuer,
+                                                                          ValidateIssuer = false
+                                                                      };
+                    });
 
             //Configure Mappers
             services.ConfigureMapper();
@@ -188,42 +168,38 @@
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
 
             // Add Response compression services
-            services.AddResponseCompression(options =>
-            {
-                options.Providers.Add<GzipCompressionProvider>();
-                options.EnableForHttps = true;
-            });
+            services.AddResponseCompression(
+                options =>
+                    {
+                        options.Providers.Add<GzipCompressionProvider>();
+                        options.EnableForHttps = true;
+                    });
             // add some healthchecks
-            services.AddHealthChecks().AddCheck<ExampleHealthCheck>("exampleHealthCheck")
-                .AddSqlite(this.config["ConnectionStrings:seed_dotnetContextConnection"])
-                .AddDiskStorageHealthCheck(options => options.AddDrive(@"C:\", minimumFreeMegabytes: 1000))
-                .AddPingHealthCheck(options => options.AddHost("www.google.com", 1000));
+            services.AddHealthChecks().AddCheck<ExampleHealthCheck>("exampleHealthCheck").AddSqlite(this.Configuration.GetConnectionString("ContextConnection"))
+                .AddDiskStorageHealthCheck(options => options.AddDrive(@"C:\", 1000)).AddPingHealthCheck(options => options.AddHost("www.google.com", 1000));
 
-            services.AddMvc().AddJsonOptions(
-                config =>
-                {
-                    config.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                });
-
+            services.AddMvcCore().AddJsonOptions(
+                options =>
+                    {
+                        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                    }).AddApiExplorer();
             //Versioning of API
-            services.AddApiVersioning(o => {
-                o.ReportApiVersions = true;
-                o.AssumeDefaultVersionWhenUnspecified = true;
-                o.DefaultApiVersion = new ApiVersion(1, 0);
-            });
+            services.AddApiVersioning(
+                o =>
+                    {
+                        o.ReportApiVersions = true;
+                        o.AssumeDefaultVersionWhenUnspecified = true;
+                        o.DefaultApiVersion = new ApiVersion(1, 0);
+                    });
 
             //Add HangFire
-            services.AddHangfire(config =>
-            {
-                var options = new SQLiteStorageOptions
-                {
-                    PrepareSchemaIfNecessary = true,
-                    QueuePollInterval = TimeSpan.FromMinutes(5)
-                };
-                config.UseSQLiteStorage(this.config["ConnectionStrings:seed_dotnetContextConnection"], options);
-
-
-            });
+            services.AddHangfire(
+                config =>
+                    {
+                        SQLiteStorageOptions options = new SQLiteStorageOptions { PrepareSchemaIfNecessary = true, QueuePollInterval = TimeSpan.FromMinutes(5) };
+                        config.UseSQLiteStorage(this.Configuration.GetConnectionString("ContextConnection"), options);
+                    });
         }
     }
 }

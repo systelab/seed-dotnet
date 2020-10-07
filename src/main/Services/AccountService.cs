@@ -2,9 +2,11 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Contracts;
-    using Entities;
-    using Entities.Models;
+
+    using main.Contracts;
+    using main.Entities;
+    using main.Entities.Models;
+
     using Microsoft.AspNetCore.Identity;
 
     internal class AccountService : IAccountService
@@ -56,8 +58,7 @@
                 if (signInResult.Succeeded)
                 {
                     JsonWebToken jwt = this.jwtHandler.Create(user);
-                    string refreshToken = this.passwordHasher.HashPassword(user, Guid.NewGuid().ToString())
-                        .Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
+                    string refreshToken = this.passwordHasher.HashPassword(user, Guid.NewGuid().ToString()).Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
                     jwt.RefreshToken = refreshToken;
                     user.RefreshToken = refreshToken;
                     await this.repository.UpdateRefreshToken(user);

@@ -1,7 +1,9 @@
 ﻿namespace IntegrationTest
 {
     using System.Collections.Generic;
+
     using main.Entities.ViewModels;
+
     using Newtonsoft.Json;
 
     public class JsonEqualityComparer : IEqualityComparer<PatientViewModel>

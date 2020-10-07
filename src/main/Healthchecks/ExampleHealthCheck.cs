@@ -13,12 +13,10 @@
         public ExampleHealthCheck(IConfigurationRoot configuration)
         {
             // Use DI to inject services here
-            this.configuration = configuration;            
+            this.configuration = configuration;
         }
 
-        public Task<HealthCheckResult> CheckHealthAsync(
-            HealthCheckContext context,
-            CancellationToken cancellationToken)
+        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
         {
             // Do your logic here 
             bool healthCheckResultHealthy = this.configuration != null;

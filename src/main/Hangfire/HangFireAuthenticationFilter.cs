@@ -1,11 +1,7 @@
-﻿using Hangfire.Dashboard;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace main.Hangfire
+﻿namespace main.Hangfire
 {
+    using global::Hangfire.Dashboard;
+
     public class HangFireAuthenticationFilter : IDashboardAuthorizationFilter
     {
         public bool Authorize(DashboardContext context)

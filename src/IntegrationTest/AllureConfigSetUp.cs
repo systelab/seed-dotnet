@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace IntegrationTest
+﻿namespace IntegrationTest
 {
+    using System;
     using System.IO;
 
     using Allure.Commons;
@@ -16,9 +13,7 @@ namespace IntegrationTest
         [OneTimeSetUp]
         public void Setup()
         {
-            Environment.SetEnvironmentVariable(
-                "ALLURE_CONFIG",
-                Path.Combine(Environment.CurrentDirectory, AllureConstants.CONFIG_FILENAME));
+            Environment.SetEnvironmentVariable("ALLURE_CONFIG", Path.Combine(Environment.CurrentDirectory, AllureConstants.CONFIG_FILENAME));
         }
     }
 }

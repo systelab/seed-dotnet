@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace main.Hangfire.Contracts
+﻿namespace main.Hangfire.Contracts
 {
+    using System;
+    using System.Threading.Tasks;
+
     public interface IJobExample
     {
         Task JobExample1(DateTime now);
+
         Task JobExample2(DateTime now);
     }
 }

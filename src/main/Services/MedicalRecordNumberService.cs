@@ -1,18 +1,20 @@
 ﻿namespace main.Services
 {
     using System;
-    using Contracts;
+
+    using main.Contracts;
 
     using Microsoft.Extensions.Logging;
 
     using Polly;
+
     using RestSharp;
 
     public class MedicalRecordNumberService : IMedicalRecordNumberService
     {
-        private readonly ISyncPolicy policy;
-
         private readonly ILogger<MedicalRecordNumberService> logger;
+
+        private readonly ISyncPolicy policy;
 
         public MedicalRecordNumberService(ISyncPolicy policy, ILogger<MedicalRecordNumberService> logger)
         {
@@ -26,17 +28,17 @@
             {
                 RestClient client = new RestClient(url);
 
-                return this.policy.Execute(() =>
-                {
-                    IRestResponse response = client.Execute(
-                        new RestRequest("/identity/v1/medical-record-number", Method.GET, DataFormat.Json));
-                    if (!response.IsSuccessful)
-                    {
-                        throw response.ErrorException;
-                    }
+                return this.policy.Execute(
+                    () =>
+                        {
+                            IRestResponse response = client.Execute(new RestRequest("/identity/v1/medical-record-number", Method.GET, DataFormat.Json));
+                            if (!response.IsSuccessful)
+                            {
+                                throw response.ErrorException;
+                            }
 
-                    return response.Content;
-                });
+                            return response.Content;
+                        });
             }
             catch (Exception)
             {

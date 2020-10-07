@@ -1,6 +1,7 @@
 ﻿namespace main
 {
-    using Extensions;
+    using main.Extensions;
+
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -10,8 +11,7 @@
         {
             using (IServiceScope scope = webhost.Services.GetService<IServiceScopeFactory>().CreateScope())
             {
-                SeedDotnetContextSeedData
-                    seeder = scope.ServiceProvider.GetRequiredService<SeedDotnetContextSeedData>();
+                SeedDotnetContextSeedData seeder = scope.ServiceProvider.GetRequiredService<SeedDotnetContextSeedData>();
                 seeder.EnsureSeedData().Wait();
             }
 

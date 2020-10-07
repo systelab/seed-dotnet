@@ -11,13 +11,13 @@
         public string Email { get; set; }
 
         /// <summary>
-        ///     Gets or sets User's name
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
         ///     Gets or sets User's lastname
         /// </summary>
         public string LastName { get; set; }
+
+        /// <summary>
+        ///     Gets or sets User's name
+        /// </summary>
+        public string Name { get; set; }
     }
 }

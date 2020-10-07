@@ -4,52 +4,41 @@
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Text;
-    using Contracts;
-    using Entities;
-    using Entities.Models;
-    using Microsoft.Extensions.Configuration;
+
+    using main.Contracts;
+    using main.Entities;
+    using main.Entities.Models;
+
     using Microsoft.IdentityModel.Tokens;
+
+    using JsonWebToken = main.Entities.JsonWebToken;
+    using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
     internal class JwtHandler : IJwtHandler
     {
-        private readonly IConfigurationRoot _config;
-        private readonly SigningCredentials _signingCredentials;
+        private readonly AppSettingsModel config;
 
-        public JwtHandler(IConfigurationRoot config)
+        public JwtHandler(AppSettingsModel config)
         {
-            this._config = config;
-            SecurityKey _securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._config["jwt:secretKey"]));
-            this._signingCredentials = new SigningCredentials(_securityKey, SecurityAlgorithms.HmacSha256);
+            this.config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public JsonWebToken Create(UserManage user)
         {
-            Claim[] claims =
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
-            };
-            DateTime nowUtc = DateTime.Now;
+            Claim[] claims = { new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName) };
 
-            SigningCredentials creds = this._signingCredentials;
-            DateTime expires = nowUtc.AddMinutes(int.Parse(this._config["jwt:expiryMinutes"]));
-            long exp = (long) new TimeSpan(expires.Ticks).TotalSeconds;
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            byte[] key = Encoding.ASCII.GetBytes(this.config.Secret);
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+                                                          {
+                                                              Subject = new ClaimsIdentity(claims),
+                                                              Expires = DateTime.UtcNow.AddMinutes(double.Parse(this.config.ExpiryMinutes)),
+                                                              SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                                                          };
 
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
-            JwtSecurityToken token = new JwtSecurityToken(this._config["jwt:issuer"], this._config["Tokens:Audience"],
-                claims,
-                expires: DateTime.Now.AddMinutes(int.Parse(this._config["jwt:expiryMinutes"])),
-                signingCredentials: creds
-            );
-            string tokenx = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return new JsonWebToken
-            {
-                AccessToken = tokenx,
-                Expires = exp,
-                Expiration = expires
-            };
+            return new JsonWebToken { AccessToken = tokenHandler.WriteToken(token), Expiration = tokenDescriptor.Expires.Value };
         }
     }
 }

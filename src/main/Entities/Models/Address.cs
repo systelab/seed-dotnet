@@ -1,6 +1,6 @@
 ﻿namespace main.Entities.Models
 {
-    using Common;
+    using main.Entities.Common;
 
     public class Address : BaseEntity
     {

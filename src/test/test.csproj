@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Allure.xUnit\Allure.builder.csproj" />
     <ProjectReference Include="..\main\main.csproj" />
   </ItemGroup>
 

@@ -1,4 +1,4 @@
-﻿namespace main.Controllers.Api
+﻿namespace main.Services
 {
     using System;
 

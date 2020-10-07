@@ -1,10 +1,12 @@
 ﻿namespace main.Repository.Repositories
 {
     using System.Linq;
-    using Contracts.Repository;
-    using Entities;
-    using Entities.Models;
-    using PagedList.Core;
+
+    using main.Contracts.Repository;
+    using main.Entities;
+    using main.Entities.Models;
+
+    using X.PagedList;
 
     public class AllergyRepository : RepositoryBase<Allergy>, IAllergyRepository
     {
@@ -13,10 +15,9 @@
         {
         }
 
-        public PagedList<Allergy> GetAllWithPaginationAllergy(int pageIndex, int pageSize)
+        public IPagedList<Allergy> GetAllWithPaginationAllergy(int pageIndex, int pageSize)
         {
-            return new PagedList<Allergy>(this.context.Allergies
-                .OrderBy(p => p.Name), pageIndex, pageSize);
+            return new PagedList<Allergy>(this.context.Allergies.OrderBy(p => p.Name), pageIndex, pageSize);
         }
     }
 }

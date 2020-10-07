@@ -1,25 +1,26 @@
 ﻿namespace Test.Controller
 {
     using AutoMapper;
+
     using main.Contracts;
     using main.Controllers.Api;
+
     using Microsoft.Extensions.Logging;
-    using Moq;
+    using Microsoft.Extensions.Logging.Abstractions;
 
     internal class PatientControllerBuilder
     {
-        private readonly IMedicalRecordNumberService medicalRecordNumber;
         private ILogger<PatientController> logger;
 
         private IMapper mapper;
-        private IUnitOfWork unitOfWork;
 
-        public PatientControllerBuilder(IMapper mapper, IMedicalRecordNumberService medicalRecordNumber)
+        private IPatientService patientService;
+
+        public PatientControllerBuilder(IMapper mapper, IPatientService patientService)
         {
-            this.unitOfWork = new Mock<IUnitOfWork>().Object;
-            this.logger = new Mock<ILogger<PatientController>>().Object;
+            this.patientService = patientService;
+            this.logger = new NullLogger<PatientController>();
             this.mapper = mapper;
-            this.medicalRecordNumber = medicalRecordNumber;
         }
 
         public static implicit operator PatientController(PatientControllerBuilder instance)
@@ -29,13 +30,7 @@
 
         public PatientController Build()
         {
-            return new PatientController(this.unitOfWork, this.logger, this.mapper, this.medicalRecordNumber);
-        }
-
-        public PatientControllerBuilder WithRepository(IUnitOfWork unitOfWork)
-        {
-            this.unitOfWork = unitOfWork;
-            return this;
+            return new PatientController(this.patientService, this.logger, this.mapper);
         }
 
         public PatientControllerBuilder WithLogger(ILogger<PatientController> logger)
@@ -47,6 +42,12 @@
         public PatientControllerBuilder WithMapper(IMapper mapper)
         {
             this.mapper = mapper;
+            return this;
+        }
+
+        public PatientControllerBuilder WithPatientService(IPatientService patientService)
+        {
+            this.patientService = patientService;
             return this;
         }
     }

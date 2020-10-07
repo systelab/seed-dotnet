@@ -2,7 +2,9 @@
 {
     using System;
     using System.Reflection;
+
     using FluentMigrator.Runner;
+
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -25,19 +27,11 @@
 
         private static IServiceProvider CreateServices(string connectionString)
         {
-            Assembly[] assemblies =
-            {
-                typeof(InitialDatabaseStructure).Assembly,
-                typeof(InsertExampleData).Assembly
-            };
+            Assembly[] assemblies = { typeof(InitialDatabaseStructure).Assembly, typeof(InsertExampleData).Assembly };
 
-            return new ServiceCollection()
-                .AddFluentMigratorCore()
-                .ConfigureRunner(configureRunner => configureRunner.AddSQLite()
-                    .WithGlobalConnectionString(connectionString)
-                    .ScanIn(assemblies).For.Migrations())
-                .AddLogging(logging => logging.AddFluentMigratorConsole())
-                .BuildServiceProvider(false);
+            return new ServiceCollection().AddFluentMigratorCore()
+                .ConfigureRunner(configureRunner => configureRunner.AddSQLite().WithGlobalConnectionString(connectionString).ScanIn(assemblies).For.Migrations())
+                .AddLogging(logging => logging.AddFluentMigratorConsole()).BuildServiceProvider(false);
         }
 
         private static void UpdateDatabase(IServiceProvider serviceProvider)

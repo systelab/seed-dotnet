@@ -1,7 +1,8 @@
 ﻿namespace main.Contracts
 {
     using System.Threading.Tasks;
-    using Entities.Models;
+
+    using main.Entities.Models;
 
     /// <summary>
     ///     Interface with all the method needed

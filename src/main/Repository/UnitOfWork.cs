@@ -1,9 +1,9 @@
 ﻿namespace main.Repository
 {
-    using Contracts;
-    using Contracts.Repository;
-    using Entities;
-    using Repositories;
+    using main.Contracts;
+    using main.Contracts.Repository;
+    using main.Entities;
+    using main.Repository.Repositories;
 
     /// <summary>
     /// 
@@ -23,9 +23,9 @@
             this.Allergies = new AllergyRepository(this.context);
         }
 
-        public IPatientRepository Patients { get; }
         public IAllergyRepository Allergies { get; }
 
+        public IPatientRepository Patients { get; }
 
         /// <summary>
         /// 

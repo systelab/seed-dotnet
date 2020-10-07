@@ -1,31 +1,36 @@
 ﻿namespace main.Extensions
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Security.Cryptography.X509Certificates;
+
     using AutoMapper;
-    using Contracts;
-    using Contracts.Repository;
-    using Entities;
-    using Entities.Common;
-    using Entities.Models;
-    using Entities.Models.Relations;
-    using Entities.ViewModels;
-    using Entities.ViewModels.Relations;
+
+    using main.Contracts;
+    using main.Contracts.Repository;
+    using main.Entities;
+    using main.Entities.Common;
+    using main.Entities.Models;
+    using main.Entities.Models.Relations;
+    using main.Entities.ViewModels;
+    using main.Entities.ViewModels.Relations;
     using main.Mail;
+    using main.Repository;
+    using main.Repository.Repositories;
+    using main.Services;
+
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.PlatformAbstractions;
-    using PagedList.Core;
+    using Microsoft.OpenApi.Models;
+
     using Polly;
     using Polly.CircuitBreaker;
 
-    using Repository;
-    using Repository.Repositories;
-    using Services;
-    using Swashbuckle.AspNetCore.Swagger;
+    using Serilog;
+
+    using X.PagedList;
 
     /// <summary>
     /// 
@@ -33,53 +38,50 @@
     public static class ServiceExtensions
     {
         /// <summary>
-        /// 
+        /// Import certificates in the solution trust collection
         /// </summary>
         /// <param name="services"></param>
-        public static void ConfigureCors(this IServiceCollection services)
+        public static void ConfigureCertificate(this IServiceCollection services)
         {
-            services.AddCors(
-                o => o.AddPolicy(
-                    "MyPolicy",
-                    builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
+            string pathToCAFile = "./CERTIFICATE_NAME.p7b";
+
+            // ADD CA certificate to local trust store
+            X509Store localTrustStore = new X509Store(StoreName.Root);
+            X509Certificate2Collection certificateCollection = new X509Certificate2Collection();
+
+            try
+            {
+                certificateCollection.Import(pathToCAFile);
+                localTrustStore.Open(OpenFlags.ReadWrite);
+                localTrustStore.AddRange(certificateCollection);
+            }
+            catch (Exception ex)
+            {
+                Console.Write("Root certificate import failed: " + ex.Message);
+            }
+            finally
+            {
+                localTrustStore.Close();
+            }
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="services"></param>
-        public static void ConfigureSwagger(this IServiceCollection services)
+        public static void ConfigureContext(this IServiceCollection services)
         {
-            services.AddSwaggerGen(
-                c =>
-                {
-                    c.OperationFilter<SwaggerConsumesOperationFilter>();
-                    c.AddSecurityDefinition("Bearer", new ApiKeyScheme
-                    {
-                        Description =
-                            "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                        Name = "Authorization",
-                        In = "header",
-                        Type = "apiKey"
-                    });
-                    c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
-                    {
-                        {"Bearer", new string[] { }}
-                    });
-                    c.SwaggerDoc(
-                        "v1",
-                        new Info
-                        {
-                            Version = "v1",
-                            Title = "Seed DotNet",
-                            Description = "This is a seed project for a .Net WebApi",
-                            TermsOfService = "None"
-                        });
-                    // Set the comments path for the Swagger JSON and UI.
-                    string basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                    string xmlPath = Path.Combine(basePath, "seed_dotnet.xml");
-                    c.IncludeXmlComments(xmlPath);
-                });
+            services.AddDbContext<SeedDotnetContext>();
+            services.AddTransient<SeedDotnetContextSeedData>();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
+        public static void ConfigureCors(this IServiceCollection services)
+        {
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
         }
 
         /// <summary>
@@ -90,14 +92,54 @@
         {
             services.AddIdentity<UserManage, IdentityRole>(
                 config =>
-                {
-                    config.Password.RequireLowercase = true;
-                    config.Password.RequireUppercase = true;
-                    config.Password.RequireNonAlphanumeric = false;
-                    config.Password.RequiredLength = 8;
-                    config.Password.RequireDigit = false;
-                    config.User.RequireUniqueEmail = false;
-                }).AddEntityFrameworkStores<SeedDotnetContext>();
+                    {
+                        config.Password.RequireLowercase = true;
+                        config.Password.RequireUppercase = true;
+                        config.Password.RequireNonAlphanumeric = false;
+                        config.Password.RequiredLength = 8;
+                        config.Password.RequireDigit = false;
+                        config.User.RequireUniqueEmail = false;
+                    }).AddEntityFrameworkStores<SeedDotnetContext>();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
+        public static void ConfigureMapper(this IServiceCollection services)
+        {
+            MapperConfiguration automapConfiguration = new MapperConfiguration(
+                cfg =>
+                    {
+                        cfg.CreateMap<AddressViewModel, Address>().ReverseMap();
+                        cfg.CreateMap<PatientViewModel, Patient>().ForMember(p => p.Dob, o => o.MapFrom(q => q.Dob ?? DateTime.MinValue)).ReverseMap().ForMember(
+                            p => p.Dob,
+                            o => o.MapFrom(q => q.Dob == DateTime.MinValue ? null : new DateTime?(q.Dob)));
+                        cfg.CreateMap<UserViewModel, UserManage>().ReverseMap();
+                        cfg.CreateMap<AllergyViewModel, Allergy>().ReverseMap();
+                        cfg.CreateMap<PatientAllergyViewModel, PatientAllergy>().ReverseMap();
+                        cfg.CreateMap<EmailViewModel, Email>().ReverseMap();
+
+                        #region Pagination configurations
+
+                        cfg.CreateMap<PagedList<Patient>, ExtendedPagedList<PatientViewModel>>().ForMember(p => p.TotalPages, o => o.MapFrom(q => q.PageCount))
+                            .ForMember(p => p.Content, o => o.MapFrom(q => q.AsEnumerable())).ForMember(p => p.First, o => o.MapFrom(q => q.IsFirstPage))
+                            .ForMember(p => p.Last, o => o.MapFrom(q => q.IsLastPage)).ForMember(p => p.Size, o => o.MapFrom(q => q.PageSize))
+                            .ForMember(p => p.NumberOfElements, o => o.MapFrom(q => q.Count)).ForMember(p => p.Number, o => o.MapFrom(q => q.PageNumber - 1))
+                            .ForMember(p => p.TotalElements, o => o.MapFrom(q => q.TotalItemCount));
+
+                        cfg.CreateMap<PagedList<Allergy>, ExtendedPagedList<AllergyViewModel>>().ForMember(p => p.TotalPages, o => o.MapFrom(q => q.PageCount))
+                            .ForMember(p => p.Content, o => o.MapFrom(q => q.AsEnumerable())).ForMember(p => p.First, o => o.MapFrom(q => q.IsFirstPage))
+                            .ForMember(p => p.Last, o => o.MapFrom(q => q.IsLastPage)).ForMember(p => p.Size, o => o.MapFrom(q => q.PageSize))
+                            .ForMember(p => p.NumberOfElements, o => o.MapFrom(q => q.Count)).ForMember(p => p.Number, o => o.MapFrom(q => q.PageNumber - 1))
+                            .ForMember(p => p.TotalElements, o => o.MapFrom(q => q.TotalItemCount));
+
+                        #endregion
+                    });
+
+            IMapper mapper = automapConfiguration.CreateMapper();
+
+            services.AddSingleton(mapper);
         }
 
         /// <summary>
@@ -115,116 +157,57 @@
             services.AddScoped<IJwtHandler, JwtHandler>();
             services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
             services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
-            services.AddScoped <IMailService, MailService>();
-            services.AddScoped<ISyncPolicy>(provider =>
-                Policy.Handle<Exception>().CircuitBreaker(2, TimeSpan.FromMinutes(1), onBreak: OnBreak, onReset: OnReset, onHalfOpen: OnHalfOpen));
+            services.AddScoped<IMailService, MailService>();
+            services.AddScoped<ISyncPolicy>(provider => Policy.Handle<Exception>().CircuitBreaker(2, TimeSpan.FromMinutes(1), OnBreak, OnReset, OnHalfOpen));
         }
 
-        private static void OnHalfOpen()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
+        public static void ConfigureSwagger(this IServiceCollection services)
         {
-            var logger = NLog.LogManager.GetCurrentClassLogger();
-            logger.Error($"Circuit half open");
-        }
-
-        private static void OnReset(Context context)
-        {
-            var logger = NLog.LogManager.GetCurrentClassLogger();
-            logger.Error($"Circuit reset for {context.PolicyKey} at {context.OperationKey}");
+            services.AddSwaggerGen(
+                c =>
+                    {
+                        c.AddSecurityDefinition(
+                            "Bearer",
+                            new OpenApiSecurityScheme
+                                {
+                                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                                    Name = "Authorization",
+                                    In = ParameterLocation.Header,
+                                    Type = SecuritySchemeType.ApiKey
+                                });
+                        c.AddSecurityRequirement(
+                            new OpenApiSecurityRequirement
+                                {
+                                    { new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }, new string[] { } }
+                                });
+                        c.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "Seed DotNet", Description = "This is a seed project for a .Net WebApi" });
+                        // Set the comments path for the Swagger JSON and UI.
+                        string xmlFile = $"seed_dotnet.xml";
+                        string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                        c.IncludeXmlComments(xmlPath);
+                    });
         }
 
         private static void OnBreak(Exception exception, CircuitState circuitState, TimeSpan timeSpan, Context context)
         {
-            var logger = NLog.LogManager.GetCurrentClassLogger();
+            ILogger logger = Log.Logger;
             logger.Error($"Circuit break with state {circuitState} using {context.PolicyKey} at {context.OperationKey}, due to: {exception} in {timeSpan.TotalSeconds}.");
         }
 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigureMapper(this IServiceCollection services)
+        private static void OnHalfOpen()
         {
-            MapperConfiguration automapConfiguration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<AddressViewModel, Address>().ReverseMap();
-                cfg.CreateMap<PatientViewModel, Patient>()
-                    .ForMember(p => p.Dob, o => o.MapFrom(q => q.Dob ?? DateTime.MinValue))
-                    .ReverseMap()
-                    .ForMember(p => p.Dob,
-                        o => o.MapFrom(q => q.Dob == DateTime.MinValue ? null : new DateTime?(q.Dob)));
-                cfg.CreateMap<UserViewModel, UserManage>().ReverseMap();
-                cfg.CreateMap<AllergyViewModel, Allergy>().ReverseMap();
-                cfg.CreateMap<PatientAllergyViewModel, PatientAllergy>().ReverseMap();
-                cfg.CreateMap<EmailViewModel, Email>().ReverseMap();
-
-                #region Pagination configurations
-
-                cfg.CreateMap<PagedList<Patient>, ExtendedPagedList<PatientViewModel>>()
-                    .ForMember(p => p.TotalPages, o => o.MapFrom(q => q.PageCount))
-                    .ForMember(p => p.Content, o => o.MapFrom(q => q.AsEnumerable()))
-                    .ForMember(p => p.First, o => o.MapFrom(q => q.IsFirstPage))
-                    .ForMember(p => p.Last, o => o.MapFrom(q => q.IsLastPage))
-                    .ForMember(p => p.Size, o => o.MapFrom(q => q.PageSize))
-                    .ForMember(p => p.NumberOfElements, o => o.MapFrom(q => q.Count))
-                    .ForMember(p => p.Number, o => o.MapFrom(q => q.PageNumber - 1))
-                    .ForMember(p => p.TotalElements, o => o.MapFrom(q => q.TotalItemCount));
-
-                cfg.CreateMap<PagedList<Allergy>, ExtendedPagedList<AllergyViewModel>>()
-                    .ForMember(p => p.TotalPages, o => o.MapFrom(q => q.PageCount))
-                    .ForMember(p => p.Content, o => o.MapFrom(q => q.AsEnumerable()))
-                    .ForMember(p => p.First, o => o.MapFrom(q => q.IsFirstPage))
-                    .ForMember(p => p.Last, o => o.MapFrom(q => q.IsLastPage))
-                    .ForMember(p => p.Size, o => o.MapFrom(q => q.PageSize))
-                    .ForMember(p => p.NumberOfElements, o => o.MapFrom(q => q.Count))
-                    .ForMember(p => p.Number, o => o.MapFrom(q => q.PageNumber - 1))
-                    .ForMember(p => p.TotalElements, o => o.MapFrom(q => q.TotalItemCount));
-
-                #endregion
-            });
-
-            IMapper mapper = automapConfiguration.CreateMapper();
-
-            services.AddSingleton(mapper);
+            ILogger logger = Log.Logger;
+            logger.Error("Circuit half open");
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigureContext(this IServiceCollection services)
+        private static void OnReset(Context context)
         {
-            services.AddDbContext<SeedDotnetContext>();
-            services.AddTransient<SeedDotnetContextSeedData>();
-        }
-
-        /// <summary>
-        /// Import certificates in the solution trust collection
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigureCertificate(this IServiceCollection services)
-        {
-            string pathToCAFile = "./CERTIFICATE_NAME.p7b";
-
-            // ADD CA certificate to local trust store
-            X509Store localTrustStore = new X509Store(StoreName.Root);
-            X509Certificate2Collection certificateCollection = new X509Certificate2Collection();
-    
-            try
-            {
-                certificateCollection.Import(pathToCAFile);
-                localTrustStore.Open(OpenFlags.ReadWrite);
-                localTrustStore.AddRange(certificateCollection);
-            }
-            catch (Exception ex)
-            {
-                Console.Write("Root certificate import failed: " + ex.Message);
-
-            }
-            finally
-            {
-                localTrustStore.Close();
-            }
+            ILogger logger = Log.Logger;
+            logger.Error($"Circuit reset for {context.PolicyKey} at {context.OperationKey}");
         }
     }
 }

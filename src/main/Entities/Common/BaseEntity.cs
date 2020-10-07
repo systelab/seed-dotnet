@@ -6,14 +6,14 @@
 
     public abstract class BaseEntity
     {
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime CreationTime { get; set; } = DateTime.UtcNow;
+
         [Key]
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-
-        [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime CreationTime { get; set; } = DateTime.UtcNow;
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime UpdateTime { get; set; } = DateTime.UtcNow;

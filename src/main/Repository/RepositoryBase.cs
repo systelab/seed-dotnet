@@ -5,13 +5,17 @@
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
-    using Contracts;
-    using Entities;
-    using Entities.Models;
-    using Microsoft.EntityFrameworkCore;
-    using PagedList.Core;
 
-    public class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : class
+    using main.Contracts;
+    using main.Entities;
+    using main.Entities.Models;
+
+    using Microsoft.EntityFrameworkCore;
+
+    using X.PagedList;
+
+    public class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
+        where TEntity : class
     {
         protected readonly SeedDotnetContext context;
 
@@ -26,14 +30,14 @@
 
         public async Task Add(TEntity entity)
         {
-            this.context.Set<TEntity>().Add(entity);
-            this.context.SaveChanges();
+            await this.context.Set<TEntity>().AddAsync(entity);
+            await this.context.SaveChangesAsync();
         }
 
         public async Task AddRange(IEnumerable<TEntity> Entities)
         {
-            this.context.Set<TEntity>().AddRange(Entities);
-            this.context.SaveChanges();
+            await this.context.Set<TEntity>().AddRangeAsync(Entities);
+            await this.context.SaveChangesAsync();
         }
 
         public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
@@ -41,14 +45,9 @@
             return this.context.Set<TEntity>().Where(predicate);
         }
 
-        public TEntity SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
-        {
-            return this.context.Set<TEntity>().SingleOrDefault(predicate);
-        }
-
         public async Task<TEntity> Get(Guid id)
         {
-            return this.context.Set<TEntity>().Find(id);
+            return await this.context.Set<TEntity>().FindAsync(id);
         }
 
         public IEnumerable<TEntity> GetAll()
@@ -56,27 +55,9 @@
             return this.context.Set<TEntity>().ToList();
         }
 
-        public async Task<PagedList<TEntity>> GetAllWithPagination(int pageIndex, int pageSize)
+        public async Task<IPagedList<TEntity>> GetAllWithPagination(int pageIndex, int pageSize)
         {
             return new PagedList<TEntity>(this.context.Set<TEntity>(), pageIndex, pageSize);
-        }
-
-        public async Task Remove(TEntity entity)
-        {
-            this.context.Entry(entity).State = EntityState.Deleted;
-            this.context.SaveChanges();
-        }
-
-        public async Task RemoveRange(IEnumerable<TEntity> Entities)
-        {
-            this.context.Set<TEntity>().RemoveRange(Entities);
-            this.context.SaveChanges();
-        }
-
-        public async Task Update(TEntity entity)
-        {
-            this.context.Entry(entity).State = EntityState.Modified;
-            this.context.SaveChanges();
         }
 
         public int GetCountTotalItems()
@@ -97,6 +78,29 @@
         public async Task<UserManage> GetUserManageWithRefreshToken(string token)
         {
             return await this.context.Users.Where(t => t.RefreshToken == token).FirstOrDefaultAsync();
+        }
+
+        public async Task Remove(TEntity entity)
+        {
+            this.context.Entry(entity).State = EntityState.Deleted;
+            await this.context.SaveChangesAsync();
+        }
+
+        public async Task RemoveRange(IEnumerable<TEntity> Entities)
+        {
+            this.context.Set<TEntity>().RemoveRange(Entities);
+            await this.context.SaveChangesAsync();
+        }
+
+        public TEntity SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
+        {
+            return this.context.Set<TEntity>().SingleOrDefault(predicate);
+        }
+
+        public async Task Update(TEntity entity)
+        {
+            this.context.Entry(entity).State = EntityState.Modified;
+            await this.context.SaveChangesAsync();
         }
 
         /// <summary>
