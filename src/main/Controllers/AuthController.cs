@@ -2,14 +2,11 @@
 {
     using System;
     using System.Threading.Tasks;
-
     using AutoMapper;
-
     using main.Contracts;
     using main.Entities;
     using main.Entities.Models;
     using main.Entities.ViewModels;
-
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Identity;
@@ -17,8 +14,10 @@
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
+    [Authorize]
+    [ApiController]
     [ApiVersion("1")]
-    [EnableCors("MyPolicy")]
+    //[EnableCors("MyPolicy")]
     [Route("seed/v{version:apiVersion}/users")]
     public class AuthController : Controller
     {
@@ -31,7 +30,8 @@
         private readonly UserManager<UserManage> userManager;
 
         /// <inheritdoc />
-        public AuthController(UserManager<UserManage> userManager, IAccountService repository, IMapper mapper, ILogger<AuthController> logger)
+        public AuthController(UserManager<UserManage> userManager, IAccountService repository, IMapper mapper,
+            ILogger<AuthController> logger)
         {
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
             this.userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -42,24 +42,25 @@
         /// <summary>
         ///     Do the login and get the Token of the session
         /// </summary>
-        /// <param name="login"></param>
-        /// <param name="password"></param>
+        /// <param name="userLogin"></param>
         /// <returns></returns>
+        [AllowAnonymous]
         [Route("login")]
         [HttpPost]
+        [Produces("application/json")]
         [SwaggerConsumes("application/x-www-form-urlencoded")]
-        public async Task<IActionResult> GetToken(string login, string password)
+        public async Task<IActionResult> GetToken([FromForm] UserLogin userLogin)
         {
-            JsonWebToken result = await this.repository.SignIn(login, password);
+            JsonWebToken result = await this.repository.SignIn(userLogin.login, userLogin.password);
             if (result != null)
             {
                 this.Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
                 this.Response.Headers.Add("Refresh", result.RefreshToken);
-                this.logger.LogDebug($"User logged: {login}");
+                this.logger.LogDebug($"User logged: {userLogin.login}");
                 return this.Ok("Done");
             }
 
-            this.logger.LogWarning($"Bad request, username {login} or password incorrect");
+            this.logger.LogWarning($"Bad request, username {userLogin.login} or password incorrect");
 
             return this.Unauthorized("Username or password incorrect");
         }
@@ -104,7 +105,8 @@
             {
                 this.Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
                 this.Response.Headers.Add("Refresh", result.RefreshToken);
-                this.Response.Headers.Add("Access-Control-Expose-Headers", "origin, content-type, accept, authorization, ETag, if-none-match");
+                this.Response.Headers.Add("Access-Control-Expose-Headers",
+                    "origin, content-type, accept, authorization, ETag, if-none-match");
                 return this.Ok();
             }
 

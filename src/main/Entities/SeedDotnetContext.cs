@@ -15,19 +15,13 @@
     /// </summary>
     public class SeedDotnetContext : IdentityDbContext<UserManage>
     {
-        private readonly IConfigurationRoot config;
-
-        private SqliteConnection connection;
-
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="config"></param>
         /// <param name="options"></param>
-        public SeedDotnetContext(IConfigurationRoot config, DbContextOptions options)
+        public SeedDotnetContext(DbContextOptions options)
             : base(options)
         {
-            this.config = config;
         }
 
         /// <summary>
@@ -49,26 +43,12 @@
         /// 
         /// </summary>
         /// <returns></returns>
-        public DbConnection CloseConnection()
+        public void CloseConnection()
         {
-            if (this.connection != null)
+            if (this.Database?.GetDbConnection() != null)
             {
-                this.connection.Close();
-                return this.connection;
+                this.Database?.CloseConnection();
             }
-
-            return null;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="optionsBuilder"></param>
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-
-            optionsBuilder.UseSqlite(this.GetConnection());
         }
 
         /// <summary>
@@ -80,20 +60,6 @@
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<PatientAllergy>().HasKey(t => new { t.IdAllergy, t.IdPatient });
-        }
-
-        private DbConnection GetConnection()
-        {
-            this.connection = new SqliteConnection(this.config["ConnectionStrings:seed_dotnetContextConnection"]);
-            this.connection.Open();
-
-            return this.connection;
-        }
-
-        private string GetPassword()
-        {
-            // modify this code to retrieve the password from a secure key repository. Obviously, avoid using the configuration file!
-            return this.config["ConnectionStrings:password"];
         }
     }
 }
