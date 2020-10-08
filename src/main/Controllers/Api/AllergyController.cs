@@ -19,6 +19,7 @@
     using X.PagedList;
 
     [ApiVersion("1")]
+    [ApiController]
     [EnableCors("MyPolicy")]
     [Route("seed/v{version:apiVersion}/allergies")]
     [Authorize]

@@ -136,6 +136,8 @@
             //Configure the Scopes
             services.ConfigureScope();
 
+            services.AddControllers();
+
             // Add certificates
             services.ConfigureCertificate();
 

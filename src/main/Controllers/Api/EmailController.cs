@@ -14,6 +14,7 @@
     using Microsoft.Extensions.Logging;
 
     [ApiVersion("1")]
+    [ApiController]
     [EnableCors("MyPolicy")]
     [Route("seed/v{version:apiVersion}/emails")]
     public class EmailController : Controller
