@@ -17,11 +17,18 @@
             : base(
                 cfg =>
                     {
-                        cfg.CreateMap<AddressViewModel, Address>().ReverseMap();
-                        cfg.CreateMap<PatientViewModel, Patient>().ForMember(p => p.Dob, o => o.MapFrom(q => q.Dob ?? DateTime.MinValue)).ReverseMap().ForMember(
+                        cfg.CreateMap<AddressViewModel, Address>().ForMember(p => p.CreationTime, o => o.Ignore())
+                            .ForMember(p => p.UpdateTime, o => o.Ignore()).ReverseMap();
+                        cfg.CreateMap<PatientViewModel, Patient>().ForMember(p => p.CreationTime, o => o.Ignore())
+                            .ForMember(p => p.UpdateTime, o => o.Ignore()).ForMember(p => p.Dob, o => o.MapFrom(q => q.Dob ?? DateTime.MinValue)).ReverseMap().ForMember(
                             p => p.Dob,
                             o => o.MapFrom(q => q.Dob == DateTime.MinValue ? null : new DateTime?(q.Dob)));
-                        cfg.CreateMap<UserViewModel, UserManage>().ReverseMap();
+                        cfg.CreateMap<UserViewModel, UserManage>()
+                            .ForMember(p => p.LastName, o => o.MapFrom(q => q.LastName))
+                            .ForMember(p => p.Name, o => o.MapFrom(q => q.Name))
+                            .ForMember(p => p.Email, o => o.MapFrom(q => q.Email))
+                            .ForAllOtherMembers(o => o.Ignore());
+                        cfg.CreateMap<UserManage, UserViewModel>();
                         cfg.CreateMap<IPagedList<Patient>, ExtendedPagedList<PatientViewModel>>().ForMember(p => p.TotalPages, o => o.MapFrom(q => q.PageCount))
                             .ForMember(p => p.Content, o => o.MapFrom(q => q.AsEnumerable())).ForMember(p => p.First, o => o.MapFrom(q => q.IsFirstPage))
                             .ForMember(p => p.Last, o => o.MapFrom(q => q.IsLastPage)).ForMember(p => p.Size, o => o.MapFrom(q => q.PageSize))

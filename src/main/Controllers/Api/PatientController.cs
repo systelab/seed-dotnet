@@ -24,6 +24,7 @@
     /// 
     /// </summary>
     [ApiVersion("1")]
+    [ApiController]
     [EnableCors("MyPolicy")]
     [Route("seed/v{version:apiVersion}/patients")]
     [Authorize]
@@ -48,7 +49,7 @@
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            this.patientService = patientService;
+            this.patientService = patientService ?? throw new ArgumentNullException(nameof(patientService));
         }
 
         /// <summary>
@@ -61,10 +62,9 @@
         public async Task<IActionResult> CreatePatient([FromBody] PatientViewModel patient)
         {
             Patient newPatient = this.mapper.Map<Patient>(patient);
-            this.mapper.Map<PatientViewModel>(this.patientService.Create(newPatient));
-            this.logger.LogDebug($"Patient created {newPatient.Id}");
-            await Task.CompletedTask;
-            return this.Ok(newPatient);
+            PatientViewModel newPatientViewModel = this.mapper.Map<PatientViewModel>(await this.patientService.Create(newPatient));
+            this.logger.LogDebug($"Patient created {newPatientViewModel.Id}");
+            return this.Ok(newPatientViewModel);
         }
 
         /// <summary>
