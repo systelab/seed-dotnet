@@ -9,7 +9,7 @@
         [Test]
         public void AutomapperTest()
         {
-            new SeedMapperConfiguration().AssertConfigurationIsValid();
+            new MapperConfiguration().AssertConfigurationIsValid();
         }
     }
 }

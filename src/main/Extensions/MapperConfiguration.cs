@@ -3,17 +3,15 @@
     using System;
     using System.Linq;
 
-    using AutoMapper;
-
     using Main.Entities.Common;
     using Main.Entities.Models;
     using Main.Entities.ViewModels;
 
     using X.PagedList;
 
-    public class SeedMapperConfiguration : MapperConfiguration
+    public class MapperConfiguration : AutoMapper.MapperConfiguration
     {
-        public SeedMapperConfiguration()
+        public MapperConfiguration()
             : base(
                 cfg =>
                     {

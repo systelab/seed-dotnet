@@ -16,7 +16,7 @@
 
     public class PatientRepository : RepositoryBase<Patient>, IPatientRepository
     {
-        public PatientRepository(SeedDotnetContext context)
+        public PatientRepository(DatabaseContext context)
             : base(context)
         {
         }

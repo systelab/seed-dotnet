@@ -16,6 +16,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="wwwroot\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Migrations\20181214103832_seed_db_v1.cs" />
     <Compile Remove="Migrations\20181214103832_seed_db_v1.Designer.cs" />
     <Compile Remove="Migrations\20181214104107_seed_db_v2.cs" />
@@ -25,10 +32,6 @@
     <Compile Remove="Migrations\20190113131416_seed-r7-v2.cs" />
     <Compile Remove="Migrations\20190113131416_seed-r7-v2.Designer.cs" />
     <Compile Remove="Migrations\SeedDotnetContextModelSnapshot.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,15 +1,14 @@
 ﻿namespace Main.Entities
 {
-
     using Main.Entities.Models;
     using Main.Entities.Models.Relations;
 
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 
-    public class SeedDotnetContext : IdentityDbContext<UserManage>
+    public class DatabaseContext : IdentityDbContext<UserManage>
     {
-        public SeedDotnetContext(DbContextOptions options)
+        public DatabaseContext(DbContextOptions options)
             : base(options)
         {
         }

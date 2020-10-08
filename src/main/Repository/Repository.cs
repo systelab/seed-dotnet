@@ -12,17 +12,17 @@
     /// <summary>
     ///     Repository with all the queries to the database using the entity framework
     /// </summary>
-    internal class SeedDotnetRepository : ISeedDotnetRepository
+    internal class Repository : IRepository
     {
-        private readonly SeedDotnetContext context;
+        private readonly DatabaseContext context;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SeedDotnetRepository" /> class.
+        ///     Initializes a new instance of the <see cref="Repository" /> class.
         /// </summary>
         /// <param name="context">
         ///     database context
         /// </param>
-        public SeedDotnetRepository(SeedDotnetContext context)
+        public Repository(DatabaseContext context)
         {
             this.context = context;
         }

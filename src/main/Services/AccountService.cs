@@ -15,7 +15,7 @@
 
         private readonly IPasswordHasher<UserManage> passwordHasher;
 
-        private readonly ISeedDotnetRepository repository;
+        private readonly IRepository repository;
 
         private readonly SignInManager<UserManage> signInManager;
 
@@ -26,7 +26,7 @@
             UserManager<UserManage> userM,
             IJwtHandler jwtHandler,
             IPasswordHasher<UserManage> passwordHasher,
-            ISeedDotnetRepository repository)
+            IRepository repository)
         {
             this.repository = repository;
             this.signInManager = signInManager;

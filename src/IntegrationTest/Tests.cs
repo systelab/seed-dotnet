@@ -458,7 +458,7 @@
         {
             using (IServiceScope scope = this.server.Host.Services.GetService<IServiceScopeFactory>().CreateScope())
             {
-                using (SeedDotnetContext context = scope.ServiceProvider.GetRequiredService<SeedDotnetContext>())
+                using (DatabaseContext context = scope.ServiceProvider.GetRequiredService<DatabaseContext>())
                 {
                     List<Patient> patients = context.Patients.ToList();
 
@@ -486,7 +486,7 @@
             using (IServiceScope scope = this.server.Host.Services.GetService<IServiceScopeFactory>().CreateScope())
             {
                 IMapper mapper = this.server.Host.Services.GetService<IMapper>();
-                using (SeedDotnetContext context = scope.ServiceProvider.GetRequiredService<SeedDotnetContext>())
+                using (DatabaseContext context = scope.ServiceProvider.GetRequiredService<DatabaseContext>())
                 {
                     foreach (PatientViewModel patient in patientList)
                     {

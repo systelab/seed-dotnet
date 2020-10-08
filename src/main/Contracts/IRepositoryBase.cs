@@ -33,7 +33,7 @@
 
         Task Remove(TEntity entity);
 
-        Task RemoveRange(IEnumerable<TEntity> Entities);
+        Task RemoveRange(IEnumerable<TEntity> entities);
 
         TEntity SingleOrDefault(Expression<Func<TEntity, bool>> predicate);
 

@@ -6,16 +6,16 @@
 
     using Microsoft.AspNetCore.Identity;
 
-    internal class SeedDotnetContextSeedData
+    internal class ContextData
     {
         private readonly UserManager<UserManage> userManager;
 
-        public SeedDotnetContextSeedData(UserManager<UserManage> userM)
+        public ContextData(UserManager<UserManage> userM)
         {
             this.userManager = userM;
         }
 
-        public async Task EnsureSeedData()
+        public async Task EnsureData()
         {
             if (await this.userManager.FindByNameAsync("Systelab") == null)
             {

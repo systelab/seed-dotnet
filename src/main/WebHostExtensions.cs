@@ -11,8 +11,8 @@
         {
             using (IServiceScope scope = webhost.Services.GetService<IServiceScopeFactory>().CreateScope())
             {
-                SeedDotnetContextSeedData seeder = scope.ServiceProvider.GetRequiredService<SeedDotnetContextSeedData>();
-                seeder.EnsureSeedData().Wait();
+                ContextData seeder = scope.ServiceProvider.GetRequiredService<ContextData>();
+                seeder.EnsureData().Wait();
             }
 
             return webhost;

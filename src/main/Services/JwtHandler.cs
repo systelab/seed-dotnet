@@ -30,11 +30,11 @@
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             byte[] key = Encoding.ASCII.GetBytes(this.config.Secret);
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
-                                                          {
-                                                              Subject = new ClaimsIdentity(claims),
-                                                              Expires = DateTime.UtcNow.AddMinutes(double.Parse(this.config.ExpiryMinutes)),
-                                                              SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-                                                          };
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddMinutes(double.Parse(this.config.ExpiryMinutes)),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
 
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 

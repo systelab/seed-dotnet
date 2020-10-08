@@ -10,7 +10,7 @@
 
     public class AllergyRepository : RepositoryBase<Allergy>, IAllergyRepository
     {
-        public AllergyRepository(SeedDotnetContext context)
+        public AllergyRepository(DatabaseContext context)
             : base(context)
         {
         }

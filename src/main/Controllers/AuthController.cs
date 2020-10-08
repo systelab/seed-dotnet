@@ -2,18 +2,19 @@
 {
     using System;
     using System.Threading.Tasks;
+
     using AutoMapper;
+
     using Main.Contracts;
     using Main.Entities;
     using Main.Entities.Models;
     using Main.Entities.ViewModels;
+
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
     [Authorize]
     [ApiController]
     [ApiVersion("1")]
@@ -29,9 +30,7 @@
 
         private readonly UserManager<UserManage> userManager;
 
-        /// <inheritdoc />
-        public AuthController(UserManager<UserManage> userManager, IAccountService repository, IMapper mapper,
-            ILogger<AuthController> logger)
+        public AuthController(UserManager<UserManage> userManager, IAccountService repository, IMapper mapper, ILogger<AuthController> logger)
         {
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
             this.userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -105,8 +104,7 @@
             {
                 this.Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
                 this.Response.Headers.Add("Refresh", result.RefreshToken);
-                this.Response.Headers.Add("Access-Control-Expose-Headers",
-                    "origin, content-type, accept, authorization, ETag, if-none-match");
+                this.Response.Headers.Add("Access-Control-Expose-Headers", "origin, content-type, accept, authorization, ETag, if-none-match");
                 return this.Ok();
             }
 

@@ -33,6 +33,8 @@ namespace UnitTest.Controllers
 
     using X.PagedList;
 
+    using MapperConfiguration = Main.Extensions.MapperConfiguration;
+
     [AllureNUnit]
     [Ignore("Refactor the UT to test the service, not the controller")]
     public class PatientControllerShould
@@ -271,7 +273,7 @@ namespace UnitTest.Controllers
         {
             Environment.SetEnvironmentVariable("ALLURE_CONFIG", Path.Combine(Environment.CurrentDirectory, AllureConstants.CONFIG_FILENAME));
 
-            SeedMapperConfiguration automapConfiguration = new SeedMapperConfiguration();
+            MapperConfiguration automapConfiguration = new MapperConfiguration();
             this.nuniLogger = new NunitLogger<PatientController>();
 
             this.mapper = automapConfiguration.CreateMapper();

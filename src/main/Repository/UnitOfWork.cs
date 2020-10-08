@@ -10,13 +10,13 @@
     /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly SeedDotnetContext context;
+        private readonly DatabaseContext context;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="context"></param>
-        public UnitOfWork(SeedDotnetContext context)
+        public UnitOfWork(DatabaseContext context)
         {
             this.context = context;
             this.Patients = new PatientRepository(this.context);

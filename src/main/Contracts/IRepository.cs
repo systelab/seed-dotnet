@@ -7,7 +7,7 @@
     /// <summary>
     ///     Interface with all the method needed
     /// </summary>
-    public interface ISeedDotnetRepository
+    public interface IRepository
     {
         Task<UserManage> GetUserManageWithRefreshToken(string token);
 

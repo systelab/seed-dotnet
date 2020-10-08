@@ -17,13 +17,13 @@
     public class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
         where TEntity : class
     {
-        protected readonly SeedDotnetContext context;
+        protected readonly DatabaseContext context;
 
         /// <summary>
         ///     Set the context of the app
         /// </summary>
         /// <param name="_context"></param>
-        public RepositoryBase(SeedDotnetContext _context)
+        public RepositoryBase(DatabaseContext _context)
         {
             this.context = _context;
         }

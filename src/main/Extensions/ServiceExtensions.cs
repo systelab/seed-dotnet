@@ -70,8 +70,8 @@
         /// <param name="services"></param>
         public static void ConfigureContext(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContext<SeedDotnetContext>(options => options.UseSqlite(connectionString));
-            services.AddTransient<SeedDotnetContextSeedData>();
+            services.AddDbContext<DatabaseContext>(options => options.UseSqlite(connectionString));
+            services.AddTransient<ContextData>();
         }
 
         /// <summary>
@@ -104,7 +104,7 @@
                     config.Password.RequiredLength = 8;
                     config.Password.RequireDigit = false;
                     config.User.RequireUniqueEmail = false;
-                }).AddEntityFrameworkStores<SeedDotnetContext>();
+                }).AddEntityFrameworkStores<DatabaseContext>();
         }
 
         /// <summary>
@@ -113,7 +113,7 @@
         /// <param name="services"></param>
         public static void ConfigureMapper(this IServiceCollection services)
         {
-            MapperConfiguration automapConfiguration = new MapperConfiguration(
+            AutoMapper.MapperConfiguration automapConfiguration = new AutoMapper.MapperConfiguration(
                 cfg =>
                 {
                     cfg.CreateMap<AddressViewModel, Address>().ReverseMap();
@@ -170,7 +170,7 @@
             services.AddScoped<IMedicalRecordNumberService, MedicalRecordNumberService>();
             services.AddScoped<IJwtHandler, JwtHandler>();
             services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
-            services.AddScoped<ISeedDotnetRepository, SeedDotnetRepository>();
+            services.AddScoped<IRepository, Repository>();
             services.AddScoped<IMailService, MailService>();
             services.AddScoped<ISyncPolicy>(provider =>
                 Policy.Handle<Exception>().CircuitBreaker(2, TimeSpan.FromMinutes(1), OnBreak, OnReset, OnHalfOpen));
