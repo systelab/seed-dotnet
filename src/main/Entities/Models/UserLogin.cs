@@ -1,14 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
-
-namespace main.Entities.Models
+﻿namespace Main.Entities.Models
 {
+    using System.ComponentModel.DataAnnotations;
+
     public class UserLogin
     {
         [Required]
-        public string login { get; set; }
+        public string Login { get; set; }
+
         [Required]
-        public string password { get; set; }
+        public string Password { get; set; }
     }
 }

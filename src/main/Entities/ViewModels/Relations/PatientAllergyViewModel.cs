@@ -1,8 +1,8 @@
-﻿namespace main.Entities.ViewModels.Relations
+﻿namespace Main.Entities.ViewModels.Relations
 {
     using System;
 
-    using main.Entities.Models;
+    using Main.Entities.Models;
 
     public class PatientAllergyViewModel
     {

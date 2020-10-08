@@ -1,4 +1,4 @@
-﻿namespace main.Healthchecks
+﻿namespace Main.Healthchecks
 {
     using System.Threading;
     using System.Threading.Tasks;

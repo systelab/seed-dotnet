@@ -1,6 +1,6 @@
-﻿namespace main.Contracts.Repository
+﻿namespace Main.Contracts.Repository
 {
-    using main.Entities.Models;
+    using Main.Entities.Models;
 
     using X.PagedList;
 

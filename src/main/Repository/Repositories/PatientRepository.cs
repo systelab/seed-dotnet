@@ -1,14 +1,14 @@
-﻿namespace main.Repository.Repositories
+﻿namespace Main.Repository.Repositories
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
-    using main.Contracts.Repository;
-    using main.Entities;
-    using main.Entities.Models;
-    using main.Entities.Models.Relations;
+    using Main.Contracts.Repository;
+    using Main.Entities;
+    using Main.Entities.Models;
+    using Main.Entities.Models.Relations;
 
     using Microsoft.EntityFrameworkCore;
 

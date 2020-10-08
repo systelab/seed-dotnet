@@ -1,27 +1,30 @@
-﻿namespace main
+﻿namespace Main
 {
     using System;
     using System.IO.Compression;
     using System.Text;
     using System.Text.Json.Serialization;
+
     using global::Hangfire;
     using global::Hangfire.SQLite;
-    using main.Entities;
-    using main.Extensions;
-    using main.Hangfire;
-    using main.Healthchecks;
-    using main.Migrations;
+
+    using Main.Entities;
+    using Main.Extensions;
+    using Main.Hangfire;
+    using Main.Healthchecks;
+    using Main.Migrations;
+
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Tokens;
+
     using Serilog;
 
     // This is 
@@ -72,7 +75,6 @@
             
             app.UseAuthentication();
             app.UseAuthorization();
-            
 
             app.Use(
                 (context, next) =>
@@ -100,8 +102,7 @@
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Seed .Net"); });
 
-            app.UseHangfireDashboard("/hangfire",
-                new DashboardOptions {Authorization = new[] {new HangFireAuthenticationFilter()}});
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions {Authorization = new[] {new HangFireAuthenticationFilter()}});
 
             app.UseHangfireServer(new BackgroundJobServerOptions {WorkerCount = 1});
 

@@ -1,8 +1,8 @@
-﻿namespace main.Services
+﻿namespace Main.Services
 {
     using System;
 
-    using main.Contracts;
+    using Main.Contracts;
 
     using Microsoft.Extensions.Logging;
 

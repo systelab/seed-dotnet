@@ -1,7 +1,7 @@
-﻿namespace main.Contracts
+﻿namespace Main.Contracts
 {
-    using main.Entities;
-    using main.Entities.Models;
+    using Main.Entities;
+    using Main.Entities.Models;
 
     internal interface IJwtHandler
     {

@@ -1,10 +1,10 @@
-﻿namespace main.Hangfire
+﻿namespace Main.Hangfire
 {
     using System;
 
     using global::Hangfire;
 
-    using main.Hangfire.Jobs;
+    using Main.Hangfire.Jobs;
 
     public class HangfireJobScheduler
     {

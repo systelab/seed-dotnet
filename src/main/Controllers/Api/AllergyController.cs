@@ -1,15 +1,15 @@
-﻿namespace main.Controllers.Api
+﻿namespace Main.Controllers.Api
 {
     using System;
     using System.Threading.Tasks;
 
     using AutoMapper;
 
-    using main.Contracts;
-    using main.Entities.Common;
-    using main.Entities.Models;
-    using main.Entities.ViewModels;
-    using main.Services;
+    using Main.Contracts;
+    using Main.Entities.Common;
+    using Main.Entities.Models;
+    using Main.Entities.ViewModels;
+    using Main.Services;
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;

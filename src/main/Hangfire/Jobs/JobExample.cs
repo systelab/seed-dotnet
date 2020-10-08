@@ -1,11 +1,11 @@
-﻿namespace main.Hangfire.Jobs
+﻿namespace Main.Hangfire.Jobs
 {
     using System;
     using System.Threading.Tasks;
 
     using global::Hangfire;
 
-    using main.Hangfire.Contracts;
+    using Main.Hangfire.Contracts;
 
     public class JobExample : IJobExample
     {

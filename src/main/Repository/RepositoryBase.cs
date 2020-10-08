@@ -1,4 +1,4 @@
-﻿namespace main.Repository
+﻿namespace Main.Repository
 {
     using System;
     using System.Collections.Generic;
@@ -6,9 +6,9 @@
     using System.Linq.Expressions;
     using System.Threading.Tasks;
 
-    using main.Contracts;
-    using main.Entities;
-    using main.Entities.Models;
+    using Main.Contracts;
+    using Main.Entities;
+    using Main.Entities.Models;
 
     using Microsoft.EntityFrameworkCore;
 

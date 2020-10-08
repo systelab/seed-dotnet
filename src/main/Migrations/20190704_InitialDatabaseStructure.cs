@@ -1,4 +1,4 @@
-﻿namespace main.Migrations
+﻿namespace Main.Migrations
 {
     using System.Data;
 

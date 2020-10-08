@@ -1,9 +1,9 @@
-﻿namespace Test.Controller
+﻿namespace UnitTest.Controllers
 {
     using AutoMapper;
 
-    using main.Contracts;
-    using main.Controllers.Api;
+    using Main.Contracts;
+    using Main.Controllers.Api;
 
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;

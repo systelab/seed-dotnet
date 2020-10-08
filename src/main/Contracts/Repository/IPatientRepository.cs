@@ -1,11 +1,11 @@
-﻿namespace main.Contracts.Repository
+﻿namespace Main.Contracts.Repository
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    using main.Entities.Models;
-    using main.Entities.Models.Relations;
+    using Main.Entities.Models;
+    using Main.Entities.Models.Relations;
 
     using X.PagedList;
 

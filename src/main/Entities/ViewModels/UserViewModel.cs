@@ -1,4 +1,4 @@
-﻿namespace main.Entities.ViewModels
+﻿namespace Main.Entities.ViewModels
 {
     /// <summary>
     ///     Represents a user

@@ -1,4 +1,4 @@
-﻿namespace main.Contracts
+﻿namespace Main.Contracts
 {
     /// <summary>
     /// Service for retrieving a MRN

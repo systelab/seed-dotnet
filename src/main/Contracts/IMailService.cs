@@ -1,8 +1,8 @@
-﻿namespace main.Contracts
+﻿namespace Main.Contracts
 {
     using System.Threading.Tasks;
 
-    using main.Entities.Common;
+    using Main.Entities.Models;
 
     /// <summary>
     /// Service for managing emails

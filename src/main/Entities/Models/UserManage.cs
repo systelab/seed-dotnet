@@ -1,4 +1,4 @@
-﻿namespace main.Entities.Models
+﻿namespace Main.Entities.Models
 {
     using Microsoft.AspNetCore.Identity;
 

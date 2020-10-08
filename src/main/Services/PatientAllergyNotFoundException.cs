@@ -1,4 +1,4 @@
-﻿namespace main.Services
+﻿namespace Main.Services
 {
     using System;
 

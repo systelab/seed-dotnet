@@ -1,11 +1,11 @@
-﻿namespace main.Contracts
+﻿namespace Main.Contracts
 {
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
 
-    using main.Entities.Models;
+    using Main.Entities.Models;
 
     using X.PagedList;
 

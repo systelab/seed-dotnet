@@ -1,13 +1,13 @@
-﻿namespace main.Controllers.Api
+﻿namespace Main.Controllers.Api
 {
     using System;
     using System.Threading.Tasks;
 
     using AutoMapper;
 
-    using main.Contracts;
-    using main.Entities.Common;
-    using main.Entities.ViewModels;
+    using Main.Contracts;
+    using Main.Entities.Models;
+    using Main.Entities.ViewModels;
 
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Mvc;
@@ -43,7 +43,7 @@
             Email newEmail = this.mapper.Map<Email>(email);
             newEmail.body = this.emailService.GetEmailTest();
             await this.emailService.SendEmail(newEmail);
-            this.logger.LogDebug($"Email sent to {email.emailTo}");
+            this.logger.LogDebug($"Email sent to {email.EmailTo}");
             return this.Ok();
         }
     }

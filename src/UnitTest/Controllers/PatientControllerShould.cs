@@ -1,4 +1,4 @@
-namespace TestNUnit
+namespace UnitTest.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -12,13 +12,13 @@ namespace TestNUnit
 
     using AutoMapper;
 
-    using main.Contracts;
-    using main.Contracts.Repository;
-    using main.Controllers.Api;
-    using main.Entities.Common;
-    using main.Entities.Models;
-    using main.Entities.ViewModels;
-    using main.Extensions;
+    using Main.Contracts;
+    using Main.Contracts.Repository;
+    using Main.Controllers.Api;
+    using Main.Entities.Common;
+    using Main.Entities.Models;
+    using Main.Entities.ViewModels;
+    using Main.Extensions;
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -30,8 +30,6 @@ namespace TestNUnit
     using NUnit.Allure.Attributes;
     using NUnit.Allure.Core;
     using NUnit.Framework;
-
-    using Test.Controller;
 
     using X.PagedList;
 

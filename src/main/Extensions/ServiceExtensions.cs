@@ -1,31 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace main.Extensions
+﻿namespace Main.Extensions
 {
     using System;
     using System.IO;
     using System.Linq;
-    using System.Reflection;
     using System.Security.Cryptography.X509Certificates;
+
     using AutoMapper;
-    using main.Contracts;
-    using main.Contracts.Repository;
-    using main.Entities;
-    using main.Entities.Common;
-    using main.Entities.Models;
-    using main.Entities.Models.Relations;
-    using main.Entities.ViewModels;
-    using main.Entities.ViewModels.Relations;
-    using main.Mail;
-    using main.Repository;
-    using main.Repository.Repositories;
-    using main.Services;
+
+    using Main.Contracts;
+    using Main.Contracts.Repository;
+    using Main.Entities;
+    using Main.Entities.Common;
+    using Main.Entities.Models;
+    using Main.Entities.Models.Relations;
+    using Main.Entities.ViewModels;
+    using Main.Entities.ViewModels.Relations;
+    using Main.Repository;
+    using Main.Repository.Repositories;
+    using Main.Services;
+
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OpenApi.Models;
+
     using Polly;
     using Polly.CircuitBreaker;
+
     using Serilog;
+
     using X.PagedList;
 
     /// <summary>

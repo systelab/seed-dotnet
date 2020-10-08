@@ -1,11 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("IntegrationTest")]
-[assembly: InternalsVisibleTo("test")]
-[assembly: InternalsVisibleTo("TestNUnit")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
-
-namespace main
+﻿namespace Main
 {
     using System;
     using System.IO;
@@ -17,19 +10,20 @@ namespace main
     using Serilog.Events;
 
     /// <summary>
-    ///     Main entry program
+    /// Main entry program
     /// </summary>
     public static class Program
     {
         /// <summary>
-        ///     Main entry
+        /// Main entry
         /// </summary>
         /// <param name="args">not used</param>
         public static void Main(string[] args)
         {
-            LoggerConfiguration conf = new LoggerConfiguration().MinimumLevel.Debug().MinimumLevel.Override("Microsoft", LogEventLevel.Information).Enrich.FromLogContext().WriteTo
-                .Async(a => a.Console()).WriteTo.Async(
-                    a => a.File(GetLogFile(), LogEventLevel.Debug, rollingInterval: RollingInterval.Infinite, rollOnFileSizeLimit: true, fileSizeLimitBytes: 1073741824));
+            LoggerConfiguration conf = new LoggerConfiguration().MinimumLevel.Debug().MinimumLevel.Override("Microsoft", LogEventLevel.Information).Enrich.FromLogContext()
+                .WriteTo.Async(a => a.Console())
+                .WriteTo.Async(a => a.File(GetLogFile(), LogEventLevel.Debug, rollingInterval: RollingInterval.Infinite, rollOnFileSizeLimit: true, fileSizeLimitBytes: 1073741824));
+
             Log.Logger = conf.CreateLogger();
 
             try

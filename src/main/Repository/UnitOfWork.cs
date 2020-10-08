@@ -1,9 +1,9 @@
-﻿namespace main.Repository
+﻿namespace Main.Repository
 {
-    using main.Contracts;
-    using main.Contracts.Repository;
-    using main.Entities;
-    using main.Repository.Repositories;
+    using Main.Contracts;
+    using Main.Contracts.Repository;
+    using Main.Entities;
+    using Main.Repository.Repositories;
 
     /// <summary>
     /// 

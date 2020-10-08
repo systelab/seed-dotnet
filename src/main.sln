@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "main", "main\main.csproj", "{C6F22F22-A069-4653-971F-469A0C9406CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Main", "main\Main.csproj", "{C6F22F22-A069-4653-971F-469A0C9406CE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTest", "IntegrationTest\IntegrationTest.csproj", "{7027A79E-C3AE-4398-8161-C9100CAC6F48}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestNUnit", "TestNUnit\TestNUnit.csproj", "{5A86FA31-D2DF-4B28-8AA8-C130B3903EC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTest.csproj", "{5A86FA31-D2DF-4B28-8AA8-C130B3903EC9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{9807D5B7-8B7D-40FE-A266-2790955FC0EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +32,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7027A79E-C3AE-4398-8161-C9100CAC6F48} = {9807D5B7-8B7D-40FE-A266-2790955FC0EF}
+		{5A86FA31-D2DF-4B28-8AA8-C130B3903EC9} = {9807D5B7-8B7D-40FE-A266-2790955FC0EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A84BB1FD-202C-4C8B-9835-80B1B107DD20}

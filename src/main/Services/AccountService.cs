@@ -1,11 +1,11 @@
-﻿namespace main.Services
+﻿namespace Main.Services
 {
     using System;
     using System.Threading.Tasks;
 
-    using main.Contracts;
-    using main.Entities;
-    using main.Entities.Models;
+    using Main.Contracts;
+    using Main.Entities;
+    using Main.Entities.Models;
 
     using Microsoft.AspNetCore.Identity;
 

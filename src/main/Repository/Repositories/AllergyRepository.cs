@@ -1,10 +1,10 @@
-﻿namespace main.Repository.Repositories
+﻿namespace Main.Repository.Repositories
 {
     using System.Linq;
 
-    using main.Contracts.Repository;
-    using main.Entities;
-    using main.Entities.Models;
+    using Main.Contracts.Repository;
+    using Main.Entities;
+    using Main.Entities.Models;
 
     using X.PagedList;
 

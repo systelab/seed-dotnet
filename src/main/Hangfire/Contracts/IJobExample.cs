@@ -1,4 +1,4 @@
-﻿namespace main.Hangfire.Contracts
+﻿namespace Main.Hangfire.Contracts
 {
     using System;
     using System.Threading.Tasks;

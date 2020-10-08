@@ -1,4 +1,4 @@
-﻿namespace main.Entities.ViewModels
+﻿namespace Main.Entities.ViewModels
 {
     /// <summary>
     ///     Model for someone's address
@@ -8,11 +8,11 @@
         /// <summary>
         ///     Gets or sets the email to send
         /// </summary>
-        public string emailTo { get; set; }
+        public string EmailTo { get; set; }
 
         /// <summary>
         ///     Gets or sets the subject of the email
         /// </summary>
-        public string subject { get; set; }
+        public string Subject { get; set; }
     }
 }

@@ -1,8 +1,8 @@
-﻿namespace main.Extensions
+﻿namespace Main.Extensions
 {
     using System.Threading.Tasks;
 
-    using main.Entities.Models;
+    using Main.Entities.Models;
 
     using Microsoft.AspNetCore.Identity;
 
@@ -10,9 +10,9 @@
     {
         private readonly UserManager<UserManage> userManager;
 
-        public SeedDotnetContextSeedData(UserManager<UserManage> _userM)
+        public SeedDotnetContextSeedData(UserManager<UserManage> userM)
         {
-            this.userManager = _userM;
+            this.userManager = userM;
         }
 
         public async Task EnsureSeedData()

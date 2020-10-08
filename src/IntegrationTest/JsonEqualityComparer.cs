@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    using main.Entities.ViewModels;
+    using Main.Entities.ViewModels;
 
     using Newtonsoft.Json;
 

@@ -1,4 +1,4 @@
-﻿namespace main.Entities
+﻿namespace Main.Entities
 {
     using System.Collections.Generic;
     using System.Linq;

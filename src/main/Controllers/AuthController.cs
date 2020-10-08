@@ -1,12 +1,12 @@
-﻿namespace main.Controllers
+﻿namespace Main.Controllers
 {
     using System;
     using System.Threading.Tasks;
     using AutoMapper;
-    using main.Contracts;
-    using main.Entities;
-    using main.Entities.Models;
-    using main.Entities.ViewModels;
+    using Main.Contracts;
+    using Main.Entities;
+    using Main.Entities.Models;
+    using Main.Entities.ViewModels;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Identity;
@@ -51,16 +51,16 @@
         [SwaggerConsumes("application/x-www-form-urlencoded")]
         public async Task<IActionResult> GetToken([FromForm] UserLogin userLogin)
         {
-            JsonWebToken result = await this.repository.SignIn(userLogin.login, userLogin.password);
+            JsonWebToken result = await this.repository.SignIn(userLogin.Login, userLogin.Password);
             if (result != null)
             {
                 this.Response.Headers.Add("Authorization", "Bearer " + result.AccessToken);
                 this.Response.Headers.Add("Refresh", result.RefreshToken);
-                this.logger.LogDebug($"User logged: {userLogin.login}");
+                this.logger.LogDebug($"User logged: {userLogin.Login}");
                 return this.Ok("Done");
             }
 
-            this.logger.LogWarning($"Bad request, username {userLogin.login} or password incorrect");
+            this.logger.LogWarning($"Bad request, username {userLogin.Login} or password incorrect");
 
             return this.Unauthorized("Username or password incorrect");
         }

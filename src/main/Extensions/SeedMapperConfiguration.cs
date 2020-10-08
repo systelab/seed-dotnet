@@ -1,13 +1,13 @@
-﻿namespace main.Extensions
+﻿namespace Main.Extensions
 {
     using System;
     using System.Linq;
 
     using AutoMapper;
 
-    using main.Entities.Common;
-    using main.Entities.Models;
-    using main.Entities.ViewModels;
+    using Main.Entities.Common;
+    using Main.Entities.Models;
+    using Main.Entities.ViewModels;
 
     using X.PagedList;
 

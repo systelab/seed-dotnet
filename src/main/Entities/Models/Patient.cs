@@ -1,9 +1,9 @@
-﻿namespace main.Entities.Models
+﻿namespace Main.Entities.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
 
-    using main.Entities.Common;
+    using Main.Entities.Common;
 
     public class Patient : BaseEntity
     {

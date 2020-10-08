@@ -11,11 +11,11 @@
 
     using FluentAssertions;
 
-    using main;
-    using main.Entities;
-    using main.Entities.Common;
-    using main.Entities.Models;
-    using main.Entities.ViewModels;
+    using Main;
+    using Main.Entities;
+    using Main.Entities.Common;
+    using Main.Entities.Models;
+    using Main.Entities.ViewModels;
 
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
@@ -31,7 +31,7 @@
     [AllureEpic("TestAPI")]
     [AllureNUnit]
     [AllureFeature("The scope of this scenario is to verify that the API response as expected. In addition, this scenario also interacts with the database.")]
-    public class IntegrationNunit
+    public class Tests
     {
         private readonly HttpClient client;
 
@@ -39,7 +39,7 @@
 
         private string currentToken;
 
-        public IntegrationNunit()
+        public Tests()
         {
             this.server = new TestServer(new WebHostBuilder().UseEnvironment("Testing").UseStartup<Startup>());
 

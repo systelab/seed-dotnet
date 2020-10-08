@@ -1,4 +1,4 @@
-﻿namespace main.Entities.Common
+﻿namespace Main.Entities.Common
 {
     using System;
     using System.ComponentModel.DataAnnotations;

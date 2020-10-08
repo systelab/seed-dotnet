@@ -1,4 +1,4 @@
-﻿namespace main.Mail
+﻿namespace Main.Services
 {
     using System;
     using System.Net;
@@ -8,8 +8,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    using main.Contracts;
-    using main.Entities.Common;
+    using Main.Contracts;
+    using Main.Entities.Models;
 
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

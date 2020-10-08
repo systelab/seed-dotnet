@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TestNUnit
+﻿namespace UnitTest.Extensions
 {
-    using main.Extensions;
+    using Main.Extensions;
 
     using NUnit.Framework;
 
-    class TestAutomapper
+    internal class SeedMapperConfigurationTest
     {
         [Test]
         public void AutomapperTest()

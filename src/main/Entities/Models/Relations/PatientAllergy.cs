@@ -1,10 +1,10 @@
-﻿namespace main.Entities.Models.Relations
+﻿namespace Main.Entities.Models.Relations
 {
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    using main.Entities.Common;
+    using Main.Entities.Common;
 
     public class PatientAllergy : BaseEntity
     {

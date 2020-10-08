@@ -1,4 +1,4 @@
-﻿namespace main.Entities.Common
+﻿namespace Main.Entities.Models
 {
     public class Email
     {

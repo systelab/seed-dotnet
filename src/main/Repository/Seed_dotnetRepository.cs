@@ -1,11 +1,11 @@
-﻿namespace main.Repository
+﻿namespace Main.Repository
 {
     using System.Linq;
     using System.Threading.Tasks;
 
-    using main.Contracts;
-    using main.Entities;
-    using main.Entities.Models;
+    using Main.Contracts;
+    using Main.Entities;
+    using Main.Entities.Models;
 
     using Microsoft.EntityFrameworkCore;
 

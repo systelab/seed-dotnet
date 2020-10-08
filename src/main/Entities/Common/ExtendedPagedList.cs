@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ExtendedPagedList.cs" company="Systelab Technologies, S.A.">2018</copyright>
-// <summary>
-//   Extends a paged list by adding a total count of items
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace main.Entities.Common
+﻿namespace Main.Entities.Common
 {
     using System.Collections.Generic;
 

@@ -1,17 +1,17 @@
-﻿namespace main.Services
+﻿namespace Main.Services
 {
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Text;
 
-    using main.Contracts;
-    using main.Entities;
-    using main.Entities.Models;
+    using Main.Contracts;
+    using Main.Entities;
+    using Main.Entities.Models;
 
     using Microsoft.IdentityModel.Tokens;
 
-    using JsonWebToken = main.Entities.JsonWebToken;
+    using JsonWebToken = Entities.JsonWebToken;
     using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
     internal class JwtHandler : IJwtHandler

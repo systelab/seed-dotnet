@@ -1,4 +1,4 @@
-﻿namespace main.Hangfire
+﻿namespace Main.Hangfire
 {
     using global::Hangfire.Dashboard;
 
