@@ -1,6 +1,12 @@
 ﻿namespace Main.Entities.Common
 {
     using System.Collections.Generic;
+    using System.Linq;
+
+    using Main.Entities.Models;
+    using Main.Entities.ViewModels;
+
+    using X.PagedList;
 
     /// <summary>
     ///     Extends a paged list by adding a total count of items
@@ -47,5 +53,25 @@
         ///     Gets the total number of pages
         /// </summary>
         public int TotalPages { get; set; }
+
+        public ExtendedPagedList(PagedList<T> list)
+
+        {
+            if (list == null)
+            {
+                this.Content = new List<T>();
+            }
+            else
+            {
+                this.Content = list.AsEnumerable();
+                this.First = list.IsFirstPage;
+                this.Last = list.IsLastPage;
+                this.Number = list.PageNumber;
+                this.NumberOfElements = list.Count;
+                this.Size = list.PageSize;
+                this.TotalElements = list.TotalItemCount;
+                this.TotalPages = list.PageCount;
+            }
+        }
     }
 }

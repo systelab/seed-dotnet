@@ -29,9 +29,14 @@
         {
             Assembly[] assemblies = { typeof(InitialDatabaseStructure).Assembly, typeof(InsertExampleData).Assembly };
 
-            return new ServiceCollection().AddFluentMigratorCore()
-                .ConfigureRunner(configureRunner => configureRunner.AddSQLite().WithGlobalConnectionString(connectionString).ScanIn(assemblies).For.Migrations())
-                .AddLogging(logging => logging.AddFluentMigratorConsole()).BuildServiceProvider(false);
+            return new ServiceCollection()
+                .AddLogging(logging => logging.AddFluentMigratorConsole())
+                .AddFluentMigratorCore()
+                .ConfigureRunner(
+                    configureRunner => configureRunner.AddSQLite()
+                        .WithGlobalConnectionString(connectionString)
+                        .ScanIn(assemblies).For.Migrations())
+                .BuildServiceProvider(false);
         }
 
         private static void UpdateDatabase(IServiceProvider serviceProvider)

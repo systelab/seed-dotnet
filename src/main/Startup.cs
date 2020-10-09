@@ -5,14 +5,18 @@
     using System.Text;
     using System.Text.Json.Serialization;
 
+    using AutoMapper;
+
     using global::Hangfire;
     using global::Hangfire.SQLite;
 
+    using Main.Contracts;
     using Main.Entities;
     using Main.Extensions;
     using Main.Hangfire;
     using Main.Healthchecks;
     using Main.Migrations;
+    using Main.Services;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -56,9 +60,10 @@
                 app.UseHsts();
             }
 
-            if (!this.Environment.IsProduction())
+            if (!this.Environment.IsEnvironment("Testing"))
             {
                 app.UseSwagger();
+                
             }
 
             app.UseStaticFiles();
@@ -125,13 +130,15 @@
 
             services.AddSingleton(appSettingsModel);
             
+            services.AddLogging(loggingBuilder =>
+                loggingBuilder.AddSerilog(dispose: true));
 
             if (this.Environment.IsDevelopment())
             {
                 // Here you can set the services implemented only for DEV 
             }
 
-            if (!this.Environment.IsProduction())
+            if (!this.Environment.IsEnvironment("Testing"))
                 // Add Swagger reference to the project. Swagger is not needed when testing
             {
                 services.ConfigureSwagger();
@@ -202,6 +209,8 @@
                 .AddDiskStorageHealthCheck(options => options.AddDrive(@"C:\", 1000))
                 .AddPingHealthCheck(options => options.AddHost("www.google.com", 1000));
 
+            services.AddAutoMapper(typeof(AppMapperConfiguration));
+
             services.AddMvcCore().AddJsonOptions(
                 options =>
                 {
@@ -225,6 +234,10 @@
                         {PrepareSchemaIfNecessary = true, QueuePollInterval = TimeSpan.FromMinutes(5)};
                     config.UseSQLiteStorage(this.Configuration.GetConnectionString("ContextConnection"), options);
                 });
+
+            services.AddScoped<IPatientService, PatientService>();
+            services.AddScoped<IMailService, MailService>();
+            services.AddScoped<IAccountService, AccountService>();
         }
     }
 }

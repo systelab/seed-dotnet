@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using AutoMapper;
@@ -115,7 +116,10 @@
         {
             // PagedList is a one-based index. We offer a zero-based index, therefore we have to add 1 to the page number
             IPagedList<Patient> results = await this.patientService.Get(page + 1, elementsPerPage);
-            return this.Ok(this.mapper.Map<ExtendedPagedList<PatientViewModel>>(results));
+            IEnumerable<PatientViewModel> resultViewModel = mapper.Map<IEnumerable<Patient>, IEnumerable<PatientViewModel>>(results.AsEnumerable());
+            PagedList<PatientViewModel> patientViewModels = new PagedList<PatientViewModel>(results, resultViewModel);
+
+            return this.Ok(new ExtendedPagedList<PatientViewModel>(patientViewModels));
         }
 
         /// <summary>
@@ -140,8 +144,13 @@
         [HttpDelete]
         public async Task<IActionResult> Remove(Guid uid)
         {
-            this.patientService.Delete(uid);
-            await Task.CompletedTask;
+            Patient patient = await this.patientService.Get(uid);
+            if (patient == null)
+            {
+                return this.NotFound(uid);
+            }
+
+            await this.patientService.Delete(uid);
             return this.Ok();
         }
 

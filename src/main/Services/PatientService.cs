@@ -74,6 +74,11 @@
         {
             Patient results = await this.unitOfWork.Patients.Get(uid);
 
+            if (results == null)
+            {
+                throw new PatientNotFoundException();
+            }
+
             if (!string.IsNullOrWhiteSpace(updatedPatient.Name))
             {
                 results.Name = updatedPatient.Name;

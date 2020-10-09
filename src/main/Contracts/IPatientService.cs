@@ -22,7 +22,7 @@
 
         Task<IPagedList<Patient>> Get(int page, int elementsPerPage);
 
-        Task<Patient> Get(Guid page);
+        Task<Patient> Get(Guid patientUid);
 
         Task<IList<PatientAllergy>> GetAllergies(Guid uid);
 

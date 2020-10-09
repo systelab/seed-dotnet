@@ -7,6 +7,8 @@
     using System.Net.Http;
     using System.Threading.Tasks;
 
+    using Allure.Commons;
+
     using AutoMapper;
 
     using FluentAssertions;
@@ -19,6 +21,7 @@
 
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
     using Newtonsoft.Json;
@@ -27,6 +30,8 @@
     using NUnit.Allure.Core;
     using NUnit.Allure.Steps;
     using NUnit.Framework;
+
+    using Serilog;
 
     [AllureEpic("TestAPI")]
     [AllureNUnit]
@@ -41,10 +46,20 @@
 
         public Tests()
         {
-            this.server = new TestServer(new WebHostBuilder().UseEnvironment("Testing").UseStartup<Startup>());
+            this.server = new TestServer(new WebHostBuilder().ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.Sources.Clear();
+
+                    var env = hostingContext.HostingEnvironment;
+
+                    config.AddJsonFile("appsettings.json");
+
+                    config.AddEnvironmentVariables();
+                }).UseSerilog().UseEnvironment("Testing").UseStartup<Startup>());
 
             this.server.Host.Seed();
             this.client = this.server.CreateClient();
+
 
             this.ClearPatientData();
             this.SeedPatient(KnownPatients);
@@ -347,7 +362,7 @@
 
         [AllureTms("UpdatePatient_BadRequest")]
         [Description("Update a patient with invalid data and the API response with a bad request.")]
-        [TestCase("joe", "doe", "email@valid.com")]
+        [TestCase("joe", "doe", "email(A)invalid.com")]
         [TestCase("joe", "", "email@valid.com")]
         [TestCase("joe", "doe", "")]
         [TestCase("joe", "doe", null)]
