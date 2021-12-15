@@ -16,11 +16,11 @@
 
     public class MailService : IMailService
     {
-        private readonly IConfigurationRoot config;
+        private readonly IConfiguration config;
 
         private readonly ILogger<Email> logger;
 
-        public MailService(IConfigurationRoot config, ILogger<Email> logger)
+        public MailService(IConfiguration config, ILogger<Email> logger)
         {
             this.config = config ?? throw new ArgumentNullException(nameof(config));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));

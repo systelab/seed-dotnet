@@ -66,7 +66,12 @@ namespace UnitTest.Controllers
                 () =>
                     {
                         sut = this.sutBuilder.WithPatientService(this.mockPatientService.Object);
-                        patient = new PatientViewModel { Name = "Carlos", Surname = "Carmona", Email = "ccarmona@werfen.com" };
+                        patient = new PatientViewModel
+                            {
+                                Name = "Carlos",
+                                Surname = "Carmona",
+                                Email = "ccarmona@werfen.com"
+                            };
                     },
                 $"Action: Create a new Patient with values: Name: {patient.Name}, Surname: {patient.Surname} and email: {patient.Email}");
 
@@ -225,7 +230,6 @@ namespace UnitTest.Controllers
         [TestCase("joe", null, null)]
         [TestCase("", null, null)]
         [TestCase(null, null, null)]
-
         public async Task InsertPatient_ValidPatient_InsertionOK(string name, string lastname, string email)
         {
             IActionResult result = null;
@@ -237,7 +241,13 @@ namespace UnitTest.Controllers
                     {
                         // Arrange
 
-                        patientToInsert = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
+                        patientToInsert = new PatientViewModel
+                            {
+                                Email = email,
+                                Id = id,
+                                Surname = lastname,
+                                Name = name
+                            };
                         Patient mappedPatientToInsert = this.mapper.Map<Patient>(patientToInsert);
                         this.mockPatientService.Setup(repo => repo.Create(It.Is<Patient>(p => p.Equals(mappedPatientToInsert))));
                         sut = this.sutBuilder.WithPatientService(this.mockPatientService.Object);
@@ -271,10 +281,10 @@ namespace UnitTest.Controllers
         {
             Environment.SetEnvironmentVariable("ALLURE_CONFIG", Path.Combine(Environment.CurrentDirectory, AllureConstants.CONFIG_FILENAME));
 
-            AppMapperConfiguration automapConfiguration = new AppMapperConfiguration();
             this.nuniLogger = new NunitLogger<PatientController>();
 
-            this.mapper = automapConfiguration.CreateMapper();
+            MapperConfiguration configuration = new MapperConfiguration(cfg => { cfg.AddProfile<AppMapperProfile>(); });
+            this.mapper = configuration.CreateMapper();
             this.mockPatientService = new Mock<IPatientService>();
             Mock<IAllergyRepository> mockAllergyRepository = new Mock<IAllergyRepository>();
 
@@ -300,13 +310,13 @@ namespace UnitTest.Controllers
                         sut = this.sutBuilder.WithPatientService(this.mockPatientService.Object);
 
                         patient = new PatientViewModel
-                                      {
-                                          Id = Guid.NewGuid(),
-                                          Name = "Cerizo",
-                                          Surname = "Remundo",
-                                          Email = "cremundo@werfen.com",
-                                          MedicalNumber = "8899"
-                                      };
+                            {
+                                Id = Guid.NewGuid(),
+                                Name = "Cerizo",
+                                Surname = "Remundo",
+                                Email = "cremundo@werfen.com",
+                                MedicalNumber = "8899"
+                            };
                     },
                 "Action: Step 1: Arrange");
 
@@ -392,11 +402,29 @@ namespace UnitTest.Controllers
         private void InitializeData()
         {
             this.listOfPatients = new List<Patient>
-                                      {
-                                          new Patient { Id = new Guid("35321823-4f70-40a7-8135-f7f2e9b5ea90"), Name = "Arturo", Surname = "Ciguendo", Email = "aciguendo@werfen.com" },
-                                          new Patient { Id = new Guid("4ab9c588-6177-4c1e-93da-694ebb034c07"), Name = "Sofia", Surname = "Corona", Email = "scorona@werfen.com" },
-                                          new Patient { Id = new Guid("7780fa2f-628e-472d-8503-e0e48e5a4875"), Name = "Marta", Surname = "Sanchez", Email = "msanchez@werfen.com" }
-                                      };
+                {
+                    new Patient
+                        {
+                            Id = new Guid("35321823-4f70-40a7-8135-f7f2e9b5ea90"),
+                            Name = "Arturo",
+                            Surname = "Ciguendo",
+                            Email = "aciguendo@werfen.com"
+                        },
+                    new Patient
+                        {
+                            Id = new Guid("4ab9c588-6177-4c1e-93da-694ebb034c07"),
+                            Name = "Sofia",
+                            Surname = "Corona",
+                            Email = "scorona@werfen.com"
+                        },
+                    new Patient
+                        {
+                            Id = new Guid("7780fa2f-628e-472d-8503-e0e48e5a4875"),
+                            Name = "Marta",
+                            Surname = "Sanchez",
+                            Email = "msanchez@werfen.com"
+                        }
+                };
         }
     }
 

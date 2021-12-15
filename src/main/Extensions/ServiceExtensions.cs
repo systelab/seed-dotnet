@@ -80,13 +80,13 @@
         /// <param name="services"></param>
         public static void ConfigureCors(this IServiceCollection services)
         {
-            services.AddCors(o =>
-            {
-                //o.AddPolicy("MyPolicy",
-                //    builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
-                o.AddDefaultPolicy(builder =>
-                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
-            });
+            services.AddCors(
+                o =>
+                    {
+                        //o.AddPolicy("MyPolicy",
+                        //    builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
+                        o.AddDefaultPolicy(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+                    });
         }
 
         /// <summary>
@@ -97,14 +97,14 @@
         {
             services.AddIdentity<UserManage, IdentityRole>(
                 config =>
-                {
-                    config.Password.RequireLowercase = true;
-                    config.Password.RequireUppercase = true;
-                    config.Password.RequireNonAlphanumeric = false;
-                    config.Password.RequiredLength = 8;
-                    config.Password.RequireDigit = false;
-                    config.User.RequireUniqueEmail = false;
-                }).AddEntityFrameworkStores<DatabaseContext>();
+                    {
+                        config.Password.RequireLowercase = true;
+                        config.Password.RequireUppercase = true;
+                        config.Password.RequireNonAlphanumeric = false;
+                        config.Password.RequiredLength = 8;
+                        config.Password.RequireDigit = false;
+                        config.User.RequireUniqueEmail = false;
+                    }).AddEntityFrameworkStores<DatabaseContext>();
         }
 
         /// <summary>
@@ -113,43 +113,34 @@
         /// <param name="services"></param>
         public static void ConfigureMapper(this IServiceCollection services)
         {
-            AutoMapper.MapperConfiguration automapConfiguration = new AutoMapper.MapperConfiguration(
+            MapperConfiguration automapConfiguration = new MapperConfiguration(
                 cfg =>
-                {
-                    cfg.CreateMap<AddressViewModel, Address>().ReverseMap();
-                    cfg.CreateMap<PatientViewModel, Patient>()
-                        .ForMember(p => p.Dob, o => o.MapFrom(q => q.Dob ?? DateTime.MinValue)).ReverseMap().ForMember(
+                    {
+                        cfg.CreateMap<AddressViewModel, Address>().ReverseMap();
+                        cfg.CreateMap<PatientViewModel, Patient>().ForMember(p => p.Dob, o => o.MapFrom(q => q.Dob ?? DateTime.MinValue)).ReverseMap().ForMember(
                             p => p.Dob,
                             o => o.MapFrom(q => q.Dob == DateTime.MinValue ? null : new DateTime?(q.Dob)));
-                    cfg.CreateMap<UserViewModel, UserManage>().ReverseMap();
-                    cfg.CreateMap<AllergyViewModel, Allergy>().ReverseMap();
-                    cfg.CreateMap<PatientAllergyViewModel, PatientAllergy>().ReverseMap();
-                    cfg.CreateMap<EmailViewModel, Email>().ReverseMap();
+                        cfg.CreateMap<UserViewModel, UserManage>().ReverseMap();
+                        cfg.CreateMap<AllergyViewModel, Allergy>().ReverseMap();
+                        cfg.CreateMap<PatientAllergyViewModel, PatientAllergy>().ReverseMap();
+                        cfg.CreateMap<EmailViewModel, Email>().ReverseMap();
 
-                    #region Pagination configurations
+                        #region Pagination configurations
 
-                    cfg.CreateMap<PagedList<Patient>, ExtendedPagedList<PatientViewModel>>()
-                        .ForMember(p => p.TotalPages, o => o.MapFrom(q => q.PageCount))
-                        .ForMember(p => p.Content, o => o.MapFrom(q => q.AsEnumerable()))
-                        .ForMember(p => p.First, o => o.MapFrom(q => q.IsFirstPage))
-                        .ForMember(p => p.Last, o => o.MapFrom(q => q.IsLastPage))
-                        .ForMember(p => p.Size, o => o.MapFrom(q => q.PageSize))
-                        .ForMember(p => p.NumberOfElements, o => o.MapFrom(q => q.Count))
-                        .ForMember(p => p.Number, o => o.MapFrom(q => q.PageNumber - 1))
-                        .ForMember(p => p.TotalElements, o => o.MapFrom(q => q.TotalItemCount));
+                        cfg.CreateMap<PagedList<Patient>, ExtendedPagedList<PatientViewModel>>().ForMember(p => p.TotalPages, o => o.MapFrom(q => q.PageCount))
+                            .ForMember(p => p.Content, o => o.MapFrom(q => q.AsEnumerable())).ForMember(p => p.First, o => o.MapFrom(q => q.IsFirstPage))
+                            .ForMember(p => p.Last, o => o.MapFrom(q => q.IsLastPage)).ForMember(p => p.Size, o => o.MapFrom(q => q.PageSize))
+                            .ForMember(p => p.NumberOfElements, o => o.MapFrom(q => q.Count)).ForMember(p => p.Number, o => o.MapFrom(q => q.PageNumber - 1))
+                            .ForMember(p => p.TotalElements, o => o.MapFrom(q => q.TotalItemCount));
 
-                    cfg.CreateMap<PagedList<Allergy>, ExtendedPagedList<AllergyViewModel>>()
-                        .ForMember(p => p.TotalPages, o => o.MapFrom(q => q.PageCount))
-                        .ForMember(p => p.Content, o => o.MapFrom(q => q.AsEnumerable()))
-                        .ForMember(p => p.First, o => o.MapFrom(q => q.IsFirstPage))
-                        .ForMember(p => p.Last, o => o.MapFrom(q => q.IsLastPage))
-                        .ForMember(p => p.Size, o => o.MapFrom(q => q.PageSize))
-                        .ForMember(p => p.NumberOfElements, o => o.MapFrom(q => q.Count))
-                        .ForMember(p => p.Number, o => o.MapFrom(q => q.PageNumber - 1))
-                        .ForMember(p => p.TotalElements, o => o.MapFrom(q => q.TotalItemCount));
+                        cfg.CreateMap<PagedList<Allergy>, ExtendedPagedList<AllergyViewModel>>().ForMember(p => p.TotalPages, o => o.MapFrom(q => q.PageCount))
+                            .ForMember(p => p.Content, o => o.MapFrom(q => q.AsEnumerable())).ForMember(p => p.First, o => o.MapFrom(q => q.IsFirstPage))
+                            .ForMember(p => p.Last, o => o.MapFrom(q => q.IsLastPage)).ForMember(p => p.Size, o => o.MapFrom(q => q.PageSize))
+                            .ForMember(p => p.NumberOfElements, o => o.MapFrom(q => q.Count)).ForMember(p => p.Number, o => o.MapFrom(q => q.PageNumber - 1))
+                            .ForMember(p => p.TotalElements, o => o.MapFrom(q => q.TotalItemCount));
 
-                    #endregion
-                });
+                        #endregion
+                    });
 
             IMapper mapper = automapConfiguration.CreateMapper();
 
@@ -172,8 +163,7 @@
             services.AddScoped<IPasswordHasher<UserManage>, PasswordHasher<UserManage>>();
             services.AddScoped<IRepository, Repository>();
             services.AddScoped<IMailService, MailService>();
-            services.AddScoped<ISyncPolicy>(provider =>
-                Policy.Handle<Exception>().CircuitBreaker(2, TimeSpan.FromMinutes(1), OnBreak, OnReset, OnHalfOpen));
+            services.AddScoped<ISyncPolicy>(provider => Policy.Handle<Exception>().CircuitBreaker(2, TimeSpan.FromMinutes(1), OnBreak, OnReset, OnHalfOpen));
         }
 
         /// <summary>
@@ -184,47 +174,50 @@
         {
             services.AddSwaggerGen(
                 c =>
-                {
-                    c.AddSecurityDefinition(
-                        "Bearer",
-                        new OpenApiSecurityScheme
-                        {
-                            Description =
-                                "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                            Name = "Authorization",
-                            In = ParameterLocation.Header,
-                            Type = SecuritySchemeType.ApiKey
-                        });
-                    c.AddSecurityRequirement(
-                        new OpenApiSecurityRequirement
-                        {
-                            {
-                                new OpenApiSecurityScheme
+                    {
+                        c.AddSecurityDefinition(
+                            "Bearer",
+                            new OpenApiSecurityScheme
                                 {
-                                    Reference = new OpenApiReference
-                                        {Type = ReferenceType.SecurityScheme, Id = "Bearer"}
-                                },
-                                new string[] { }
-                            }
-                        });
-                    c.SwaggerDoc("v1",
-                        new OpenApiInfo
-                        {
-                            Version = "v1", Title = "Seed DotNet",
-                            Description = "This is a seed project for a .Net WebApi"
-                        });
-                    // Set the comments path for the Swagger JSON and UI.
-                    string xmlFile = $"seed_dotnet.xml";
-                    string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                    c.IncludeXmlComments(xmlPath);
-                });
+                                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                                    Name = "Authorization",
+                                    In = ParameterLocation.Header,
+                                    Type = SecuritySchemeType.ApiKey
+                                });
+                        c.AddSecurityRequirement(
+                            new OpenApiSecurityRequirement
+                                {
+                                    {
+                                        new OpenApiSecurityScheme
+                                            {
+                                                Reference = new OpenApiReference
+                                                    {
+                                                        Type = ReferenceType.SecurityScheme,
+                                                        Id = "Bearer"
+                                                    }
+                                            },
+                                        new string[] { }
+                                    }
+                                });
+                        c.SwaggerDoc(
+                            "v1",
+                            new OpenApiInfo
+                                {
+                                    Version = "v1",
+                                    Title = "Seed DotNet",
+                                    Description = "This is a seed project for a .Net WebApi"
+                                });
+                        // Set the comments path for the Swagger JSON and UI.
+                        string xmlFile = "seed_dotnet.xml";
+                        string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                        //c.IncludeXmlComments(xmlPath);
+                    });
         }
 
         private static void OnBreak(Exception exception, CircuitState circuitState, TimeSpan timeSpan, Context context)
         {
             ILogger logger = Log.Logger;
-            logger.Error(
-                $"Circuit break with state {circuitState} using {context.PolicyKey} at {context.OperationKey}, due to: {exception} in {timeSpan.TotalSeconds}.");
+            logger.Error($"Circuit break with state {circuitState} using {context.PolicyKey} at {context.OperationKey}, due to: {exception} in {timeSpan.TotalSeconds}.");
         }
 
         private static void OnHalfOpen()

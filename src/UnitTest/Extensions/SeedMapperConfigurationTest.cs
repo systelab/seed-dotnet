@@ -1,5 +1,7 @@
 ﻿namespace UnitTest.Extensions
 {
+    using AutoMapper;
+
     using Main.Extensions;
 
     using NUnit.Framework;
@@ -9,7 +11,7 @@
         [Test]
         public void AutomapperTest()
         {
-            new MapperConfiguration().AssertConfigurationIsValid();
+            new MapperConfiguration(cfg => { cfg.AddProfile<AppMapperProfile>(); }).AssertConfigurationIsValid();
         }
     }
 }

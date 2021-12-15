@@ -7,8 +7,6 @@
     using System.Net.Http;
     using System.Threading.Tasks;
 
-    using Allure.Commons;
-
     using AutoMapper;
 
     using FluentAssertions;
@@ -19,10 +17,11 @@
     using Main.Entities.Models;
     using Main.Entities.ViewModels;
 
-    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc.Testing;
     using Microsoft.AspNetCore.TestHost;
-    using Microsoft.Extensions.Configuration;
+    using Microsoft.Data.Sqlite;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
 
     using Newtonsoft.Json;
 
@@ -31,39 +30,16 @@
     using NUnit.Allure.Steps;
     using NUnit.Framework;
 
-    using Serilog;
-
     [AllureEpic("TestAPI")]
     [AllureNUnit]
     [AllureFeature("The scope of this scenario is to verify that the API response as expected. In addition, this scenario also interacts with the database.")]
     public class Tests
     {
-        private readonly HttpClient client;
-
-        private readonly TestServer server;
+        private HttpClient client;
 
         private string currentToken;
 
-        public Tests()
-        {
-            this.server = new TestServer(new WebHostBuilder().ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    config.Sources.Clear();
-
-                    var env = hostingContext.HostingEnvironment;
-
-                    config.AddJsonFile("appsettings.json");
-
-                    config.AddEnvironmentVariables();
-                }).UseSerilog().UseEnvironment("Testing").UseStartup<Startup>());
-
-            this.server.Host.Seed();
-            this.client = this.server.CreateClient();
-
-
-            this.ClearPatientData();
-            this.SeedPatient(KnownPatients);
-        }
+        private TestServer server;
 
         public static PatientViewModel[] KnownPatients =>
             new[]
@@ -92,8 +68,25 @@
                             Name = "Penélope",
                             MedicalNumber = "5656"
                         },
-                    new PatientViewModel { Email = "valid@email.com", Id = new Guid("89aca2d6-f261-4a2c-a927-2ab029fb7959"), Surname = "Pérez", Name = "Silvio" }
+                    new PatientViewModel
+                        {
+                            Email = "valid@email.com",
+                            Id = new Guid("89aca2d6-f261-4a2c-a927-2ab029fb7959"),
+                            Surname = "Pérez",
+                            Name = "Silvio"
+                        }
                 };
+
+        [OneTimeSetUp]
+        public void OneTimeSetup()
+        {
+            WebApplicationFactory<Startup> application = new WebApplicationFactory<Startup>();
+            this.server = application.Server;
+            this.client = application.CreateClient();
+
+            this.ClearPatientData();
+            this.SeedPatient(KnownPatients);
+        }
 
         [AllureTms("CreatePatient_BadRequest")]
         [Description("Create patients with differents values to invalid request")]
@@ -158,13 +151,13 @@
         {
             Guid id = new Guid(idGuid);
             PatientViewModel patientToUpdate = new PatientViewModel
-                                                   {
-                                                       Email = email,
-                                                       Id = id,
-                                                       Surname = surname,
-                                                       Name = name,
-                                                       MedicalNumber = medicalnumber
-                                                   };
+                {
+                    Email = email,
+                    Id = id,
+                    Surname = surname,
+                    Name = name,
+                    MedicalNumber = medicalnumber
+                };
             return patientToUpdate;
         }
 
@@ -236,9 +229,9 @@
         [Test]
         public async Task GetListOfPatients_Unauthorized()
         {
-            HttpResponseMessage response = await this.server.CreateRequest("seed/v1/patients").GetAsync().ConfigureAwait(false);
+            HttpResponseMessage response = await this.client.GetAsync("seed/v1/patients").ConfigureAwait(false);
 
-            response.StatusCode.Should().BeEquivalentTo(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [AllureTms("GetPatient_Found")]
@@ -287,9 +280,9 @@
         [Test]
         public async Task GetPatient_Unauthorized()
         {
-            HttpResponseMessage response = await this.server.CreateRequest("seed/v1/patients/1").GetAsync().ConfigureAwait(false);
+            HttpResponseMessage response = await this.client.GetAsync("seed/v1/patients/1").ConfigureAwait(false);
 
-            response.StatusCode.Should().BeEquivalentTo(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [AllureTms("InvalidLogin_BadRequest")]
@@ -299,10 +292,13 @@
         {
             List<KeyValuePair<string, string>> nvc = new List<KeyValuePair<string, string>>();
             nvc.Add(new KeyValuePair<string, string>("login", "admin"));
-            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, "seed/v1/users/login") { Content = new FormUrlEncodedContent(nvc) };
+            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, "seed/v1/users/login")
+                {
+                    Content = new FormUrlEncodedContent(nvc)
+                };
             HttpResponseMessage response = await this.client.SendAsync(req);
 
-            response.StatusCode.Should().BeEquivalentTo(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [AllureTms("RemovePatient_Found")]
@@ -342,9 +338,9 @@
         [Test]
         public async Task RemovePatient_Unauthorized()
         {
-            HttpResponseMessage response = await this.server.CreateRequest("seed/v1/patients/1").SendAsync("DELETE");
+            HttpResponseMessage response = await this.client.DeleteAsync("seed/v1/patients/1");
 
-            response.StatusCode.Should().BeEquivalentTo(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [SetUp]
@@ -374,7 +370,13 @@
             Guid id = Guid.NewGuid();
             // Arrange
             await this.Authorize().ConfigureAwait(false);
-            PatientViewModel patientToUpdate = new PatientViewModel { Email = email, Id = id, Surname = lastname, Name = name };
+            PatientViewModel patientToUpdate = new PatientViewModel
+                {
+                    Email = email,
+                    Id = id,
+                    Surname = lastname,
+                    Name = name
+                };
 
             // Act
             HttpResponseMessage response = await this.CallUpdatePatient(patientToUpdate).ConfigureAwait(false);
@@ -390,13 +392,13 @@
             // Arrange
             await this.Authorize().ConfigureAwait(false);
             PatientViewModel patientToUpdate = new PatientViewModel
-                                                   {
-                                                       Email = email,
-                                                       Id = id,
-                                                       Surname = lastname,
-                                                       Name = name,
-                                                       MedicalNumber = medicalNumber
-                                                   };
+                {
+                    Email = email,
+                    Id = id,
+                    Surname = lastname,
+                    Name = name,
+                    MedicalNumber = medicalNumber
+                };
 
             // Act
             HttpResponseMessage response = await this.CallUpdatePatient(patientToUpdate).ConfigureAwait(false);
@@ -416,7 +418,7 @@
         {
             HttpResponseMessage response = await this.server.CreateRequest("seed/v1/patients/1").SendAsync("PUT").ConfigureAwait(false);
 
-            response.StatusCode.Should().BeEquivalentTo(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [AllureTms("ValidLogin_ReturnToken")]
@@ -471,7 +473,7 @@
         [Description("Update a patient without authorization.")]
         private void ClearPatientData()
         {
-            using (IServiceScope scope = this.server.Host.Services.GetService<IServiceScopeFactory>().CreateScope())
+            using (IServiceScope scope = this.server.Services.GetService<IServiceScopeFactory>().CreateScope())
             {
                 using (DatabaseContext context = scope.ServiceProvider.GetRequiredService<DatabaseContext>())
                 {
@@ -492,15 +494,18 @@
             List<KeyValuePair<string, string>> nvc = new List<KeyValuePair<string, string>>();
             nvc.Add(new KeyValuePair<string, string>("login", "Systelab"));
             nvc.Add(new KeyValuePair<string, string>("password", "Systelab"));
-            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, "seed/v1/users/login") { Content = new FormUrlEncodedContent(nvc) };
+            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, "seed/v1/users/login")
+                {
+                    Content = new FormUrlEncodedContent(nvc)
+                };
             return await this.client.SendAsync(req).ConfigureAwait(false);
         }
 
         private void SeedPatient(PatientViewModel[] patientList)
         {
-            using (IServiceScope scope = this.server.Host.Services.GetService<IServiceScopeFactory>().CreateScope())
+            using (IServiceScope scope = this.server.Services.GetService<IServiceScopeFactory>().CreateScope())
             {
-                IMapper mapper = this.server.Host.Services.GetService<IMapper>();
+                IMapper mapper = this.server.Services.GetService<IMapper>();
                 using (DatabaseContext context = scope.ServiceProvider.GetRequiredService<DatabaseContext>())
                 {
                     foreach (PatientViewModel patient in patientList)
@@ -511,6 +516,26 @@
                     context.SaveChanges();
                 }
             }
+        }
+    }
+
+    internal class TodoApplication : WebApplicationFactory<Program>
+    {
+        protected override IHost CreateHost(IHostBuilder builder)
+        {
+            // Add mock/test services to the builder here
+            builder.ConfigureServices(
+                services =>
+                    {
+                        services.AddScoped(
+                            sp =>
+                                {
+                                    // Replace SQL Lite with test DB
+                                    return new SqliteConnection("Data Source=testtodos.db");
+                                });
+                    });
+
+            return base.CreateHost(builder);
         }
     }
 }
